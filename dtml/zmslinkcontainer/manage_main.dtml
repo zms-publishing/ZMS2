@@ -1,0 +1,127 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getZMILangStr('CAPTION_EDIT')%display_type(REQUEST)"></title>
+</head>
+<dtml-var "manage_tabs(_,_,p_languages=_.True)">
+<dtml-var f_bo_area>
+<dtml-var checkout>
+
+<form name="form0" action="manage_changeProperties" method="post">
+<dtml-var f_submitInputFields>
+
+<!-- ############# -->
+<!-- ### INSERT    -->
+<!-- ############# -->
+<dtml-call "REQUEST.set( 'ZMS_INSERT', 'ZMSLinkElement')">
+
+<table cellspacing="1" cellpadding="2" border="0" class="zmiNeutralColorStrong0">
+
+<tr class="zmiNeutralColorMedium0">
+ <td colspan="5"><dtml-var "f_headline(_,_,headline=getZMILangStr('BTN_ADD'))"></td>
+</tr>
+
+<tr valign="top" class="zmiNeutralColorStrong0">
+ <td> &nbsp; </td>
+ <td>
+  <font class="form-label"><dtml-var "getZMILangStr('ATTR_URL')"></font>
+  <font class="form-small">(<dtml-var "getZMILangStr('OR').lower()"> PMID)</font>
+ </td>
+ <td>
+  <font class="form-label"><dtml-var "getZMILangStr('ATTR_TITLE')"></font>
+  <font class="form-small">(<dtml-var "getZMILangStr('OR').lower()"> &quot;Medline&quot;)</font>
+ </td>
+ <td colspan="2">
+  <font class="form-label"><dtml-var "getZMILangStr('ATTR_DESCRIPTION')"></font>
+  <font class="form-small">(<dtml-var "getZMILangStr('LITERATURE_REFERENCE_ONLY')">!)</font>
+ </td>
+</tr>
+
+<tr valign="top" class="zmiNeutralColorLight0">
+ <td class="zmiNeutralColorMedium0"><img src="<dtml-var spacer_gif>" title="" border="0" width="40" height="20"></td>
+ <td class="form-small"><dtml-var "getUrlInput(fmName='form0',elName='_url',elTextName='_title',size=15,value='',enabled=1,REQUEST=REQUEST,css='form-small')">&nbsp;</td>
+ <td class="form-small"><dtml-var "getTextInput(fmName='form0',elName='_title',size=10,value='',enabled=1,REQUEST=REQUEST,css='form-small')"></td>
+ <td class="form-small"><dtml-var "getTextArea(fmName='form0',elName='_description',cols=15,rows=3,value='',enabled=1,REQUEST=REQUEST,css='form-small')"></td>
+ <td width="100">&nbsp;</td>
+</tr>
+
+</table>
+
+<!-- ### SUBMIT -->
+<dtml-var f_submitBtn>
+
+<!-- ############# -->
+<!-- ### EDIT      -->
+<!-- ############# -->
+<dtml-call "REQUEST.set( 'ZMS_INSERT', _.None)">
+
+<dtml-if "getChildNodes(REQUEST,['ZMSLinkElement'])">
+
+<table cellspacing="1" cellpadding="2" border="0" class="zmiNeutralColorStrong0">
+
+<tr class="zmiNeutralColorMedium0">
+ <td colspan="5"><dtml-var "f_headline(_,_,headline=getZMILangStr('TAB_EDIT'))"></td>
+</tr>
+
+<tr valign="middle" class="zmiNeutralColorStrong0">
+ <td> &nbsp; </td>
+ <td>
+  <font class="form-label"><dtml-var "getZMILangStr('ATTR_URL')"></font>
+  <font class="form-small">(<dtml-var "getZMILangStr('OR').lower()"> PMID)</font>
+ </td>
+ <td>
+  <font class="form-label"><dtml-var "getZMILangStr('ATTR_TITLE')"></font>
+  <font class="form-small">(<dtml-var "getZMILangStr('OR').lower()"> &quot;Medline&quot;)</font>
+ </td>
+ <td colspan="2">
+  <font class="form-label"><dtml-var "getZMILangStr('ATTR_DESCRIPTION')"></font>
+  <font class="form-small">(<dtml-var "getZMILangStr('LITERATURE_REFERENCE_ONLY')">!)</font>
+ </td>
+</tr>
+
+<dtml-let childNodes="getChildNodes(REQUEST,['ZMSLinkElement'])">
+<dtml-in childNodes>
+<dtml-let seqindex=sequence-index ob=sequence-item>
+
+<tr valign="top" class="zmiNeutralColorLight0">
+ <td align="center" class="zmiNeutralColorMedium0"
+  ><nobr
+   ><select class="form-small" onchange="location.href='<dtml-var id>/manage_moveObjToPos?lang=<dtml-var lang>&pos:int='+(this.selectedIndex+1)"
+    ><dtml-in "_.range(_.len(childNodes))"
+     ><option <dtml-if "_['sequence-index']==seqindex">selected="selected"</dtml-if>><dtml-var "_['sequence-index']+1"></option
+    ></dtml-in
+   ></select
+    ><a href="javascript:confirmDeleteBtnOnClick('manage_deleteObjs?ids:list=<dtml-var id>&preview=preview');" class="button"
+     ><img src="<dtml-var MISC_ZMS>btn_trashcan1.gif" title="<dtml-var "getZMILangStr('BTN_DELETE')">" border="0"></a
+  ></nobr
+ </td>
+ <td class="form-small"><dtml-var "getUrlInput(fmName='form0',elName='url%s'%id,elTextName='title%s'%id,size=15,value=getObjAttrValue(getObjAttr('attr_ref'),REQUEST),enabled=1,REQUEST=REQUEST,css='form-small')">&nbsp;</td>
+ <td class="form-small"><dtml-var "getTextInput(fmName='form0',elName='title%s'%id,size=10,value=getObjAttrValue(getObjAttr('title'),REQUEST),enabled=1,REQUEST=REQUEST,css='form-small')"></td>
+ <td class="form-small"><dtml-var "getTextArea(fmName='form0',elName='description%s'%id,cols=15,rows=3,value=getObjAttrValue(getObjAttr('attr_dc_description'),REQUEST),enabled=1,REQUEST=REQUEST,css='form-small')"></td>
+ <td width="100" class="zmiNeutralColorMedium0"><dtml-var "manage_main_change(_,_,ob=_['sequence-item'],REQUEST=REQUEST)"></td>
+</tr>
+
+</dtml-let>
+</dtml-in>
+</dtml-let>
+
+</table>
+
+</dtml-if>
+
+<table cellspacing="0" cellpadding="1" border="0" width="100%">
+<colgroup>
+ <col width="20%" />
+ <col width="80%" />
+</colgroup>
+
+<!-- ### Meta-Attributes -->
+<dtml-var "f_metaInputFields(_,_,fmName='form0',p_meta_type=this().meta_type,noSubmitBtn=_.len(getChildNodes(REQUEST,['ZMSLinkElement']))==0)">
+
+</table>
+
+<!-- ### Buttons -->
+<dtml-var f_submitBtn>
+
+</form>
+
+<dtml-var f_eo_area>
+<dtml-var manage_page_footer>

@@ -1,0 +1,238 @@
+<dtml-try>
+
+<!-- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+     +- INSERT
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- -->
+<dtml-if "REQUEST.get('action','')=='insert'">
+ <dtml-call "REQUEST.set('message','')">
+ <dtml-call "REQUEST.set('sqlStatement','')">
+ <dtml-if "REQUEST.get('btn','')==''">
+  <!-- ### FORM -->
+  <dtml-call "REQUEST.set('ZMS_INSERT',meta_type)">
+  <dtml-var "input_form(_,_,headline=getZMILangStr('CAPTION_INSERT'),rowid=-1,record={})">
+ <dtml-else>
+  <!-- ### EXEC INSERT -->
+  <dtml-if "REQUEST.get('btn','')==getZMILangStr('BTN_INSERT')">
+   <dtml-call "writeBlock('[%s.actions:%s]:'%(meta_type,action))">
+   <dtml-call "REQUEST.set('rowid',_.None)">
+   <!-- # Get columns to insert -->
+   <dtml-call "REQUEST.set('c',[])">
+   <dtml-in grid_cols mapping>
+    <dtml-if auto>
+     <dtml-if "auto in ['insert','update']">
+      <dtml-if "type in ['date','datetime']">
+       <dtml-call "c.append({'id':id,'value':sql_quote__(SESSION[sessqentitykey],id,getLangFmtDate(ZopeTime(),lang,'%s_FMT'%type.upper()))})">
+      <dtml-elif "type in ['int']">
+       <dtml-in "query('SELECT MAX(%s) AS max_id FROM %s'%(id,SESSION[sessqentitykey]))['records']" mapping>
+        <dtml-call "c.append({'id':id,'value':_.str(_.int(max_id)+1)})">
+       <dtml-else>
+        <dtml-call "c.append({'id':id,'value':_.str(0)})">
+       </dtml-in>
+      </dtml-if>
+     </dtml-if>
+    <dtml-else>
+     <dtml-unless multimultiselect>
+     <dtml-unless multiselect>
+       <dtml-let d="{'id':id,'value':sql_quote__(SESSION[sessqentitykey],id,REQUEST.get('new_%s'%id,''))}">
+        <dtml-if nullable>
+         <dtml-if "REQUEST.get('new_%s'%id,'') == ''">
+          <dtml-call "operator_setitem(d,'value','NULL')">
+         </dtml-if>
+        </dtml-if>
+       <dtml-call "c.append(d)">
+      </dtml-let>
+     </dtml-unless>
+     </dtml-unless>
+    </dtml-if auto>
+   </dtml-in>
+   <!-- # Append columns to insert statement -->
+   <dtml-call "REQUEST.set('sqlStatement',[])">
+   <dtml-call "sqlStatement.append('INSERT INTO %s ('%SESSION[sessqentitykey])">
+   <dtml-in c mapping>
+    <dtml-call "sqlStatement.append(id)">
+    <dtml-unless sequence-end>
+     <dtml-call "sqlStatement.append(', ')">
+    </dtml-unless sequence-end>
+   </dtml-in>
+   <!-- # Append values to insert statement -->
+   <dtml-call "sqlStatement.append(') VALUES (')">
+   <dtml-in c mapping>
+    <dtml-call "sqlStatement.append(value)">
+    <dtml-unless sequence-end>
+     <dtml-call "sqlStatement.append(', ')">
+    </dtml-unless sequence-end>
+    <dtml-if "id==primary_key">
+     <dtml-call "REQUEST.set('rowid',value)">
+
+    </dtml-if>
+   </dtml-in>
+   <dtml-call "sqlStatement.append(')')">
+   <!-- # Execute insert statement -->
+   <dtml-call "REQUEST.set('sqlStatement',''.join(sqlStatement))">
+   <dtml-try>
+    <dtml-call "writeBlock('[%s.actions:%s]: executeQuery(%s)'%(meta_type,action,sqlStatement))">
+    <dtml-call "executeQuery(sqlStatement)">
+    <dtml-call "REQUEST.set('message',message+getZMILangStr('MSG_INSERTED')%getZMILangStr('ATTR_RECORD')+' ('+SESSION[sessqentitykey]+')'+'<br/>')"> 
+   <dtml-except>
+    <dtml-call "REQUEST.set('message',message+'SQL-ERROR: '+sqlStatement+'<br/>')"> 
+   </dtml-try>
+   <!-- ### INTERSECTIONS -->
+   <dtml-unless rowid>
+
+    <dtml-call "REQUEST.set('sqlStatement',[])">
+    <dtml-call "sqlStatement.append('SELECT %s AS value FROM %s WHERE 1=1 '%(primary_key,SESSION[sessqentitykey]))">
+    <dtml-in c mapping>
+     <dtml-if "value.upper()!='NULL'">
+
+      <dtml-call "sqlStatement.append('AND %s=%s '%(id,value))">
+     </dtml-if>
+    </dtml-in>
+    <dtml-call "REQUEST.set('sqlStatement',''.join(sqlStatement))">
+    <dtml-try>
+     <dtml-call "writeBlock('[%s.actions:%s]: rowid(%s)'%(meta_type,action,sqlStatement))">
+     <dtml-in "query(sqlStatement)['records']" mapping>
+      <dtml-call "writeBlock('[%s.actions:%s]: rowid=%s'%(meta_type,action,_.str(value)))">
+      <dtml-call "REQUEST.set('rowid',value)">
+
+     </dtml-in>
+    <dtml-except>
+     <dtml-call "writeBlock('[%s.actions:%s]: ERROR in rowid(%s)'%(meta_type,action,sqlStatement))">
+    </dtml-try>
+   </dtml-unless>
+   <dtml-if rowid>
+    <dtml-var "intersection_sql(_,_,rowid=rowid)">
+   </dtml-if>
+  </dtml-if>
+  <!-- ### Return -->
+  <dtml-call "RESPONSE.redirect(url_append_params(URL,{'lang':lang, 'qorder':qorder, 'qorderdir':qorderdir, 'qstart':qstart, 'manage_tabs_message':message, 'traceSql':sqlStatement}))">
+ </dtml-if>
+
+<!-- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- 
+     +- UPDATE
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- -->
+<dtml-elif "REQUEST.get('action','')=='update'">
+ <dtml-call "REQUEST.set('message','')"> 
+ <dtml-call "REQUEST.set('sqlStatement','')"> 
+ <dtml-if "REQUEST.get('btn','')==''">
+  <!-- ### FORM -->
+  <dtml-call "REQUEST.set('sqlStatement',[])">
+  <dtml-call "sqlStatement.append('SELECT * FROM %s '%SESSION[sessqentitykey])">
+  <dtml-call "sqlStatement.append('WHERE ' + primary_key + '=' + sql_quote__(SESSION[sessqentitykey],primary_key,rowid))">
+  <dtml-call "REQUEST.set('resSlctStmnt',''.join(sqlStatement))">
+  <dtml-call "REQUEST.set('res',query(resSlctStmnt)['records'])">
+  <dtml-var "input_form(_,_,headline=getZMILangStr('CAPTION_EDIT'),rowid=rowid,record=res[0])">
+ <dtml-else>
+  <dtml-call "REQUEST.set('message','')"> 
+  <!-- ### EXEC -->
+  <dtml-if "REQUEST.get('btn','') in [getZMILangStr('BTN_CHANGE'),getZMILangStr('BTN_DELETE')]">
+   <dtml-call "writeBlock('[%s.actions:%s]:'%(meta_type,action))">
+   <!-- # Get columns to update -->
+   <dtml-call "REQUEST.set('c',[])">
+   <dtml-in grid_cols mapping>
+    <dtml-if auto>
+     <dtml-if "auto in ['update']">
+      <dtml-if "type in ['date','datetime']">
+       <dtml-call "c.append({'id':id,'value':sql_quote__(SESSION[sessqentitykey],id,getLangFmtDate(ZopeTime(),lang,'%s_FMT'%type.upper()))})">
+      </dtml-if>
+     </dtml-if>
+    <dtml-elif blob>
+     <dtml-if "REQUEST.get('delete_blob_%s'%id)">
+      <dtml-call "localfs_remove(blob['path']+REQUEST.get('old_%s'%id))">
+      <dtml-call "c.append({'id':id,'value':'NULL'})">
+     <dtml-elif "REQUEST.get('blob_%s'%id) is not _.None and REQUEST.get('blob_%s'%id).filename">
+      <dtml-comment>***** Normalize filename (crop path in local-fs) *****</dtml-comment>
+      <dtml-call "REQUEST.set('filename',REQUEST.get('blob_%s'%id).filename)">
+      <dtml-if "filename.rfind('/')>0"><dtml-call "REQUEST.set('filename',filename[filename.rfind('/')+1:])"></dtml-if>
+      <dtml-if "filename.rfind('\\')>0"><dtml-call "REQUEST.set('filename',filename[filename.rfind('\\')+1:])"></dtml-if>
+      <dtml-comment>***** File exists? => Throw exception! *****</dtml-comment>
+      <dtml-if "filename!=REQUEST.get('old_%s'%id)">
+       <dtml-call "REQUEST.set('fileexists',_.False)">
+       <dtml-try>
+        <dtml-call "REQUEST.set('fileexists',_.len(localfs_read(blob['path']+filename))>0)">
+       <dtml-except></dtml-try>
+       <dtml-if fileexists>
+        <dtml-raise type="IOException">Can't overwrite <dtml-var filename>!</dtml-raise>
+       </dtml-if>
+      </dtml-if>
+      <dtml-comment>***** Remove old file from fs *****</dtml-comment>
+      <dtml-try>
+       <dtml-call "localfs_remove(blob['path']+REQUEST.get('old_%s'%id))">
+      <dtml-except></dtml-try>
+      <dtml-comment>***** Write new file to fs *****</dtml-comment>
+      <dtml-call "localfs_write(blob['path']+filename,REQUEST.get('blob_%s'%id))">
+      <dtml-comment>***** Update in DB *****</dtml-comment>
+      <dtml-call "c.append({'id':id,'value':sql_quote__(SESSION[sessqentitykey],id,filename)})">
+     </dtml-if>
+    <dtml-else>
+     <dtml-unless multimultiselect>
+     <dtml-unless multiselect>
+      <dtml-if "id == primary_key or REQUEST.get('old_%s'%id,'') != REQUEST.get('new_%s'%id,'')">
+       <dtml-let d="{'id':id,'value':sql_quote__(SESSION[sessqentitykey],id,REQUEST.get('new_%s'%id,''))}">
+        <dtml-if nullable>
+         <dtml-if "REQUEST.get('new_%s'%id,'') == ''">
+          <dtml-call "operator_setitem(d,'value','NULL')">
+         </dtml-if>
+        </dtml-if>
+        <dtml-call "c.append(d)">
+       </dtml-let>
+      </dtml-if>
+     </dtml-unless>
+     </dtml-unless>
+    </dtml-if auto>
+   </dtml-in>
+   <!-- # Append values to update statement -->
+   <dtml-if c>
+    <dtml-call "REQUEST.set('sqlStatement',[])">
+    <dtml-call "sqlStatement.append('UPDATE %s SET '%SESSION[sessqentitykey])">
+    <dtml-in c mapping>
+     <dtml-call "sqlStatement.append(id+'='+value+' ')">
+     <dtml-unless sequence-end>
+      <dtml-call "sqlStatement.append(', ')">
+     </dtml-unless sequence-end>
+    </dtml-in>
+    <dtml-call "sqlStatement.append(' WHERE ' + primary_key + '=' + sql_quote__(SESSION[sessqentitykey],primary_key,rowid))">
+    <!-- # Execute update statement -->
+    <dtml-call "REQUEST.set('sqlStatement',''.join(sqlStatement))">
+    <dtml-try>
+     <dtml-call "writeBlock('[%s.actions:%s]: executeQuery(%s)'%(meta_type,action,sqlStatement))">
+     <dtml-call "executeQuery(sqlStatement)">
+     <dtml-call "REQUEST.set('message',message+getZMILangStr('MSG_CHANGED')+' ('+SESSION[sessqentitykey]+')'+'<br/>')"> 
+    <dtml-except>
+     <dtml-call "REQUEST.set('message',message+'SQL-ERROR: '+sqlStatement+'<br/>')"> 
+    </dtml-try>
+   </dtml-if>
+   <!-- ### INTERSECTIONS -->
+   <dtml-var "intersection_sql(_,_,rowid=rowid)">
+  </dtml-if>
+  <!-- ### Return -->
+  <dtml-call "RESPONSE.redirect(url_append_params(URL,{'lang':lang, 'qorder':qorder, 'qorderdir':qorderdir, 'qstart':qstart, 'manage_tabs_message':message, 'traceSql':sqlStatement}))">
+ </dtml-if>
+
+<!-- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- 
+     +- DELETE
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- -->
+<dtml-elif "REQUEST.get('action','')=='delete'">
+ <dtml-call "REQUEST.set('message','')"> 
+ <dtml-call "REQUEST.set('sqlStatement','')"> 
+  <!-- ### EXEC -->
+  <dtml-call "writeBlock('[%s.actions:%s]:'%(meta_type,action))">
+  <dtml-call "REQUEST.set('sqlStatement',[])">
+  <dtml-call "sqlStatement.append('DELETE FROM %s '%SESSION[sessqentitykey])">
+  <dtml-call "sqlStatement.append('WHERE ' + primary_key + '=' + sql_quote__(SESSION[sessqentitykey],primary_key,rowid))">
+  <dtml-call "REQUEST.set('sqlStatement',''.join(sqlStatement))">
+  <dtml-try>
+   <dtml-call "writeBlock('[%s.actions:%s]: executeQuery(%s)'%(meta_type,action,sqlStatement))">
+   <dtml-call "executeQuery(sqlStatement)">
+   <dtml-call "REQUEST.set('message',getZMILangStr('MSG_DELETED')%1)"> 
+  <dtml-except>
+   <dtml-call "REQUEST.set('message','SQL-ERROR: '+sqlStatement)"> 
+  </dtml-try>
+  <!-- ### Return -->
+  <dtml-call "RESPONSE.redirect(url_append_params(URL,{'lang':lang, 'qorder':qorder, 'qorderdir':qorderdir, 'qstart':qstart, 'manage_tabs_message':message, 'traceSql':sqlStatement}))">
+
+<!-- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-  -->
+</dtml-if>
+
+<dtml-except>
+ <dtml-call "RESPONSE.redirect(url_append_params(URL,{'lang':lang, 'qorder':qorder, 'qorderdir':qorderdir, 'qstart':qstart, 'manage_tabs_error_message':'<b>'+_.str(error_type)+'</b>: '+_.str(error_value)+'<hr/>'+_.str(error_tb)}))">
+</dtml-try>

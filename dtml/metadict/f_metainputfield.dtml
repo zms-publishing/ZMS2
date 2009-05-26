@@ -1,0 +1,85 @@
+<dtml-comment> 
+*******************************************************************************
+*	f_metaInputField
+*
+*	@param p_meta_type
+*	@param obj_attr
+*	@param key
+*	@param value
+*	@param required
+*	@param lang_str
+*	@param type
+*	@param REQUEST
+*******************************************************************************
+</dtml-comment>
+
+<dtml-let elName="getObjAttrName(obj_attr,lang)">
+
+<dtml-comment>
+##### FORM-DELIMITER #####
+</dtml-comment>
+<dtml-if "metadictAttr['type']=='delimiter'">
+<tr>
+ <td colspan="2" class="zmiHeadline"><dtml-var "metadictAttr['name']"></td>
+</tr>
+<dtml-comment>
+##### FORM-HINT #####
+</dtml-comment>
+<dtml-elif "metadictAttr['type']=='hint'">
+<tr>
+ <td colspan="2" class="form-text"><dtml-var "metadictAttr['name']"></td>
+</tr>
+<dtml-comment>
+##### FORM-INTERFACE #####
+</dtml-comment>
+<dtml-elif "metadictAttr['type']=='interface'">
+<tr valign="middle">
+ <td colspan="2" class="form-text"><dtml-var "dt_html(metadictAttr['name'],REQUEST)"></td>
+</tr>
+<dtml-comment>
+#####  ZMSResource  #####
+</dtml-comment>
+<dtml-elif "metadictAttr['type'] in getMetaobjIds() and 
+          getMetaobj(metadictAttr['type'])['type']=='ZMSResource'">
+ <dtml-unless ZMS_INSERT>
+  <dtml-if "_.len(getObjChildren(metadictAttr['id'],REQUEST))==0">
+   <tr>
+    <td><div class="form-label"><dtml-var "getZMILangStr(lang_str)"><dtml-if required><sup style="color:red">*</sup></dtml-if></div></td>
+    <td><a href="manage_initObjChild?id=<dtml-var "metadictAttr['id']">&type=<dtml-var "metadictAttr['type']">&lang=<dtml-var lang>&target=<dtml-var "REQUEST['URL']">" class="button"><img src="<dtml-var MISC_ZMS>btn_add.gif" title="" border="0"/></a></td>
+   </tr>
+  <dtml-else>
+   <dtml-in "getObjChildren(metadictAttr['id'],REQUEST)">
+   <tr>
+    <td colspan="2">
+     <table cellspacing="0" cellpadding="1" border="0" width="100%" class="zmiHeadline">
+     <tr valign="middle">
+      <td><dtml-var "getZMILangStr(lang_str)"><dtml-if required><sup style="color:red">*</sup></dtml-if></td>
+      <td align="right"><dtml-if required>&nbsp;<dtml-else><a href="javascript:confirmDeleteBtnOnClick('manage_deleteObjs?ids:list=<dtml-var id>&target=<dtml-var "REQUEST['URL']">');" class="button"><img src="<dtml-var MISC_ZMS>btn_trashcan1.gif" title="" border="0"/></a></dtml-if></td>
+     </tr>
+     </table>
+    </td>
+   </tr>
+   <dtml-let metaObj="getMetaobj(metadictAttr['type'])">
+    <dtml-var metaobj_input_fields>
+   </dtml-let>
+  </dtml-in>
+ </dtml-if>
+</dtml-unless>
+
+<dtml-comment>
+#####  Object #####
+</dtml-comment>
+<dtml-elif "metadictAttr['type']=='*' or metadictAttr['type'] in dGlobalAttrs.keys() or metadictAttr['type'] in getMetaobjIds()">
+ <dtml-var "f_selectObject(_,_,objLabel=getZMILangStr(lang_str),objAttr=metadictAttr)">
+
+<dtml-comment>
+#####  Primitive #####
+</dtml-comment>
+<dtml-elif "metadictAttr['type'] != 'method'"> 
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr(lang_str)"><dtml-if required><sup style="color:red">*</sup></dtml-if></div></td>
+ <td><dtml-var "getObjInput(key,REQUEST)"></td>
+</tr>
+
+</dtml-if>
+</dtml-let>

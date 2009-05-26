@@ -1,0 +1,31 @@
+<dtml-in res>
+ <dtml-let teaserElmnt=sequence-item
+           manage_main="'%s/manage_main?lang=%s'%(teaserElmnt.absolute_url(),REQUEST['lang'])">
+  <div class="form-small">
+   <a href="<dtml-var manage_main>"><img src="<dtml-var MISC_ZMS>internal_link.gif" title="<dtml-var "getZMILangStr('CAPTION_EDIT')%teaserElmnt.display_type(REQUEST)">" border="0" align="absmiddle"/></a>
+   <dtml-if "teaserElmnt.meta_type == 'ZMSTeaserElement'">
+    <dtml-let url="teaserElmnt.getUrl(REQUEST)"
+              img="teaserElmnt.getImg(REQUEST)"
+              title="teaserElmnt.getTitle(REQUEST)"
+              abstract="teaserElmnt.getAbstract(REQUEST)">
+     <dtml-if title>
+      <dtml-if url>
+       <a href="<dtml-var url>" target="_blank" class="zmi"><b><dtml-var title></b></a>:
+      <dtml-else>
+       <b><dtml-var title></b>:
+      </dtml-if>
+     <dtml-else>
+      <dtml-if img>
+       <i>&laquo;<dtml-var "img.filename">&raquo;</i><br/>
+      </dtml-if>
+     </dtml-if>
+     <dtml-var abstract><br/>
+    </dtml-let>
+   <dtml-elif "teaserElmnt.meta_type == 'ZMSCustom'">
+    <dtml-let title="teaserElmnt.getTitlealt(REQUEST)">
+     <b><dtml-var title></b><br/>
+    </dtml-let>
+   </dtml-if>
+  </div>
+ </dtml-let>
+</dtml-in>

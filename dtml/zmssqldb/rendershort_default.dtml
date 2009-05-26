@@ -1,0 +1,6 @@
+<h2><dtml-var "display_type(REQUEST)"></h2>
+<dtml-in "getEntities()" mapping>
+ <div class="form-small"><dtml-var id></div>
+</dtml-in>
+
+

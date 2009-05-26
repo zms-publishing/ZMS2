@@ -1,0 +1,44 @@
+<dtml-if "REQUEST.get('op','') in ['search','sitemap','print']">
+<meta name="Robots" content="noindex,nofollow" />
+<dtml-else>
+<link rel="schema.DC" href="http://purl.org/DC/elements/1.1/" title="http://purl.org/DC/elements/1.1/" />
+<meta name="DC.Title" content="<dtml-var "getTitle(REQUEST)" html_quote>" />
+<meta name="DC.Title.Alt" content="<dtml-var "getTitlealt(REQUEST)" html_quote>" />
+<meta name="DC.Date" content="<dtml-var "getLangFmtDate(getObjProperty('change_dt',REQUEST),lang,'DATE_FMT')" html_quote>" />
+<meta name="DC.Format" content="<dtml-var "getContentType(REQUEST)" html_quote>" />
+<meta name="DC.Identifier" content="<dtml-var id>" />
+<meta name="DC.Language" content="<dtml-var lang html_quote>" />
+<dtml-in "getMetadictAttrs(meta_type,exclude_types=['method'])"
+><dtml-let key=sequence-item
+           metadictAttr="getMetadictAttr(key)"
+           metadictType="metadictAttr['type']"
+           metadictValue="getObjProperty(key,REQUEST)"
+><dtml-if metadictValue
+><dtml-if "metadictType not in ['image','file']"
+><dtml-if "_.len(metadictAttr['keys'])>0 and metadictAttr['keys'][0].find('{$')==0"
+><dtml-let ob="getLinkObj(metadictAttr['keys'][0],REQUEST)"
+><dtml-call "REQUEST.set('dict',[])"
+><dtml-in "ob.getObjProperty('records',REQUEST)"
+><dtml-let x=sequence-item
+><dtml-call "dict.extend([x['key'],x.get('value',x.get('value_%s'%lang))])"
+></dtml-let
+></dtml-in
+><dtml-call "REQUEST.set('dict',dict_list(dict))"
+><dtml-try>
+<meta name="<dtml-var "metadictAttr['id']">" content="<dtml-in metadictValue><dtml-var "dict.get(_['sequence-item'],'')" html_quote><dtml-unless sequence-end>; </dtml-unless></dtml-in>" />
+<dtml-except>
+<meta name="<dtml-var "metadictAttr['id']">" content="<dtml-var "dict.get(metadictValue,'')" html_quote>" />
+</dtml-try
+></dtml-let
+><dtml-else
+><dtml-try>
+<meta name="<dtml-var "metadictAttr['id']">" content="<dtml-in metadictValue><dtml-var sequence-item html_quote><dtml-unless sequence-end>; </dtml-unless></dtml-in>" />
+<dtml-except>
+<meta name="<dtml-var "metadictAttr['id']">" content="<dtml-var "metadictValue" html_quote>" />
+</dtml-try
+></dtml-if
+></dtml-if
+></dtml-if
+></dtml-let
+></dtml-in>
+</dtml-if>

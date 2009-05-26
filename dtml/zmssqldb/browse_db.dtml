@@ -1,0 +1,73 @@
+<dtml-var manage_page_header>
+
+<dtml-comment>***** Init parameters *****</dtml-comment>
+<dtml-call "REQUEST.set('qcharset',_.getattr(this(),'charset','utf-8'))">
+<dtml-call "REQUEST.set('qbatch',REQUEST.get('qbatch',3))">
+<dtml-call "REQUEST.set('qsize',REQUEST.get('qsize',99))">
+<dtml-call "REQUEST.set('qfilter',REQUEST.get('qfilter','%'))">
+<dtml-call "REQUEST.set('qorder','qvalue')">
+<dtml-call "REQUEST.set('qorderdir','asc')">
+
+<dtml-call "REQUEST.set('sqlStatement',[])">
+<dtml-call "sqlStatement.append( 'SELECT ' + REQUEST.get('fieldname') + ' AS qkey, ' + REQUEST.get('displayfield') + ' AS qvalue FROM ' + REQUEST.get('tablename') + ' WHERE ' + REQUEST.get('displayfield') + ' LIKE \'' + qfilter + '\'')">
+<dtml-call "REQUEST.set('sqlStatement',''.join(sqlStatement))">
+<dtml-call "REQUEST.set('res',[])">
+<dtml-in "query(sqlStatement)['records']" mapping>
+ <dtml-call "res.append({
+ 	'qkey':_.unicode(_.str(qkey),_.getattr(REQUEST['ZMS_THIS'],'charset','utf-8')).encode('utf-8'),
+ 	'qvalue':_.unicode(_.str(qvalue),_.getattr(REQUEST['ZMS_THIS'],'charset','utf-8')).encode('utf-8'),})">
+</dtml-in>
+<script language="JavaScript">
+<!--//
+function chooseObj(i) {
+  var field = new Array();
+  var displayfield = new Array();
+  <dtml-in res start=qstart size=qsize mapping>
+    field[<dtml-var sequence-index>] = '<dtml-var qkey>';
+    displayfield[<dtml-var sequence-index>] = '<dtml-var qvalue>';
+  </dtml-in>
+  self.parent.opener.lazyMultiSelectAddElement('<dtml-var elId>',displayfield[i],field[i]);
+  self.parent.close();
+}
+//-->
+</script>
+</head>
+<body class="zmiNeutralColorLight0" alink="#990000" vlink="#cc0000" link="#336699" leftmargin="0" topmargin="0" marginheight="0" marginwidth="0">
+<table cellspacing="0" cellpadding="8" border="0" width="100%" height="100%" class="zmiNeutralColorLight0">
+<tr>
+<td align="left" valign="top" height="100%">
+ <form name="form0">
+ <input type="hidden" name="lang" value="<dtml-var lang>"/>
+ <input type="hidden" name="fmName" value="<dtml-var fmName>"/>
+ <input type="hidden" name="elId" value="<dtml-var elId>"/>
+ <input type="hidden" name="fieldname" value="<dtml-var fieldname>"/>
+ <input type="hidden" name="displayfield" value="<dtml-var displayfield>"/>
+ <input type="hidden" name="tablename" value="<dtml-var tablename>"/>
+ <table>
+ <tr valign="top">
+  <td class="form-label"><dtml-var "getZMILangStr('ATTR_FILTER')"></td>
+  <td class="form-element"><dtml-var "getTextInput(fmName='form0',elName='qfilter',size=10,value=qfilter)"></td>
+  <td class="form-element">
+    <input class="form-submit" type="submit" name="btn" value="<dtml-var "getZMILangStr('BTN_REFRESH')">">
+    <input class="form-submit" type="submit" name="btn" value="<dtml-var "getZMILangStr('BTN_RESET')">">
+  </td>
+ </tr>
+ </table>
+ </form>
+ <dtml-call "REQUEST.set('grid_cols',
+      [{'key':'qkey','label':'Id','type':'string'}
+      ,{'key':'qvalue','label':'Value','type':'string'}
+      ])">
+  <dtml-call "REQUEST.set('grid_options',{
+     'choose':{'action':'javascript:chooseObj(%s)'},
+   })">
+ <dtml-var "f_recordset_grid(_,_
+   ,grid_url=url_append_params(URL,{'lang':lang,'fmName':fmName,'elId':elId,'fieldname':fieldname,'displayfield':displayfield,'tablename':tablename})
+   ,grid_cols=grid_cols
+   ,grid_options=grid_options
+   )">
+</td>
+</tr>
+</table>
+</body>
+</html>

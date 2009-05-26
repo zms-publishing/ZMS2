@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+<item key="dtml"><![CDATA[<!-- BO bodyContentZMSCustom_contentEditableLib -->
+
+
+<!-- EO bodyContentZMSCustom_contentEditableLib -->
+]]></item>
+<item key="enabled" type="int">1</item>
+<item key="key"><![CDATA[contentEditableLib]]></item>
+<item key="value" type="dictionary"><dictionary>
+<item key="__obj_attrs__" type="list"><list>
+<item type="dictionary"><dictionary>
+<item key="custom"><![CDATA[<!--// BO contentEditableLib.standard_html_header //-->
+
+<script type="text/javascript" charset="UTF-8" src="<dtml-if ZMS_ROOT><dtml-var ZMS_ROOT>/</dtml-if>content_editable.js" type="text/javascript"></script>
+
+<!--// EO contentEditableLib.standard_html_header //-->
+]]></item>
+<item key="default"/>
+<item key="id"><![CDATA[standard_html_header]]></item>
+<item key="keys" type="list"><list>
+</list>
+</item>
+<item key="mandatory" type="int">0</item>
+<item key="multilang" type="int">0</item>
+<item key="name"><![CDATA[Mastertemplate: before page]]></item>
+<item key="repetitive" type="int">0</item>
+<item key="type"><![CDATA[method]]></item>
+</dictionary>
+</item>
+<item type="dictionary"><dictionary>
+<item key="custom"><![CDATA[<!--// BO renderCustomText //-->
+
+<dtml-with context>
+ <dtml-call "writeBlock('[renderCustomText]:')">
+ <dtml-if "isPreviewRequest(REQUEST)
+        and HTTP_USER_AGENT.find('MSIE') > 0 
+        and AUTHENTICATED_USER.has_permission('ZMS Author',context)">
+  <dtml-call "writeBlock('[renderCustomText]: new_text')">
+  <dtml-let new_text="[]">
+   <dtml-call "new_text.append('<div')">
+   <dtml-call "new_text.append(' id='+QUOT+key+QUOT)">
+   <dtml-call "new_text.append(' contentEditable='+QUOT+'true'+QUOT)">
+   <dtml-call "new_text.append(' onClick='+QUOT+'javascript: style.border=\'1px dotted blue\';saveclick_'+key+'.style.display=\'inline\';saveclick_'+key+'.style.visibility=\'visible\';'+QUOT)">
+   <dtml-call "new_text.append(' onBlur='+QUOT+'javascript: style.border=\'none\';'+QUOT)">
+   <dtml-call "new_text.append('>')">
+   <dtml-call "new_text.append(text)">
+   <dtml-call "new_text.append('</div>')">
+   <dtml-call "new_text.append('<div class='+QUOT+'saveclick'+QUOT+' id='+QUOT+'saveclick_'+key+QUOT+' style='+QUOT+'display:none;visibility:hidden;'+QUOT+'>')">
+   <dtml-call "new_text.append('[<a href='+QUOT+'javascript:contenteditableChangeClick(\''+absolute_url()+'\',\''+id+'\',\''+key+'\',\''+lang+'\')'+QUOT+' style='+QUOT+'color: black; font-size:9px; text-decoration: none;'+QUOT+'>'+getZMILangStr('BTN_CHANGE')+'</a>]')">
+   <dtml-call "new_text.append('</div>')">
+   <dtml-return "''.join(new_text)">
+  </dtml-let>
+ </dtml-if>
+ <dtml-return text>
+</dtml-with>
+
+<!--// EO renderCustomText //-->
+]]></item>
+<item key="default"/>
+<item key="id"><![CDATA[renderCustomText]]></item>
+<item key="keys" type="list"><list>
+</list>
+</item>
+<item key="mandatory" type="int">0</item>
+<item key="multilang" type="int">0</item>
+<item key="name"><![CDATA[Render custom-text]]></item>
+<item key="repetitive" type="int">0</item>
+<item key="type"><![CDATA[DTML Method]]></item>
+</dictionary>
+</item>
+<item type="dictionary"><dictionary>
+<item key="custom"><![CDATA[<dtml-call "REQUEST.RESPONSE.setHeader('Expires',_.DateTime(_.DateTime().timeTime() + 3600).toZone('GMT+1').rfc822())">
+<dtml-call "REQUEST.RESPONSE.setHeader('Cache-Control','public, max-age=3600')">
+<dtml-call "REQUEST.RESPONSE.setHeader('Content-Type', 'text/javascript; charset=utf-8')">
+
+/**
+ * Users can change the contents of a Web page when the contentEditable property is set 
+ * to TRUE. This method submits the changes for the object specified by id.
+ *
+ * @param url		Url of the object to be changed.
+ * @param id		Id of the object to be changed.
+ * @param key		Key of the property to be changed.
+ */
+function contenteditableChangeClick(url, id, key, lang)
+{
+  var elName = key + "_" + id;
+  var elValue = escape(window.eval(elName).innerHTML);
+  var fmName = id + "Form";
+  document.write('<form name="' + fmName + '" action="' + url + '/manage_changeTextProperties" method="post">');
+  document.write('<input type="hidden" name="lang" value="' + lang + '">');
+  document.write('<input type="hidden" name="preview" value="preview">');
+  document.write('<input type="hidden" name="key" value="' + key + '">');
+  document.write('<input type="hidden" name="custom" value="' + elValue + '">');
+  document.write('</form>');
+  var fm = document.forms[fmName];
+  fm.submit();
+}
+
+/**
+ * Users can change the contents of a Web page when the contentEditable property is set 
+ * to TRUE.
+ */
+function contentEditableBlur( el, id, objAttrName)
+{
+  var text = el.innerHTML;
+  var fm = document.forms['form0_'+id];
+  var formats = new Array();
+  <dtml-in "getTextFormats(REQUEST)">
+   <dtml-let textFrmt=sequence-item>
+    formats['<dtml-var "textFrmt.getId()">'] = new Array();
+    formats['<dtml-var "textFrmt.getId()">']['tag'] = '<dtml-var "textFrmt.getTag()">';
+    formats['<dtml-var "textFrmt.getId()">']['subtag'] = '<dtml-var "textFrmt.getSubTag()">';
+   </dtml-let>
+  </dtml-in>
+  var formatElement = fm.elements['format'];
+  var format = '?';
+  if ( formatElement.value)
+    format = formatElement.value;
+  else
+    format = formatElement.options[ formatElement.selectedIndex].value;
+  var tag = formats[ format]['tag'].toUpperCase();
+  var subtag = formats[ format]['subtag'].toUpperCase();
+  // Remove tags.
+  if ( tag.length > 0)
+  {
+    var startTag = '<' + tag;
+    var endTag = '</' + tag;
+    if ( text.indexOf( startTag) == 0)
+      text = text.substring( text.indexOf( '>' ,text.indexOf(startTag))+1);
+    text = text.replace(startTag+'>', '');
+    if ( text.lastIndexOf( endTag) > 0 && 
+         text.lastIndexOf('>',text.lastIndexOf(endTag)) == text.length-1)
+      text = text.substring( 0, text.lastIndexOf( endTag));
+    text = text.replace(endTag+'>', '');
+  }
+  // Remove sub-tags.
+  if ( subtag.length > 0)
+  {
+    var newText = '';
+    var startTag = '<' + subtag + '>';
+    var endTag = '</' + subtag + '>';
+    while ( text.indexOf( startTag) >= 0)
+      text = text.replace( startTag, '');
+    while ( text.indexOf( endTag) >= 0)
+      text = text.replace( endTag, '');
+  }
+  // Remove para-entities.
+  var paraEnt = '&para;\n';
+  while ( text.indexOf( paraEnt) >= 0)
+    text = text.replace( paraEnt, '');
+  // Trim.
+  while ( text.length > 0 && text.charAt(0) <= ' ')
+    text = text.substring(1);
+  while ( text.length > 0 && text.charAt( text.length-1) <= ' ')
+    text = text.substring(0, text.length-1);
+  // Set text.
+  var objAttrElement = fm.elements[ objAttrName];
+  objAttrElement.value = text;
+}
+]]></item>
+<item key="default"/>
+<item key="id"><![CDATA[content_editable.js]]></item>
+<item key="keys" type="list"><list>
+</list>
+</item>
+<item key="mandatory" type="int">0</item>
+<item key="multilang" type="int">0</item>
+<item key="name"><![CDATA[JavaScript: Content-Editable]]></item>
+<item key="repetitive" type="int">0</item>
+<item key="type"><![CDATA[DTML Method]]></item>
+</dictionary>
+</item>
+</list>
+</item>
+<item key="acquired" type="int">0</item>
+<item key="name"><![CDATA[Content-Editable]]></item>
+<item key="package"/>
+<item key="type"><![CDATA[ZMSLibrary]]></item>
+</dictionary>
+</item>
+</dictionary>
