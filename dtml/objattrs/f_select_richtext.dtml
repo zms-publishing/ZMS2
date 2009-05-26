@@ -1,0 +1,104 @@
+<!-- ### Find RichText-Definition -->
+<dtml-call "REQUEST.set('richedit',0)">
+<dtml-in "getTextFormats(REQUEST)">
+ <dtml-let textFrmt=sequence-item>
+  <dtml-if "REQUEST.get('richedit') == 0 and textFrmt.getRichedit() > 0">
+   <dtml-call "REQUEST.set('richedit',textFrmt.getRichedit())">
+  </dtml-if>
+ </dtml-let>
+</dtml-in>
+
+<dtml-comment>
+##### MS DEC RichText-Editor #####
+</dtml-comment>
+<dtml-if "REQUEST.get('MSIE') and REQUEST.get('richedit')==1">
+ <textarea name="<dtml-var elName>" style="display:None"><dtml-var value></textarea>
+ <iframe style="border:solid gray 1px;" width="100%" height="240" src="/misc_/zmsrte/richedit.html?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&fmName=<dtml-var fmName>&elName=<dtml-var elName>&BASEURL=<dtml-var "REQUEST['URL2']" url_quote>"></iframe>
+
+<dtml-comment>
+##### EPOZ RichText-Editor #####
+</dtml-comment>
+<dtml-elif "REQUEST.get('richedit')==2">
+ <dtml-comment>   
+ """ Create an Epoz-Wysiwyg-Editor.
+ 
+     name : the name of the form-element which submits the data        
+     data : the data to edit
+     toolbox : a link to a HTML-Page which delivers additional tools
+     lang: a code for a language-file (en,de,es,pt_br,...)
+     style : style-definition for the editor
+     path: the path to the Epoz-Javascripts; you don't have to set it
+           manually in normal use-cases; other see below (shared server)
+     widget: path to an alternate widget for Epoz; take
+             epoz_script_widget.js as an example 
+
+     If Epoz can't create a Rich-Text-Editor, a simple textarea is created.
+ """
+ </dtml-comment>   
+
+<div class="neutralColorWhite" style="border:solid gray 1px;">
+ <dtml-try>
+  <dtml-var "Epoz(name=elName,data=value,toolbox=url_append_params('epoz_toolbox',{'lang':lang,'manage_lang':manage_lang}),lang='en',
+           style='width: 100%; height: 150px;', 
+           path='', widget='', css='%s/stylesheet_%s.css'%(getDocumentElement().absolute_url(),lang))">
+ <dtml-except>
+  <dtml-var "Epoz(name=elName,data=value,toolbox=url_append_params('epoz_toolbox',{'lang':lang,'manage_lang':manage_lang}),lang='en',
+           style='width: 100%; height: 150px;', 
+           path='', widget='')">
+ </dtml-try>
+</div>
+
+<dtml-comment>
+##### XStandard XHML WYSIWYG Editor #####
+</dtml-comment>
+<dtml-elif "REQUEST.get('richedit')==3">
+  <object id="editor_<dtml-var elName>"
+     <dtml-if "REQUEST.get('HTTP_USER_AGENT','').find('MSIE 7')>0">classid="clsid:0EED7206-1661-11D7-84A3-00606744831D"<dtml-else>type="application/x-xstandard"</dtml-if>
+     width="100%" height="500"
+     codebase="http://medvalue.net/pub/bscw.cgi/d293146/XStandard.cab#Version=2,0,0,0">
+    <param name="CMSCode" value="9CF6B9BD-B73D-4206-8A77-8E05477E9726" />
+    <param name="ToolbarWysiwyg" value="ordered-list, unordered-list, , draw-layout-table, draw-data-table, image, separator, hyperlink, attachment,  undo, wysiwyg, source, help" />
+    <param name="EnablePasteMarkup" value="yes" />
+    <param name="Styles" value="<dtml-var "getDocumentElement().absolute_url()">/f_xstandard_styles" />
+    <param name="CSS" value="<dtml-var "getDocumentElement().absolute_url()">/stylesheet.css" />
+    <param name="Lang" value="<dtml-var lang>" />
+    <param name="CMSImageLibraryURL" value="<dtml-var "getDocumentElement().absolute_url()">/f_xstandard_browseImages" />
+    <param name="CMSAttachmentLibraryURL" value="<dtml-var "getDocumentElement().absolute_url()">/f_xstandard_browseFiles" />
+    <param name="Options" value="9" />
+    <param name="Value" value="<dtml-var value html_quote >" />
+  </object>
+  <input type="hidden" name="<dtml-var elName>" id="xstandard_<dtml-var elName>" value="" />
+
+<dtml-comment>
+##### Non RichText-Editor #####
+</dtml-comment>
+<dtml-else>
+ <table cellspacing="0" cellpadding="0" border="0">
+ <tr valign="middle" class="zmiNeutralColorMedium0">
+   <!-- ### Character-Format (Bold, Italic, Underline, etc.) -->
+   <td nowrap="nowrap"><dtml-var "f_selectCharformat(_,_,fmName=fmName,elName=elName)"></td>
+ </tr>
+ <tr valign="middle">
+  <!-- ### Textarea -->
+  <dtml-let cols="50" rows="10" css="'form-fixed'">
+   <td nowrap="nowrap"><dtml-var "getTextArea(fmName,elName,cols,rows,value,enabled,REQUEST,css)"></td>
+  </dtml-let>
+ </tr>
+ </table>
+</dtml-if>
+
+<dtml-comment>
+##### Resources #####
+</dtml-comment>
+<dtml-unless ZMS_INSERT>
+ <dtml-if "meta_type=='ZMSCustom'">
+  <dtml-if "'resources' in getMetaobjAttrIds(meta_id)">
+   <div class="zmiNeutralColorMedium0">
+    <span class="form-label"><img src="<dtml-var MISC_ZMS>upload.gif" title="<dtml-var "getLangStr('BTN_UPLOAD',manage_lang)">" border="0" align="absmiddle"/> <dtml-var "getLangStr('CAPTION_INSERT',manage_lang)%('%s/%s'%(getLangStr('ATTR_IMAGE',manage_lang),getLangStr('ATTR_FILE',manage_lang)))"></span>
+    <span class="form-element"><input class="form-element" type="file" name="resource_<dtml-var elName>"/></span>
+   </div>
+   <br/><br/>
+  </dtml-if>
+ </dtml-if>
+</dtml-unless>
+

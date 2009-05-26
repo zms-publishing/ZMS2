@@ -1,0 +1,30 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('TAB_WAIT',manage_lang)"></title>
+<dtml-call "REQUEST.set('action',url_inherit_params(action,REQUEST,['action']))">
+<meta http-equiv="refresh" content="0; URL=<dtml-var action>">
+</head>
+
+<dtml-var "manage_tabs(_,_,my_manage_options=[{'label':getLangStr('TAB_WAIT',manage_lang),'action':''}])">
+<dtml-var f_bo_area>
+
+<div align="center" style="margin: 20px;">
+<table cellspacing="0" cellpadding="4" border="0">
+<tr class="zmiNeutralColorLight1"> 
+ <td class="form-label" align="center" colspan="2"> 
+  <img src="<dtml-var MISC_ZMS>progbar.gif" title="" border="0"/><br/>
+  <dtml-var "getLangStr('TAB_WAIT',manage_lang)">...<br/>
+ </td>
+</tr>
+<tr>
+ <td class="form-small" align="left">
+  <a href="<dtml-var action>" class="zmi"><dtml-var "getLangStr('BTN_NEXT',manage_lang)"></a>
+ </td>
+ <td class="form-small" align="right">
+  <a href="javascript:history.back()" class="zmi"><dtml-var "getLangStr('BTN_BACK',manage_lang)"></a>
+ </td>
+</tr>
+</table>
+</div>
+
+<dtml-var f_eo_area>
+<dtml-var manage_page_footer>

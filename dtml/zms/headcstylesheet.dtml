@@ -1,0 +1,29 @@
+<dtml-var f_standard_html_request
+><dtml-if "'headCStyleSheet' in getHome().objectIds()"
+><dtml-with "getHome()"
+><dtml-var headCStyleSheet
+></dtml-with
+><dtml-elif "'headCSS' in getHome().objectIds()"
+><dtml-with "getHome()"
+><dtml-var headCSS
+></dtml-with
+><dtml-else
+><dtml-in "getStylesheets()"
+><dtml-let id="id()"
+><dtml-call "REQUEST.set('abs_url',absolute_url())"
+><dtml-if "(REQUEST.get('ZMS_PATHCROPPING',_.False) or getConfProperty('ZMS.pathcropping',0)==1) and REQUEST.get('export_format','') == ''"
+ ><dtml-let base="REQUEST.get('BASE0','')"
+  ><dtml-if "abs_url.find(base)==0"
+   ><dtml-call "REQUEST.set('abs_url',abs_url[len(base):])"
+  ></dtml-if
+ ></dtml-let
+></dtml-if
+><dtml-if sequence-start
+><link rel="stylesheet" type="text/css" href="<dtml-var "abs_url.replace('.css','_%s.css'%lang)"><dtml-if preview>?preview=preview</dtml-if>" />
+<dtml-else
+><link rel="alternate stylesheet" title="<dtml-var "id[:id.rfind('.')]">" type="text/css" href="<dtml-var abs_url><dtml-if preview>?preview=preview</dtml-if>" />
+</dtml-if
+></dtml-let
+></dtml-in
+></dtml-if
+><dtml-if preview><style id="preview stylesheet" type="text/css"><!-- --></style></dtml-if>

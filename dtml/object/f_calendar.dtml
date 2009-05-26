@@ -1,0 +1,268 @@
+<dtml-var manage_page_header>
+<head>
+<title><dtml-var "getLangStr('ATTR_CALENDAR',manage_lang)"></title>
+</head>
+
+<style type="text/css">
+<!--
+#lastMon,#nextMon   {position:absolute;width:20px;height:20px;top:0px;left:0px;clip:rect(0 20 20 0);overflow:hidden;}
+#mon                {position:absolute;width:20px;height:20px;top:0px;left:0px;padding:2px;}
+a.norm:link, a.norm:visited, a.norm:hover, a.norm:active {font-size:12px;font-family:helvetica,arial;color:#000000;padding:3px;text-decoration:none;}
+a.fett:link, a.fett:visited, a.fett:hover, a.fett:active {font-size:12px;font-family:helvetica,arial;padding:3px;color:#000000;text-decoration:none;font-weight:bold;}
+a.akt:link, a.akt:visited, a.akt:hover, a.akt:active     {font-size:12px;font-family:helvetica,arial;padding:3px;color:#ff6600;text-decoration:none;font-weight:bold;}
+a.hd:link, a.hd:visited, a.hd:hover, a.hd:active         {font-size:12px;font-family:helvetica,arial;padding:4px;font-weight:bold;color:#ff6600;text-decoration:none;}
+body                {layer-background-color:#ffffff;background-color:#ffffff;}
+-->
+</style>
+
+<script language="javascript1.2">
+<!--
+var nc              = !!(document.captureEvents && !document.documentElement);
+var ie              = !!document.all;
+var ie4             = !!(!document.documentElement && document.all);
+var dom             = !!document.documentElement;
+var nc6             = !!(dom && (!document.all));
+var mac             = !!(navigator.userAgent.indexOf("Mac")!=-1);
+var bgC             = nc? 'bgColor' : 'backgroundColor';
+
+var defPosX         = nc? 15 : 10;                                      // Kalender X-Position
+var defPosY         = nc? 15 : 7;                                       // Kalender Y-Position
+var fSz             = 20;                                               // Feldgroesse
+var fBw             = 1;                                                // Rahmendicke
+var fBc             = "#ccd2d8";                                        // Background norm
+var fBcS            = "#757d83";                                        // Background Sonntag
+var tBc             = "#000000";                                        // Background Tage
+var kBc             = "#ffffff";                                        // Background Kalender
+
+var t_name = new Array(<dtml-in "_.range(7)">"<dtml-var "getLangStr('WEEKDAY%i'%(_['sequence-item']),manage_lang)[:2]">"<dtml-unless sequence-end>,</dtml-unless></dtml-in>);
+var m_name = new Array (<dtml-in "_.range(12)">"<dtml-var "getLangStr('MONTH%i'%(_['sequence-item']+1),manage_lang).upper()">"<dtml-unless sequence-end>,</dtml-unless></dtml-in>);
+
+var spn             = '\<span class="norm"\>';
+var sph             = '\<span class="hd"\>';
+var spe             = '\</span\>';
+var an_1            = '\<a class="norm" href="#" onclick="auswahl(';
+var af_1            = '\<a class="fett" href="#" onclick="auswahl(';
+var ah_1            = '\<a class="akt" href="#" onclick="auswahl(';
+var a_2             = ');return false"\>';
+var a_e             = '\</a\>';
+
+function init() {
+        sValue = opener.document.forms[fmName].elements[elName].value;
+        if (validDate(sValue))
+            aktDate = getDate(sValue)
+        else
+            aktDate     = new Date();
+        heute       = aktDate.getDate()
+        monat       = aktDate.getMonth();
+        jahr        = aktDate.getYear();
+        if (jahr < 1000) jahr += 1900;
+        aktJahr     = jahr;
+        aktMon      = monat;
+        setTimeout('kal()',200);
+}
+
+function kal() {
+
+        // erster Tag im Monat
+        m_anf       = new Date(jahr,monat,1);
+        tag_1       = m_anf.getDay();
+
+        // x Tage im Monat
+        m_neu       = new Date(jahr, monat + 1 ,1);                                     // erster Tag naechster Monat
+        m_end       = m_neu - 864e5;                                                    // einen Tag abziehen
+        m_lang      = new Date(m_end);
+        m_lang      = m_lang.getDate();                                                 // Datum
+
+        // Monat schreiben
+        var m_txt           = sph + m_name[monat] + "&nbsp;" + jahr + spe;
+        writeDiv(lay('mon'), m_txt);
+        var mBr             = divBreit(lay('mon'));
+        layS('mon').left    = (defPosX + 7 * (fSz + fBw) / 2) - (mBr / 2) - 2;          // monat zentrieren (text-align-bug bei nc)
+        layS('mon').top     = defPosY;
+
+        // Felder werden Objekte werden geschrieben
+        var fld = new Array();
+        for(var k = 1; k < 43; k++) fld[k]  = new kalFld(k);
+        for(var i = 1; i < 43; i++) fld[i].dpl();
+}
+
+// Felder Konstr.
+function kalFld(num) {
+        this.num    = num;
+        this.dpl    = dpl;
+}
+
+// Felder schreiben
+function dpl() {
+
+        tag_1       = (tag_1 > 0) ? tag_1 : 7;
+        // Sonntag hier siebter Tag
+        var tag     = (this.num +1 - tag_1);
+
+        // alles vorbei?
+        if(jahr < aktJahr)
+          var past = true;
+        else if(jahr == aktJahr)
+          past = (monat < aktMon)? true : ((monat == aktMon)? ((tag >= heute) ? false : true) : false);
+        var now = !!(tag == heute && monat == aktMon && jahr == aktJahr);
+        var txtN        = spn + ((tag < 10)? "&nbsp;" + tag : tag) + spe;
+        var txtN        = an_1 + tag + a_2 + ((tag < 10)? "&nbsp;" + tag : tag) + a_e;
+        var txtF        = af_1 + tag + a_2 + ((tag < 10)? "&nbsp;" + tag : tag) + a_e;
+        var txtH        = ah_1 + tag + a_2 + ((tag < 10)? "&nbsp;" + tag : tag) + a_e;
+
+        var txt = past? txtN : (now? txtH : txtF);
+        if ((this.num >= tag_1) && (tag <= m_lang)) writeDiv(lay('feld' + this.num), txt);
+        else                                        writeDiv(lay('feld' + this.num), " &nbsp;");
+}
+
+function nMon() {
+        if (monat < 12) monat += 1;
+        if (monat == 12) {
+                jahr += 1;
+                monat = 0;
+                }
+        kal();
+}
+
+function lMon() {
+        if (monat > -1) monat -= 1;
+        if (monat == -1) {
+                jahr -= 1;
+                monat = 11;
+        }
+        kal();
+}
+
+/*----------------------------------------------------------------------------------------
+///////////////////// Allgem. Funktionen ////////////////////////
+----------------------------------------------------------------------------------------*/
+
+function lay(num) {
+        return (nc? document.layers[num] : (dom? document.getElementById(num) : document.all[num]));
+}
+
+function layS(num) {
+        return (nc? document.layers[num] : (dom? document.getElementById(num).style : document.all[num].style));
+}
+
+// layer schreiben
+function writeDiv(obj,text) {
+        if(nc) {
+                with (obj.document) {
+                        open();
+                        write(text);
+                        close();
+                }
+        }
+        if(ie || dom)obj.innerHTML = text;
+}
+
+//Div-Breite
+function divBreit(obj) {
+        if(dom)                obj.style.width = "auto";                                                // fuer NC 6 width auf auto setzen
+        if(nc)                return obj.document.width;
+        if(ie4 || dom)        return obj.offsetWidth;
+}
+
+// searchstrings durchsuchen
+function getParm(string,parm) {
+  var startPos = string.indexOf(parm + "=");
+  if (startPos > -1) {
+    startPos = startPos + parm.length + 1;
+    var endPos = string.indexOf("&",startPos);
+    if (endPos == -1) endPos = string.length;
+    return unescape(string.substring(startPos,endPos));
+  }
+  return '';
+}
+
+/* -----------------------------------------------------------------------
+/////////////////////////////// Eintrag //////////////////////////////////
+------------------------------------------------------------------------ */
+var passed      = self.location.search.substring(1);
+var elName      = getParm(passed,'elName');
+var fmName      = getParm(passed,'fmName');
+
+function auswahl(num) {
+    var myTag = (num < 10)? '0' + num: num;
+    var myMon = ((monat + 1) < 10)? '0' + (monat + 1): (monat + 1);
+
+    //alert(myTag + ", " + myMon);
+    <dtml-if "manage_lang in ['eng','chi']">
+      opener.document.forms[fmName].elements[elName].value = jahr + "/" + myMon + "/" + myTag;
+    <dtml-else>
+      opener.document.forms[fmName].elements[elName].value = myTag + "." + myMon + "." + jahr;
+    </dtml-if>
+    opener.document.forms[fmName].elements[elName].focus();
+    self.close();
+}
+//-->
+</script>
+
+<script language="JavaScript1.2">
+<!--
+document.write('\<style TYPE="text/css"\>');
+// Kalenderfelder schreiben
+for (iL = 1; iL < 43; iL++) {
+  document.write ((iL < 42)? ('#feld' + iL + ',') : ('#feld' + iL ));
+}
+document.write('{position:absolute;width:' + fSz + 'px;height: ' + fSz + ' px;top:0px;left:0px;layer-background-color:' + fBc + ';background-color:' + fBc + ';clip:rect(0 ' + fSz + ' ' + fSz + ' 0);overflow:hidden;padding:3px;}');
+// Felder fuer Tagnamen schreiben
+for (jL in t_name) {
+  var jC = 'wfeld'+jL;
+  document.write ((jL < t_name.length -1)? ('#' + jC + ',') : ('#' + jC));
+}
+document.write('{position:absolute;width:' + fSz + 'px;height: ' + fSz + ' px;top:0px;left:0px;layer-background-color:' + tBc + ';background-color:' + tBc + ';clip:rect(0 ' + fSz + ' ' + fSz + ' 0);overflow:hidden;font-family:helvetica,arial;font-size:12px;color:#ffffff;font-weight:bold;padding:1px;}');
+// Hintergrund schreiben
+document.write('#bg{position:absolute;width:' + (fSz * 7 + fBw * 8) + 'px;height:' + (fSz * 8 + fBw * 9) + 'px;top:0px;left:0px;layer-background-color:' + kBc + ';background:' + kBc + ';border:none;}');
+document.write('\</style\>');
+//-->
+</script>
+
+</head>
+
+<body onload="init()" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+<div id="bg"></div>
+<div id="mon"></div>
+<div id="nextMon"><a href="#" onclick="nMon(); return false;" style="font-weight:bold;text-decoration:none;">&raquo;</a></div>
+<div id="lastMon"><a href="#" onclick="lMon(); return false;" style="font-weight:bold;text-decoration:none;">&laquo;</a></div>
+
+<script language="JavaScript1.2">
+<!--
+var xpos    = defPosX;
+var ypos    = defPosY+ (fSz+fBw) * 2;
+
+for(iL = 1; iL < 43; iL++) {
+        document.write('\<div id="feld' + iL + '">\</div\>');
+        layS('feld' + iL).left  += xpos;
+        layS('feld' + iL).top  += ypos;
+        xpos += fSz +fBw;
+        if(iL % 7 == 0) {
+                ypos        += fSz+fBw;
+                xpos        = defPosX;
+                layS('feld' + iL)[bgC] = fBcS;
+        }
+}
+
+for(jL in t_name) {
+        var jC = 'wfeld'+jL;
+        document.write('\<div id="' + jC + '">' + t_name[jL] + '\</div\>');
+        layS(jC).left  += xpos;
+        layS(jC).top   += defPosY+ fSz+fBw;
+        xpos += fSz +fBw;
+}
+
+
+layS('nextMon').left    = (defPosX + 6 * (fSz + fBw));
+layS('lastMon').left    = defPosX;
+layS('bg').left         = (defPosX - 1);
+layS('nextMon').top     = defPosY;
+layS('lastMon').top     = defPosY;
+layS('bg').top          = (defPosY - 1);
+
+//-->
+</script>
+
+</body>
+</html>

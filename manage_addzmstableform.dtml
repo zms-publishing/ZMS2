@@ -1,0 +1,225 @@
+<dtml-call "REQUEST.set('ZMS_INSERT','ZMSTable')">
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('CAPTION_INSERT',manage_lang)%display_type(REQUEST,ZMS_INSERT)"></title>
+</head>
+<dtml-var "manage_tabs(_,_,my_manage_options=[{'label':getLangStr('BTN_INSERT',manage_lang),'action':''}])">
+<dtml-var f_bo_area>
+
+<dtml-unless fmName><dtml-call "REQUEST.set('fmName', 'form0')"></dtml-unless>
+<form name="<dtml-var fmName>" action="manage_addZMSTable" method="post">
+<input type="hidden" name="_sort_id:int" value="<dtml-var _sort_id>">
+<input type="hidden" name="id" value="<dtml-var "REQUEST.get('id','e')">">
+<input type="hidden" name="ZMS_INSERT" value="<dtml-var ZMS_INSERT>">
+<dtml-var f_submitInputFields>
+
+<table cellspacing="0" cellpadding="1" border="0" width="100%">
+<colgroup>
+ <col width="20%" />
+ <col width="80%" />
+</colgroup>
+
+<!-- ### Columns -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_COLS',manage_lang)"></div></td>
+ <td><dtml-var "getTextInput(fmName,'table_cols:int',4,3)"></td>
+</tr>
+
+<!-- ### Rows -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_ROWS',manage_lang)"></div></td>
+ <td><dtml-var "getTextInput(fmName,'table_rows:int',4,3)"></td>
+</tr>
+
+<tr>
+ <td rowspan="5" valign="top"><div class="form-label"><dtml-var "getLangStr('ATTR_TYPE',manage_lang)"></div></td>
+ <td>
+  <table cellspacing="2" cellpadding="0" border="0">
+  <tr>
+   <td></td>
+   <td align="center" class="form-small">3 <dtml-var "getLangStr('ATTR_COLS',manage_lang)"></td>
+  </tr>
+  <tr>
+   <td></td>
+   <td class="zmiNeutralColorStrong0"><img src="<dtml-var spacer_gif>" width="1" height="1" title="" border="0" /></td>
+  </tr>
+  <tr>
+   <td valign="middle" rowspan="3"><input class="form-radio" type="radio" name="table_type:int" value="1" checked="checked"></td>
+   <td>
+    <div class="ZMSTable">
+    <table>
+    <tr>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></th>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></th>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></th>
+    </tr>
+    <tr>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+    </tr>
+    <tr>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+    </tr>
+    </table>
+    </div>
+   </td>
+   <td class="zmiNeutralColorStrong0"><img src="<dtml-var spacer_gif>" width="1" height="4" title="" border="0"></td>
+   <td valign="middle" class="form-small">3 <dtml-var "getLangStr('ATTR_ROWS',manage_lang)"></td>
+  </tr>
+  </table>
+ </td>
+</tr>
+<tr>
+ <td>
+  <table cellspacing="2" cellpadding="0" border="0">
+  <tr>
+   <td valign="middle"><input class="form-radio" type="radio" name="table_type:int" value="2"></td>
+   <td>
+    <div class="ZMSTable">
+    <table>
+    <tr>
+     <th colspan="3" style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></th>
+    </tr>
+    <tr>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+    </tr>
+    <tr>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+    </tr>
+    </table>
+    </div>
+   </td>
+  </tr>
+  </table>
+ </td>
+</tr>
+<tr>
+ <td>
+  <table cellspacing="2" cellpadding="0" border="0">
+  <tr>
+   <td valign="middle"><input class="form-radio" type="radio" name="table_type:int" value="3"></td>
+   <td>
+    <div class="ZMSTable">
+    <table>
+    <tr>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></th>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+    </tr>
+    <tr>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></th>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+    </tr>
+    <tr>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></th>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+    </tr>
+    </table>
+    </div>
+   </td>
+  </tr>
+  </table>
+ </td>
+</tr>
+<tr>
+ <td>
+  <table cellspacing="2" cellpadding="0" border="0">
+  <tr>
+   <td valign="middle"><input class="form-radio" type="radio" name="table_type:int" value="4"></td>
+   <td>
+    <div class="ZMSTable">
+    <table>
+    <tr>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></th>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></th>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></th>
+    </tr>
+    <tr>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></th>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+    </tr>
+    <tr>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></th>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0"></td>
+    </tr>
+    </table>
+    </div>
+   </td>
+  </tr>
+  </table>
+ </td>
+</tr>
+<tr>
+ <td>
+  <table cellspacing="2" cellpadding="0" border="0">
+  <tr>
+   <td></td>
+   <td align="center" class="form-small"><dtml-var "getLangStr('ATTR_CUSTOM',manage_lang)"></td>
+  </tr>
+  <tr>
+   <td></td>
+   <td class="zmiNeutralColorStrong0"><img src="<dtml-var spacer_gif>" width="1" height="1" title="" border="0" /></td>
+  </tr>
+  <tr>
+   <td valign="middle"><input class="form-radio" type="radio" name="table_type:int" value="5"></td>
+   <td>
+    <div class="ZMSTable">
+    <table>
+    <tr>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0" /></th>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0" /></th>
+     <th style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0" /></th>
+    </tr>
+    <tr>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0" /></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0" /></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0" /></td>
+    </tr>
+    <tr>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0" /></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0" /></td>
+     <td style="border: solid 1px #999999;"><img src="<dtml-var spacer_gif>" width="30" height="4" title="" border="0" /></td>
+    </tr>
+    </table>
+    </div>
+   </td>
+  </tr>
+  </table>
+ </td>
+</tr>
+
+<!-- ### Caption -->
+<tr>
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_CAPTION',manage_lang)"></div></td>
+ <td><dtml-var "getObjInput('caption',REQUEST)"></td>
+</tr>
+
+<!-- ### Align -->
+<tr>
+ <td><div class="form-label"><dtml-var "getLangStr('ALIGN',manage_lang)"></div></td>
+ <td><dtml-var "getObjInput('align',REQUEST)"></td>
+</tr>
+
+<!-- ### Meta-Attributes -->
+<dtml-var "f_metaInputFields(_,_,fmName=fmName,my_meta_type=ZMS_INSERT)">
+
+</table>
+
+<!-- ### Buttons -->
+<dtml-var f_submitBtn>
+
+</form>
+
+<dtml-var f_eo_area>
+<dtml-var manage_page_footer>
+

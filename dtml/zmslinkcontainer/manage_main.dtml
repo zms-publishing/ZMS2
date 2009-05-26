@@ -1,0 +1,142 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('CAPTION_EDIT',manage_lang)%display_type(REQUEST)"></title>
+</head>
+<dtml-var "manage_tabs(_,_,my_manage_languages=1)">
+<dtml-var f_bo_area>
+<dtml-var checkout>
+
+<form name="form0" action="manage_changeProperties" method="post">
+<dtml-var f_submitInputFields>
+
+<!-- ############# -->
+<!-- ### INSERT    -->
+<!-- ############# -->
+<dtml-call "REQUEST.set( 'ZMS_INSERT', 'ZMSLinkElement')">
+
+<table cellspacing="1" cellpadding="2" border="0" class="zmiNeutralColorStrong0">
+
+<tr class="zmiNeutralColorMedium0">
+ <td colspan="5"><dtml-var "f_headline(_,_,headline=getLangStr('BTN_ADD',manage_lang))"></td>
+</tr>
+
+<tr valign="top" class="zmiNeutralColorStrong0">
+ <td> &nbsp; </td>
+ <td>
+  <font class="form-label"><dtml-var "getLangStr('ATTR_URL',manage_lang)"></font>
+  <font class="form-small">(<dtml-var "getLangStr('OR',manage_lang).lower()"> PMID)</font>
+ </td>
+ <td>
+  <font class="form-label"><dtml-var "getLangStr('ATTR_TITLE',manage_lang)"></font>
+  <font class="form-small">(<dtml-var "getLangStr('OR',manage_lang).lower()"> &quot;Medline&quot;)</font>
+ </td>
+ <td colspan="2">
+  <font class="form-label"><dtml-var "getLangStr('ATTR_DESCRIPTION',manage_lang)"></font>
+  <font class="form-small">(<dtml-var "getLangStr('LITERATURE_REFERENCE_ONLY',manage_lang)">!)</font>
+ </td>
+</tr>
+
+<tr valign="top" class="zmiNeutralColorLight0">
+ <td class="zmiNeutralColorMedium0"><img src="<dtml-var spacer_gif>" title="" border="0" width="40" height="20"></td>
+ <td class="form-small"><dtml-var "getUrlInput(fmName='form0',elName='_url',elTextName='_title',size=15,value='',enabled=1,REQUEST=REQUEST,css='form-small')">&nbsp;</td>
+ <td class="form-small"><dtml-var "getTextInput(fmName='form0',elName='_title',size=10,value='',enabled=1,REQUEST=REQUEST,css='form-small')"></td>
+ <td class="form-small"><dtml-var "getTextArea(fmName='form0',elName='_description',cols=15,rows=3,value='',enabled=1,REQUEST=REQUEST,css='form-small')"></td>
+ <td width="100">&nbsp;</td>
+</tr>
+
+</table>
+
+<!-- ### SUBMIT -->
+<dtml-var f_submitBtn>
+
+<!-- ############# -->
+<!-- ### EDIT      -->
+<!-- ############# -->
+<dtml-call "REQUEST.set( 'ZMS_INSERT', _.None)">
+
+<dtml-if "getChildNodes(REQUEST,['ZMSLinkElement'])">
+
+<table cellspacing="1" cellpadding="2" border="0" class="zmiNeutralColorStrong0">
+
+<tr class="zmiNeutralColorMedium0">
+ <td colspan="5"><dtml-var "f_headline(_,_,headline=getLangStr('TAB_EDIT',manage_lang))"></td>
+</tr>
+
+<tr valign="middle" class="zmiNeutralColorStrong0">
+ <td> &nbsp; </td>
+ <td>
+  <font class="form-label"><dtml-var "getLangStr('ATTR_URL',manage_lang)"></font>
+  <font class="form-small">(<dtml-var "getLangStr('OR',manage_lang).lower()"> PMID)</font>
+ </td>
+ <td>
+  <font class="form-label"><dtml-var "getLangStr('ATTR_TITLE',manage_lang)"></font>
+  <font class="form-small">(<dtml-var "getLangStr('OR',manage_lang).lower()"> &quot;Medline&quot;)</font>
+ </td>
+ <td colspan="2">
+  <font class="form-label"><dtml-var "getLangStr('ATTR_DESCRIPTION',manage_lang)"></font>
+  <font class="form-small">(<dtml-var "getLangStr('LITERATURE_REFERENCE_ONLY',manage_lang)">!)</font>
+ </td>
+</tr>
+
+<dtml-in "getChildNodes(REQUEST,['ZMSLinkElement'])">
+<dtml-let ob=sequence-item>
+
+<tr valign="top" class="zmiNeutralColorLight0">
+ <td align="center" class="zmiNeutralColorMedium0">
+  <table cellspacing="0" cellpadding="0" border="0">
+  <tr>
+   <td
+    ><dtml-if sequence-start
+     ><img src="<dtml-var MISC_ZMS>spacer.gif" width="20" height="10" title="" border="0"
+    ><dtml-else
+     ><a href="<dtml-var id>/manage_moveObjUp?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&preview=<dtml-var preview>" class="button"
+      ><img src="<dtml-var MISC_ZMS>btn_arr_up.gif" title="<dtml-var "getLangStr('ACTION_MOVEUP',manage_lang)">" border="0"></a
+    ></dtml-if
+   ></td>
+   <td rowspan="2"
+    ><a href="javascript:confirmDeleteBtnOnClick('manage_deleteObjs?ids:list=<dtml-var id>&preview=preview');" class="button"
+     ><img src="<dtml-var MISC_ZMS>btn_delete1.gif" title="<dtml-var "getLangStr('BTN_DELETE',manage_lang)">" border="0"></a
+   ></td>
+  </tr>
+  <tr>
+   <td
+    ><dtml-if sequence-end
+     ><img src="<dtml-var MISC_ZMS>spacer.gif" width="20" height="10" title="" border="0"
+    ><dtml-else
+     ><a href="<dtml-var id>/manage_moveObjDown?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&preview=<dtml-var preview>" class="button"
+      ><img src="<dtml-var MISC_ZMS>btn_arr_down.gif" title="<dtml-var "getLangStr('ACTION_MOVEDOWN',manage_lang)">" border="0"></a
+    ></dtml-if
+   ></td>
+  </tr>
+  </table>
+ </td>
+ <td class="form-small"><dtml-var "getUrlInput(fmName='form0',elName='url%s'%id,elTextName='title%s'%id,size=15,value=getObjAttrValue(getObjAttr('attr_ref'),REQUEST),enabled=1,REQUEST=REQUEST,css='form-small')">&nbsp;</td>
+ <td class="form-small"><dtml-var "getTextInput(fmName='form0',elName='title%s'%id,size=10,value=getObjAttrValue(getObjAttr('title'),REQUEST),enabled=1,REQUEST=REQUEST,css='form-small')"></td>
+ <td class="form-small"><dtml-var "getTextArea(fmName='form0',elName='description%s'%id,cols=15,rows=3,value=getObjAttrValue(getObjAttr('attr_dc_description'),REQUEST),enabled=1,REQUEST=REQUEST,css='form-small')"></td>
+ <td width="100" class="zmiNeutralColorMedium0"><dtml-var "manage_main_change(_,_,ob=_['sequence-item'],REQUEST=REQUEST)"></td>
+</tr>
+
+</dtml-let>
+</dtml-in>
+
+</table>
+
+</dtml-if>
+
+<table cellspacing="0" cellpadding="1" border="0" width="100%">
+<colgroup>
+ <col width="20%" />
+ <col width="80%" />
+</colgroup>
+
+<!-- ### Meta-Attributes -->
+<dtml-var "f_metaInputFields(_,_,fmName='form0',my_meta_type=this().meta_type,noSubmitBtn=_.len(getChildNodes(REQUEST,['ZMSLinkElement']))==0)">
+
+</table>
+
+<!-- ### Buttons -->
+<dtml-var f_submitBtn>
+
+</form>
+
+<dtml-var f_eo_area>
+<dtml-var manage_page_footer>

@@ -1,0 +1,32 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('CAPTION_PROPERTIES',manage_lang)%display_type(REQUEST)"></title>
+</head>
+
+<dtml-var "manage_tabs(_,_,my_manage_languages=1)">
+
+<dtml-var f_bo_area>
+
+<form name="form0" action="manage_changeProperties" method="post">
+<input type="hidden" name="lang" value="<dtml-var lang>">
+<input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+<input type="hidden" name="preview" value="preview">
+ 
+<table cellspacing="0" cellpadding="2" border="0">
+<!-- ### Garbage.Collection -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_GARBAGE_COLLECTION',manage_lang)"></div></td>
+ <td><div class="form-text"><dtml-var "getLangStr('OBJECTS_OLDER_THAN',manage_lang)">&nbsp;<dtml-var "getTextInput(fmName='form0',elName='garbage_collection',value=_.getattr(this(),'garbage_collection','2'),size=5)">&nbsp;<dtml-var "getLangStr('ATTR_DAYS',lang)"></div></td>
+</tr>
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_LAST_EXECUTED',manage_lang)"></div></td>
+ <td><div class="form-text"><dtml-var "getLangFmtDate(_.getattr(this(),'last_garbage_collection',None),lang,'DATETIME_FMT')"></div></td>
+</tr>
+</table>
+ 
+<dtml-var f_submitBtn>
+ 
+</form>
+ 
+<dtml-var f_eo_area>
+
+<dtml-var manage_page_footer>

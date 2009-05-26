@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><dictionary>
+<item key="dtml"><![CDATA[<!-- BO bodyContentZMSCustom_hotspot -->
+
+<dtml-comment>
+######################################################################
+###
+###   P o i n t e r
+###
+######################################################################
+</dtml-comment>
+<div id="POINTER_<dtml-var id>" style="position: absolute; height:3px; width:3px;"
+ ><img src="<dtml-var spacer_gif>" title="" border="0" width="3" height="3" style="background-color:red; border: 1px solid white;"
+></div>
+
+<dtml-comment>
+######################################################################
+###
+###   I m a g e
+###
+######################################################################
+</dtml-comment>
+<dtml-let img="getObjProperty('img',REQUEST)">
+ <dtml-if img>
+  <img id="IMG_<dtml-var id>" src="<dtml-var "img.getHref(REQUEST)">" title="" border="0">
+ </dtml-if>
+</dtml-let>
+
+<dtml-comment>
+######################################################################
+###
+###   J a v a S c r i p t
+###
+######################################################################
+</dtml-comment>
+<script language="JavaScript">
+<!--//
+
+<dtml-var "getObjProperty('js_main',REQUEST)">
+function initPointer_<dtml-var id>() {
+  if (!setPointer_<dtml-var id>(<dtml-var "getObjProperty('xCoord',REQUEST)">,<dtml-var "getObjProperty('yCoord',REQUEST)">))
+    setTimeout('initPointer_<dtml-var id>()',100);
+}
+
+initPointer_<dtml-var id>();
+
+//-->
+</script>
+
+<dtml-comment>
+######################################################################
+</dtml-comment>
+
+<!-- EO bodyContentZMSCustom_hotspot -->
+]]></item>
+<item key="enabled" type="int"><![CDATA[1]]></item>
+<item key="key"><![CDATA[hotspot]]></item>
+<item key="value" type="dictionary"><dictionary>
+<item key="__obj_attrs__" type="list"><list>
+<item type="dictionary"><dictionary>
+<item key="custom"></item>
+<item key="id"><![CDATA[img]]></item>
+<item key="keys" type="list"><list>
+</list>
+</item>
+<item key="mandatory" type="int"><![CDATA[1]]></item>
+<item key="multilang" type="int"><![CDATA[0]]></item>
+<item key="name"><![CDATA[Image]]></item>
+<item key="repetitive" type="int"><![CDATA[0]]></item>
+<item key="type"><![CDATA[image]]></item>
+</dictionary>
+</item>
+<item type="dictionary"><dictionary>
+<item key="custom"></item>
+<item key="id"><![CDATA[xCoord]]></item>
+<item key="keys" type="list"><list>
+</list>
+</item>
+<item key="mandatory" type="int"><![CDATA[0]]></item>
+<item key="multilang" type="int"><![CDATA[0]]></item>
+<item key="name"><![CDATA[X-Coord]]></item>
+<item key="repetitive" type="int"><![CDATA[0]]></item>
+<item key="type"><![CDATA[int]]></item>
+</dictionary>
+</item>
+<item type="dictionary"><dictionary>
+<item key="custom"></item>
+<item key="id"><![CDATA[yCoord]]></item>
+<item key="keys" type="list"><list>
+</list>
+</item>
+<item key="mandatory" type="int"><![CDATA[0]]></item>
+<item key="multilang" type="int"><![CDATA[0]]></item>
+<item key="name"><![CDATA[Y-Coord]]></item>
+<item key="repetitive" type="int"><![CDATA[0]]></item>
+<item key="type"><![CDATA[int]]></item>
+</dictionary>
+</item>
+<item type="dictionary"><dictionary>
+<item key="custom"><![CDATA[<!--// BO manage_main //-->
+
+<dtml-comment>
+######################################################################
+###
+###   A d d   
+###
+######################################################################
+
+IMPORTANT NOTE:
+Constructor must always be part of <<manage_main>> method!
+ 
+</dtml-comment>
+ <dtml-if ZMS_INSERT>
+  <table cellspacing="0" cellpadding="2" border="0" width="100%">
+  <!-- ### Version -->
+  <dtml-var version_input_fields>
+  <!-- ### Active -->
+  <dtml-var active_input_fields>
+  <!-- ### Image -->
+  <tr valign="middle">
+   <td><div class="form-label"><dtml-var "getLangStr('ATTR_IMAGE',manage_lang)"></div></td>
+   <td><dtml-var "getObjInput('img',REQUEST)"></td>
+  </tr>
+  </table>
+  <!-- ### xCoord -->
+  <input type="hidden" name="xCoord:int" value="0">
+  <!-- ### yCoord -->
+  <input type="hidden" name="yCoord:int" value="0">
+  <!-- ### Submit -->
+  <dtml-var f_submitBtn>
+
+<dtml-comment>
+######################################################################
+###
+###   E d i t
+###
+######################################################################
+</dtml-comment>
+ <dtml-else>
+  <dtml-var "getObjProperty('manage_editForm',REQUEST)">
+ </dtml-if>
+
+<dtml-comment>
+######################################################################
+</dtml-comment>
+
+<!--// EO manage_main //-->]]></item>
+<item key="id"><![CDATA[manage_main]]></item>
+<item key="keys" type="list"><list>
+</list>
+</item>
+<item key="mandatory" type="int"><![CDATA[0]]></item>
+<item key="multilang" type="int"><![CDATA[0]]></item>
+<item key="name"><![CDATA[ZMI Add form]]></item>
+<item key="repetitive" type="int"><![CDATA[0]]></item>
+<item key="type"><![CDATA[method]]></item>
+</dictionary>
+</item>
+<item type="dictionary"><dictionary>
+<item key="custom"><![CDATA[<!--// BO manage_editForm //-->
+
+<dtml-comment>
+######################################################################
+###
+###   F o r m
+###
+######################################################################
+</dtml-comment>
+<input type="hidden" name="xCoord:int" value="<dtml-var "getObjProperty('xCoord',REQUEST)">">
+<input type="hidden" name="yCoord:int" value="<dtml-var "getObjProperty('yCoord',REQUEST)">">
+<table cellspacing="0" cellpadding="2" border="0" width="100%">
+<!-- ### Version -->
+<dtml-var version_input_fields>
+<!-- ### Active -->
+<dtml-var active_input_fields>
+<tr valign="middle">
+ <td colspan="2" align="center"><img id="IMG_<dtml-var id>" src="<dtml-var "getObjProperty('img',REQUEST).getHref(REQUEST)">" title="" border="0" onclick="imgClick(this);"></td>
+</tr>
+</table>
+<!-- ### Submit -->
+<dtml-var f_submitBtn>
+
+<dtml-comment>
+######################################################################
+###
+###   P o i n t e r
+###
+######################################################################
+</dtml-comment>
+<div id="POINTER_<dtml-var id>" style="position: absolute; height:3px; width:3px;"
+ ><img src="<dtml-var spacer_gif>" title="" border="0" width="3" height="3" style="background-color:red; border: 1px solid white;"
+></div>
+
+<dtml-comment>
+######################################################################
+###
+###   J a v a S c r i p t
+###
+######################################################################
+</dtml-comment>
+<script language="JavaScript">
+<!--//
+
+// Source: Capturing Mouse Position (http://www.breakingpar.com/bkp/home.nsf/Doc?OpenNavigator&U=87256B14007C5C6A87256B4B0005BFA6)
+
+// Set Netscape up to run the "captureMousePosition" function whenever
+// the mouse is moved. For Internet Explorer and Netscape 6, you can capture
+// the movement a little easier.
+if (document.all) { // Internet Explorer
+    document.onmousemove = captureMousePosition;
+} else if (document.getElementById) { // DOM
+    document.onmousemove = captureMousePosition;
+}
+// Global variables
+xMousePos = 0; // Horizontal position of the mouse on the screen
+yMousePos = 0; // Vertical position of the mouse on the screen
+xMousePosMax = 0; // Width of the page
+yMousePosMax = 0; // Height of the page
+
+function captureMousePosition(e) {
+    if (document.all) {
+        // When the page scrolls in IE, the event's mouse position
+        // reflects the position from the top/left of the screen the
+        // user is looking at. scrollLeft/Top is the amount the user
+        // has scrolled into the page. clientWidth/Height is the height/
+        // width of the current page the user is looking at. So, to be
+        // consistent with Netscape (above), add the scroll offsets to
+        // both so we end up with an absolute value on the page, no
+        // matter if the user has scrolled or not.
+        xMousePos = window.event.x+document.body.scrollLeft;
+        yMousePos = window.event.y+document.body.scrollTop;
+        xMousePosMax = document.body.clientWidth+document.body.scrollLeft;
+        yMousePosMax = document.body.clientHeight+document.body.scrollTop;
+    } else if (document.getElementById) {
+        // Netscape 6 behaves the same as Netscape 4 in this regard
+        xMousePos = e.pageX;
+        yMousePos = e.pageY;
+        xMousePosMax = window.innerWidth+window.pageXOffset;
+        yMousePosMax = window.innerHeight+window.pageYOffset;
+    }
+  window.status = "xMousePos=" + xMousePos + ", yMousePos=" + yMousePos + ", xMousePosMax=" + xMousePosMax + ", yMousePosMax=" + yMousePosMax;
+}
+
+function imgClick(el) {
+  // Get coords.
+  coords = getCoords_<dtml-var id>(el);
+  // Set form.    
+  document.forms['form0'].elements['xCoord:int'].value = xMousePos-coords['x'];
+  document.forms['form0'].elements['yCoord:int'].value = yMousePos-coords['y'];
+  // Set pointer.
+  xCoord = document.forms['form0'].elements['xCoord:int'].value;
+  yCoord = document.forms['form0'].elements['yCoord:int'].value;
+  setPointer_<dtml-var id>(xCoord,yCoord);
+}
+
+<dtml-var "getObjProperty('js_main',REQUEST)">
+function initPointer() {
+  xCoord = document.forms['form0'].elements['xCoord:int'].value;
+  yCoord = document.forms['form0'].elements['yCoord:int'].value;
+  if (!setPointer_<dtml-var id>(xCoord,yCoord))
+    setTimeout('initPointer()',100);
+}
+
+initPointer();
+
+//-->
+</script>
+
+<dtml-comment>
+######################################################################
+</dtml-comment>
+
+<!--// BO manage_editForm //-->]]></item>
+<item key="id"><![CDATA[manage_editForm]]></item>
+<item key="keys" type="list"><list>
+</list>
+</item>
+<item key="mandatory" type="int"><![CDATA[0]]></item>
+<item key="multilang" type="int"><![CDATA[0]]></item>
+<item key="name"><![CDATA[ZMI Edit form]]></item>
+<item key="repetitive" type="int"><![CDATA[0]]></item>
+<item key="type"><![CDATA[method]]></item>
+</dictionary>
+</item>
+<item type="dictionary"><dictionary>
+<item key="custom"><![CDATA[//---------- BO js_main ----------
+
+function getCoords_<dtml-var id>(el) {
+  var coords = {x: 0, y: 0};
+  var element = el;
+  while (element) {
+    coords.x += element.offsetLeft;
+    coords.y += element.offsetTop;
+    element = element.offsetParent;
+  }
+  return coords;
+}
+
+function setPointer_<dtml-var id>(xCoord, yCoord) {
+  // Get coords.
+  if (document.all) { // Internet Explorer
+    el = document.all[eval('"IMG_<dtml-var id>"')];
+  } else if (document.getElementById) { // DOM
+    el = document.getElementById("IMG_<dtml-var id>");
+  }
+  coords = getCoords_<dtml-var id>(el);
+  xPointer = coords['x']+parseInt(xCoord)-2;
+  yPointer = coords['y']+parseInt(yCoord)-2;
+  // Set pointer.
+  if (document.all) { // Internet Explorer
+    whichEl = document.all[eval('"POINTER_<dtml-var id>"')];
+    whichEl.style.top = yPointer+"px";
+    whichEl.style.left = xPointer+"px";
+    whichEl.style.visibility = "visible";
+  } else if (document.getElementById) { // DOM
+    whichEl = document.getElementById("POINTER_<dtml-var id>");
+    whichEl.style.top = yPointer+"px";
+    whichEl.style.left = xPointer+"px";
+    whichEl.style.visibility = "visible";
+  }
+  return (coords.x>0) && (coords.y>0);
+}
+
+//---------- EO js_main ----------]]></item>
+<item key="id"><![CDATA[js_main]]></item>
+<item key="keys" type="list"><list>
+</list>
+</item>
+<item key="mandatory" type="int"><![CDATA[0]]></item>
+<item key="multilang" type="int"><![CDATA[0]]></item>
+<item key="name"><![CDATA[JavaScript: Main]]></item>
+<item key="repetitive" type="int"><![CDATA[0]]></item>
+<item key="type"><![CDATA[method]]></item>
+</dictionary>
+</item>
+</list>
+</item>
+<item key="name"><![CDATA[Hotspot]]></item>
+<item key="type"><![CDATA[ZMSObject]]></item>
+</dictionary>
+</item>
+</dictionary>

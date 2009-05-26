@@ -1,0 +1,145 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('ACTION_SELECT',manage_lang)%getLangStr('TYPE_ZMSLINKELEMENT',manage_lang)"></title>
+
+<dtml-call "REQUEST.set('l_thisObj',getLinkObj(REQUEST.get('elUrlValue','')))">
+<dtml-if "l_thisObj is _.None">
+ <dtml-call "REQUEST.set('l_thisObj',getSelf([PAGES,PAGEELEMENTS]))">
+</dtml-if>
+<dtml-call "REQUEST.set('l_thisPage',l_thisObj.getSelf(PAGES))">
+
+<script language="JavaScript">
+<!--//
+
+  function selectObject(id) {
+    var fm = self.document.forms[0];
+    url = fm.elements[id+'_url'].value;
+    anchor = fm.elements[id+'_anchor'].value;
+    doc_offs = <dtml-var "_.len(getDocumentElement().absolute_url())">;
+    this_path = '<dtml-var "REQUEST.form.get('this_path',getSelf(PAGES).absolute_url())">';
+    this_path = this_path.substring(doc_offs,this_path.length);
+    url = url.substring(doc_offs,url.length);
+    i = 0;
+    while (i<this_path.length && i<url.length && this_path.substring(0,i)==url.substring(0,i)) {
+      i++;
+    }
+    i = this_path.substring(0,i).lastIndexOf('/');
+    this_path = this_path.substring(i,this_path.length);
+    url = url.substring(i,url.length);
+    c = '';
+    j = -1;
+    while (true) {
+      j = this_path.indexOf('/',j+1);
+      if (j<0) break;
+      c += '../';
+    }
+    c = './' + c;
+    url = c + url.substring(1,url.length) + anchor;
+    confirm(url);
+    window.opener.CreateLink(url);
+    window.close();
+  }
+
+  function followHref(href, elUrlValue) {
+    href += '?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>';
+    href += '&elUrlValue='+elUrlValue;
+    href += '&this_path=<dtml-var "REQUEST.form.get('this_path',getSelf(PAGES).absolute_url())">';
+    self.location.href = href;
+  }
+
+//-->
+</script>
+</head>
+<body class="zmiNeutralColorMedium0" alink="#990000" vlink="#cc0000" link="#336699" leftmargin="0" topmargin="0" marginheight="0" marginwidth="0">
+
+<dtml-with l_thisPage>
+
+<dtml-var "f_headline(_,_,headline=getLangStr('ACTION_SELECT',manage_lang)%getLangStr('TYPE_ZMSLINKELEMENT',manage_lang))"><br/>
+<form name="form0">
+
+<table cellspacing="0" cellpadding="8" border="0" width="100%" class="zmiNeutralColorLight0">
+<tr valign="top">
+ <td align="left">
+  
+ <table cellspacing="0" cellpadding="1" border="0" width="100%">
+ <tr valign="middle" class="zmiNeutralColorMedium0">
+  <td align="left" class="form-small">
+  <dtml-in "breadcrumbs_obj_path()">
+   <dtml-let ob=sequence-item>
+   &raquo;
+   <a href="javascript:followHref('epoz_toolbox','<dtml-var "getRefObjPath(ob)">')" class="zmi"
+    ><dtml-var "getTitlealt(REQUEST)"
+   ></a>
+   </dtml-let>
+  </dtml-in>
+  </td>
+ </tr>
+ </table>
+
+ <dtml-call "REQUEST.set('l_title',getTitlealt(REQUEST))">
+ <table cellspacing="0" cellpadding="0" border="0">
+ <tr>
+  <td title="<dtml-var "getLangStr('ACTION_SELECT',manage_lang)%display_type(REQUEST)">"><input class="form-element" type="radio" onclick="selectObject('<dtml-var "getHome().id">_<dtml-var id>');"></td>
+  <td><img src="<dtml-var "display_icon(REQUEST)">" title="" border="0"></td>
+  <td class="form-small"><dtml-var l_title></td>
+ </tr>
+ </table>
+
+ <dtml-call "REQUEST.set('res',[])">
+ <dtml-in "getChildNodes(REQUEST)">
+  <dtml-if "isPage() or isPageElement()">
+   <dtml-call "res.append(_['sequence-item'])">
+  </dtml-if>
+ </dtml-in>
+
+ <dtml-in res>
+ <dtml-let ob=sequence-item>
+
+   <dtml-if "isPage() or meta_type in ['ZMSFile','ZMSCustom']">
+    <dtml-call "REQUEST.set('l_title',getTitlealt(REQUEST))">
+   <dtml-elif "meta_type in ['ZMSTextarea','ZMSGraphic']">
+    <dtml-call "REQUEST.set('l_title',search_quote(getObjAttrValue(getObjAttr('text'),REQUEST),80,''))">
+   <dtml-else>
+    <dtml-call "REQUEST.set('l_title',display_type(REQUEST))">
+   </dtml-if>
+
+   <input type="hidden" name="<dtml-var "getHome().id">_<dtml-var id>_url" value="<dtml-var "getSelf(PAGES).absolute_url()">">
+   <input type="hidden" name="<dtml-var "getHome().id">_<dtml-var id>_anchor" value="<dtml-if "isPageElement()">#<dtml-var id></dtml-if>">
+   
+   <table cellspacing="0" cellpadding="0" border="0">
+   <tr>
+    <dtml-if "isPage() and getChildNodes(REQUEST)">
+     <dtml-if sequence-end>
+      <td><a href="javascript:followHref('epoz_toolbox','<dtml-var "getRefObjPath(ob)">')"><img src="<dtml-var MISC_ZMS>tv_last_pl.gif" title="+" border="0"></a></td>
+     <dtml-else>
+      <td style="background-image:url(<dtml-var MISC_ZMS>tv_line.gif);"><a href="javascript:followHref('epoz_toolbox','<dtml-var "getRefObjPath(ob)">')"><img src="<dtml-var MISC_ZMS>tv_item_pl.gif" title="+" border="0"></a></td>
+     </dtml-if>
+    <dtml-else>
+     <dtml-if sequence-end>
+      <td><img src="<dtml-var MISC_ZMS>tv_last.gif" title="" border="0"></td>
+     <dtml-else>
+      <td style="background-image:url(<dtml-var MISC_ZMS>tv_line.gif);"><img src="<dtml-var MISC_ZMS>tv_item.gif" title="" border="0"></td>
+     </dtml-if>
+    </dtml-if>
+    <td title="<dtml-var "getLangStr('ACTION_SELECT',manage_lang)%display_type(REQUEST)">"><input class="form-element" type="radio" onclick="selectObject('<dtml-var "getHome().id">_<dtml-var id>');"></td>
+    <td><img src="<dtml-var "display_icon(REQUEST)">" title="" border="0" /></td>
+    <td class="form-small"><dtml-var l_title></td>
+   </tr>
+   </table>
+
+ </dtml-let>
+ </dtml-in>
+ 
+ </td> 
+</tr>
+
+<tr>
+ <td><input class="form-submit" type="submit" name="btn" value="<dtml-var "getLangStr('BTN_CANCEL',manage_lang)" html_quote>" onclick="self.parent.close();"></td>
+</tr>
+
+</table>
+</form>
+
+</dtml-with>
+
+</body>
+</html>

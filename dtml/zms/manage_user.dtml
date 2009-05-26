@@ -1,0 +1,117 @@
+<dtml-var manage_page_header>
+<head>
+<title><dtml-var "getLangStr('TAB_ACCESS',manage_lang)"></title>
+</head>
+<body class="zmiNeutralColorLight0" alink="#990000" vlink="#cc0000" link="#336699" leftmargin="4" topmargin="4" marginheight="4" marginwidth="4">
+
+<dtml-if "_.len(REQUEST.form.get('manage_tabs_message',REQUEST.get('manage_tabs_message','')))>0">
+ <div class="system-msg">
+  <dtml-var "REQUEST.form.get('manage_tabs_message',REQUEST.get('manage_tabs_message',''))">
+  (<dtml-var "getLangFmtDate(ZopeTime(),manage_lang)">)
+ </div>
+</dtml-if>
+
+<script language="JavaScript">
+<!--//
+
+  function form0Submit(fm) {
+    var b = true;
+    if (self.btnClicked=="<dtml-var "getLangStr('BTN_CHANGE',manage_lang)" html_quote>") {
+      if (fm.elements['password'] && fm.elements['confirm']) {
+        b = b && !disallowBlank(fm.elements['password'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_PASSWORD',manage_lang)">",false);
+        b = b && !disallowBlank(fm.elements['confirm'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_CONFIRM',manage_lang)">",false);
+        if (fm.elements['password'].value!=fm.elements['confirm'].value) {
+          b = false;
+          alert('<dtml-var "getLangStr('ATTR_PASSWORD',manage_lang)"><><dtml-var "getLangStr('ATTR_CONFIRM',manage_lang)">!');
+        }
+      }
+    }
+    return b;
+  }
+
+//-->
+</script>
+  
+<dtml-let userObj=AUTHENTICATED_USER>
+ <form name="form0" action="manage_user" method="post" onsubmit="return form0Submit(this);">
+ <input type="hidden" name="lang" value="<dtml-var lang>">
+ <input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+ <input type="hidden" name="preview" value="preview">
+ <table cellspacing="1" cellpadding="2" border="0">
+ <!-- E-Mail -->
+ <tr valign="middle">
+  <td class="form-optional"><dtml-var "getLangStr('ATTR_EMAIL',manage_lang)"></td>
+  <td class="form-element"><dtml-var "getTextInput(fmName='form1',elName='email',size=25,value=getUserAttr(userObj,'email',''))"></td>
+ </tr>
+ <dtml-unless "getUserFolder().meta_type=='LDAPUserFolder' and userObj.getId() in getUserFolder().getUserNames()">
+ <!-- Password -->
+ <tr valign="middle">
+  <td><div class="form-label"><dtml-var "getLangStr('ATTR_PASSWORD',manage_lang)"></div></td>
+  <td><dtml-var "getPasswordInput(fmName='form1',elName='password',size=25,value='******')"></td>
+ </tr>
+ <!-- Password (Confirm) -->
+ <tr valign="middle">
+  <td><div class="form-label"><dtml-var "getLangStr('ATTR_CONFIRM',manage_lang)"></div></td>
+  <td><dtml-var "getPasswordInput(fmName='form1',elName='confirm',size=25,value='******')"></td>
+ </tr>
+ </dtml-unless>
+ <!-- Profil -->
+ <dtml-let profile="getUserAttr(userObj,'profile','')" ob="getLinkObj(profile,REQUEST)"> 
+  <dtml-if profile>
+   <tr valign="middle">
+    <td class="form-optional"><dtml-var "getLangStr('ATTR_PROFILE',manage_lang)"></td>
+    <td class="form-element">   
+     <dtml-if ob>
+      <dtml-with ob>
+       <a href="<dtml-var absolute_url>/manage_main?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>" target="_blank"
+        ><img src="<dtml-var "display_icon(REQUEST)">" title="<dtml-var "getLangStr('CAPTION_EDIT',manage_lang)%display_type(REQUEST)">" border="0" align="middle"
+       /></a>
+      </dtml-with>
+     <dtml-else>
+      <a href="<dtml-var profile>" target="_blank"
+       ><img src="<dtml-var MISC_ZMS>external_link.gif" title="<dtml-var profile>" border="0" align="middle"
+      /></a>
+     </dtml-if>
+    </td>
+   </tr>
+  </dtml-if>
+ </dtml-let>
+ <!-- Display/Edit Node(s) -->
+ <dtml-let nodes="getUserAttr(userObj,'nodes',{})" nodekeys="nodes.keys()">
+  <dtml-call "nodekeys.sort()">
+  <dtml-call "REQUEST.set('count',0)">
+  <dtml-in nodekeys>
+   <dtml-let seqindex=sequence-index nodekey=sequence-item nodevalue="nodes[nodekey]" ob="getLinkObj(nodekey,REQUEST)">
+    <dtml-if ob>
+     <tr valign="middle">
+      <td><div class="form-label"><dtml-var "getLangStr('ATTR_NODE',manage_lang)"> <dtml-var "count+1"></div></td>
+      <td class="form-small">
+       <dtml-var "f_breadcrumbs(_,_,objectPathElements=ob.breadcrumbs_obj_path(),no_icon=1,REQUEST=REQUEST)">
+       <dtml-in "nodevalue.get('langs',[])">
+        <dtml-if sequence-start>|</dtml-if>
+        <dtml-var "getLanguageLabel(_['sequence-item'])">
+        <dtml-unless sequence-end>,</dtml-unless>
+       </dtml-in>
+       <dtml-in "difference_list(nodevalue.get('roles',[]),['Authenticated'])">
+        <dtml-let str="'ROLE_%s'%_['sequence-item'].replace(' ','').upper()" langstr="getLangStr(str,manage_lang)">
+         <dtml-if sequence-start>|</dtml-if>
+         <dtml-if "str==langstr"><dtml-var sequence-item><dtml-else><dtml-var langstr></dtml-if>
+         <dtml-unless sequence-end>,</dtml-unless>
+        </dtml-let>
+       </dtml-in>
+      </td>
+     </tr>
+     <dtml-call "REQUEST.set('count',count+1)">
+    </dtml-if>
+   </dtml-let>
+  </dtml-in>
+ </dtml-let>
+ <tr>
+  <td class="form-label">&nbsp;</td>
+  <td class="form-element"><input class="form-submit" type="submit" name="btn" value="<dtml-var "getLangStr('BTN_CHANGE',manage_lang)">" onclick="self.btnClicked=this.value;"></td>
+ </table>
+ </form>
+</dtml-let>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+<dtml-if "isMetaType('ZMSCustom') and getType() in [ 'ZMSDocument' ,'ZMSReference']">
+<dtml-var f_bodyContent>
+<dtml-else>
+<dtml-let childNodes="getObjChildren('e',REQUEST,PAGEELEMENTS)">
+<dtml-var "getBodyContentPagePre(REQUEST)">
+<dtml-if childNodes>
+<dtml-var bodyContent_PagePre>
+<dtml-in childNodes>
+<dtml-var f_bodyContent>
+</dtml-in>
+<dtml-var bodyContent_PagePost>
+</dtml-if>
+<dtml-var "getBodyContentPagePost(REQUEST)">
+</dtml-let>
+</dtml-if>

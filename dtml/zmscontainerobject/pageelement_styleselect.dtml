@@ -1,0 +1,11 @@
+<dtml-if "_.len(getStylesheets())>1">
+<form>
+ <select onchange="setActiveStyleSheet(this.options[this.selectedIndex].value);">
+  <dtml-in "getStylesheets()">
+   <dtml-let id="id()">
+    <option value="<dtml-var "id[:id.rfind('.')]">"><dtml-var "id[:id.rfind('.')]"></option>
+   </dtml-let>
+  </dtml-in>
+ </select>
+</form>
+</dtml-if>

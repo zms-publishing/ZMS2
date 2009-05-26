@@ -1,0 +1,16 @@
+<script type="text/javascript">
+<!--//
+
+  function onFormSubmit(fmName) {
+    if (self.btnClicked != "<dtml-var "getLangStr('BTN_CANCEL',manage_lang)" html_quote>" &&
+        self.btnClicked != "<dtml-var "getLangStr('BTN_BACK',manage_lang)" html_quote>") {
+      obj = document.forms[fmName].elements['attr_ref'];
+      msg = "<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_URL',manage_lang)">";
+      dofocus = true;
+      if (disallowBlank(obj,msg,dofocus)) return false;
+    }
+    return true;
+  }
+
+//-->
+</script>

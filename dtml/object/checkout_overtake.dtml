@@ -1,0 +1,41 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('CAPTION_LOCKED',manage_lang)%display_type(REQUEST)"></title>
+</head>
+
+<dtml-var "manage_tabs(_,_,my_manage_options=[{'label':getLangStr('TAB_LOCKED',manage_lang),'action':''}])">
+
+<dtml-var f_bo_area>
+
+    <form name="form0" action="<dtml-var URL1>/manage_main" method="get">
+    <input type="hidden" name="lang" value="<dtml-var lang>">
+    <input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+    <input type="hidden" name="preview" value="preview">
+    <dtml-var "f_headline(_,_,headline=getLangStr('CAPTION_LOCKED',manage_lang)%display_type(REQUEST))">
+    <table cellspacing="0" cellpadding="2" border="0">
+    <tr>
+      <th rowspan="2" valign="top"><font style="font-family: Times,serif; font-size: 32pt; font-weight:bold; color:maroon;">!</font></th>
+      <th rowspan="2" valign="top"> &nbsp; </th>
+      <td valign="middle"><div class="form-label"><dtml-var "getLangStr('ATTR_CHECKED_OUT',manage_lang)"></div></td>
+      <td valign="middle">
+       <div class="form-text">
+        <dtml-var "getLangFmtDate(_.getattr(this(),'co_dat_%s'%lang,_.None),manage_lang,'DATE_FMT')">
+        <dtml-var "getLangStr('AT',manage_lang)"> <dtml-var "getLangFmtDate(_.getattr(this(),'co_dat_%s'%lang,_.None),manage_lang,'TIME_FMT')">
+        <dtml-var "getLangStr('BY',manage_lang)"> <dtml-var "_.getattr(this(),'co_uid_%s'%lang,_.None)">
+       </div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center">
+        <hr size="1">
+        <font class="form-element">
+          <input class="form-submit" type="submit" name="btn" value="<dtml-var "getLangStr('BTN_OVERTAKE',manage_lang)" html_quote>">
+          <input class="form-submit" type="submit" name="btn" value="<dtml-var "getLangStr('BTN_CANCEL',manage_lang)">" onclick="document.forms['form0'].action='<dtml-var URL2>/manage_main?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>';">
+        </font>
+      </td>
+    </tr>
+	</table>
+    </form>
+
+<dtml-var f_eo_area>
+
+<dtml-var manage_page_footer>

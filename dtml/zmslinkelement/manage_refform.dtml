@@ -1,0 +1,45 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('TAB_REFERENCES',manage_lang)"></title>
+</head>
+
+<dtml-var manage_tabs>
+
+<dtml-var f_bo_area>
+<br/><br/>
+
+<dtml-call "synchronizeRefByObjs(strict=0)">
+<dtml-let ref_by="getRefByObjs(REQUEST)">
+ <dtml-if ref_by>
+  <div class="form-element"><dtml-var "getLangStr('MSG_REFERENCEDBY',manage_lang)%('<em>%s</em>'%getTitlealt(REQUEST))">:</div>
+  <ul>
+  <dtml-in ref_by>
+   <dtml-let ob="getLinkObj(_['sequence-item'],REQUEST)">
+    <li class="form-small">
+     <dtml-if ob>
+      <dtml-with ob>
+       <dtml-var "f_breadcrumbs(_,_,objectPathElements=ob.breadcrumbs_obj_path(),no_icon=1,REQUEST=REQUEST)">
+       (<i><dtml-var "getLangStr('TYPE_%s'%ob.meta_type.upper(),manage_lang)"></i>)
+       <dtml-if "getObjProperty('change_uid',REQUEST)">
+        <dtml-var "getLangStr('BY',manage_lang)"> <dtml-var "getObjProperty('change_uid',REQUEST)">
+       </dtml-if>
+       <dtml-if "getObjProperty('change_dt',REQUEST)">
+        <dtml-var "getLangStr('ON',manage_lang)"> <dtml-var "getLangFmtDate(getObjProperty('change_dt',REQUEST),manage_lang,'DATE_FMT')">
+        <dtml-var "getLangStr('AT',manage_lang)"> <dtml-var "getLangFmtDate(getObjProperty('change_dt',REQUEST),manage_lang,'TIME_FMT')">
+       </dtml-if>
+      </dtml-with>
+     <dtml-else>
+      <dtml-var sequence-item>
+     </dtml-if>
+    </li>
+   </dtml-let>
+  </dtml-in>
+  </ul>
+ <dtml-else>
+  <div class="form-element"><dtml-var "getLangStr('MSG_NOREFERENCES',manage_lang)%('<em>%s</em>'%getTitlealt(REQUEST))">!</div>
+ </dtml-if>
+</dtml-let>
+
+<br/><br/>
+<dtml-var f_eo_area>
+
+<dtml-var manage_page_footer>

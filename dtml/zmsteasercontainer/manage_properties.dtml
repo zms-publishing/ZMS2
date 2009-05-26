@@ -1,0 +1,129 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('CAPTION_EDIT',manage_lang)%display_type(REQUEST)"></title>
+</head>
+
+<dtml-var "manage_tabs(_,_,my_manage_languages=1)">
+<dtml-var f_bo_area>
+
+<form name="form0" action="manage_changeProperties" method="post" enctype="multipart/form-data">
+<dtml-var f_submitInputFields>
+
+<!-- ### Border-Style -->
+
+<!-- BORDERSTYLE.HEADLINE -->
+<dtml-var "f_headline(_,_,headline=getLangStr('ATTR_BORDERSTYLE',manage_lang))">
+
+<!-- BORDERSTYLE.INPUTS -->
+  <table cellspacing="0" cellpadding="1" border="0" width="100%">
+  <tr>
+    <td valign="top" colspan="2">
+      <table cellspacing="2" cellpadding="1" border="0">
+      <tr>
+	    <dtml-let teaserCntnr="this()"
+	              bgcolor_border="teaserCntnr.getObjProperty('attr_bgcolor_border',REQUEST)"
+	              bgcolor_title="teaserCntnr.getObjProperty('attr_bgcolor_title',REQUEST)"
+	              bgcolor_text="teaserCntnr.getObjProperty('attr_bgcolor_text',REQUEST)">
+
+	      <!-- ### Border-Style 1= SOLID -->
+	      <td valign="top">
+	        <input class="form-radio" type="radio" name="attr_borderstyle:int" value="1"
+	          <dtml-if "getObjProperty('attr_borderstyle',REQUEST)==1">
+	            checked="checked"
+	          </dtml-if>
+	        >
+	      </td>
+	      <td valign="top" class="form-text"><dtml-var "getLangStr('OPT_AB_SOLID',manage_lang)">&nbsp;</td>
+	      <td valign="top">
+	       <div id="Teaser" style="width:30px;">
+	        <div class="ZMSTeaserContainer" style="margin-bottom:4px;<dtml-if bgcolor_border>background-color: <dtml-var "get_colormap().get(bgcolor_border,'black')">;</dtml-if>">
+                 <dtml-var element_icon>
+                 <dtml-var element_icon>
+                 <dtml-var element_icon>
+                </div>
+               </div>
+              </td>
+	      <!-- ### Border-Style 2= SINGLE -->
+	      <td valign="top">
+	        <input class="form-radio" type="radio" name="attr_borderstyle:int" value="2"
+	          <dtml-if "getObjProperty('attr_borderstyle',REQUEST)==2">
+	            checked="checked"
+	          </dtml-if>
+	        >
+	      </td>
+	      <td valign="top" class="form-text"><dtml-var "getLangStr('OPT_AB_SINGLE',manage_lang)">&nbsp;</td>
+	      <td valign="top">
+	       <div id="Teaser" style="width:30px;">
+	        <div class="ZMSTeaserContainer" style="margin-bottom:4px;<dtml-if bgcolor_border>background-color: <dtml-var "get_colormap().get(bgcolor_border,'black')">;</dtml-if>">
+                 <dtml-var element_icon>
+                </div>
+	        <div class="ZMSTeaserContainer" style="margin-bottom:4px;<dtml-if bgcolor_border>background-color: <dtml-var "get_colormap().get(bgcolor_border,'black')">;</dtml-if>">
+                 <dtml-var element_icon>
+                </div>
+	        <div class="ZMSTeaserContainer" style="margin-bottom:4px;<dtml-if bgcolor_border>background-color: <dtml-var "get_colormap().get(bgcolor_border,'black')">;</dtml-if>">
+                 <dtml-var element_icon>
+                </div>
+               </div>
+	      </td>
+	      <!-- ### Border-Style 3= NONE -->
+	      <td valign="top">
+	        <input class="form-radio" type="radio" name="attr_borderstyle:int" value="3"
+	          <dtml-if "getObjProperty('attr_borderstyle',REQUEST)==3">
+	            checked="checked"
+	          </dtml-if>
+	        >
+	      </td>
+	      <td valign="top" class="form-text"><dtml-var "getLangStr('OPT_AB_NONE',manage_lang)">&nbsp;</td>
+	      <td valign="top">
+	       <div id="Teaser" style="width:30px;">
+                <dtml-var element_icon>
+                <dtml-var element_icon>
+                <dtml-var element_icon>
+               </div>
+	      </td>
+
+	</dtml-let>
+      </tr>
+      </table>
+    </td>
+  </tr>
+  </table>
+
+<!-- ### Background-Colors -->
+
+<!-- BGCOLOR.HEADLINE -->
+<dtml-var "f_headline(_,_,headline=getLangStr('ATTR_BGCOLORS',manage_lang))">
+
+<!-- BGCOLOR.INPUTS -->
+<table cellspacing="0" cellpadding="0" border="0" width="100%">
+<colgroup>
+ <col width="20%" />
+ <col width="80%" />
+</colgroup>
+ <dtml-in "['attr_bgcolor_border','attr_bgcolor_title','attr_bgcolor_text']">
+  <dtml-let attr=sequence-item lang_str="getLangStr(attr.upper(),manage_lang)">
+   <tr valign="middle">
+    <td class="form-label"><dtml-var lang_str></td>
+    <td class="form-element"><dtml-var "getObjInput(attr,REQUEST)"></td>
+   </tr>
+  </dtml-let>
+ </dtml-in>
+</table>
+
+<table cellspacing="0" cellpadding="1" border="0" width="100%">
+<colgroup>
+ <col width="20%" />
+ <col width="80%" />
+</colgroup>
+
+<!-- ### Meta-Attributes -->
+<dtml-var "f_metaInputFields(_,_,fmName='form0',my_meta_type=this().meta_type,noSubmitBtn=_.len(getChildNodes(REQUEST,['ZMSLinkElement']))==0)">
+
+</table>
+
+<!-- ### Buttons -->
+<dtml-var f_submitBtn>
+
+</form>
+
+<dtml-var f_eo_area>
+<dtml-var manage_page_footer>

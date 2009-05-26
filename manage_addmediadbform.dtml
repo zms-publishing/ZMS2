@@ -1,0 +1,43 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='MediaDb',
+           help_product='ZMS',
+           help_topic=''
+	   )">
+
+<p class="form-help">
+A MediaDb is used to store images and files on the server's file system.
+</p>
+
+<form action="manage_addMediaDb" method="post">
+<table cellspacing="0" cellpadding="2" border="0">
+  <dtml-call expr="REQUEST.set('location',Control_Panel.Database.db_name())">
+  <dtml-if "location.rfind('/')>0">
+    <dtml-call expr="REQUEST.set('location',location[:location.rfind('/')+1])">
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('location',location[:location.rfind('\\')+1])">
+  </dtml-if>
+  <dtml-call expr="REQUEST.set('location',location+'mediadb')">
+  <tr valign="middle">
+    <td align="left">
+    <div class="form-label">
+    Location
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="location:required" size="40" value="<dtml-var location>"/>
+    </td>
+  </tr>
+  <tr valign="middle">
+    <td align="left">
+    </td>
+    <td align="left" class="form-element">
+     <input class="form-element" type="submit" name="submit" value=" Add " />
+    </div>
+    </td>
+  </tr>
+</table>
+</form>
+
+<dtml-var manage_page_footer>

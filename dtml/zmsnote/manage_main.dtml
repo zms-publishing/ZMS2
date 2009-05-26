@@ -1,0 +1,38 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('CAPTION_EDIT',manage_lang)%display_type(REQUEST)"></title>
+</head>
+<dtml-var "manage_tabs(_,_,my_manage_languages=1)">
+<dtml-var f_bo_area>
+<dtml-var checkout>
+
+<dtml-unless fmName><dtml-call "REQUEST.set('fmName', 'form0')"></dtml-unless>
+<form name="<dtml-var fmName>" action="manage_changeProperties" method="post" enctype="multipart/form-data">
+<dtml-let f_submitInputFieldsTable="_.True"><dtml-var f_submitInputFields></dtml-let>
+
+<tr valign="top">
+ <td colspan="2" class="zmiNeutralColorMedium0">
+  <table cellspacing="0" cellpadding="0" border="0">
+  <tr valign="middle">
+    <!-- ### Character-Format (Bold, Italic, Underline, etc.) -->
+    <td nowrap="nowrap"><dtml-var "f_selectCharformat(_,_,fmName=fmName,elName='text_%s'%lang)"></td>
+  </tr>
+  </table>
+ </td>
+</tr>
+<!-- ### Text -->
+<tr>
+ <td align="center" colspan="2"><dtml-var "getObjInput('text',REQUEST)"></td>
+</tr>
+
+<!-- ### Meta-Attributes -->
+<dtml-var "f_metaInputFields(_,_,fmName=fmName,my_meta_type=this().meta_type)">
+
+</table>
+
+<!-- ### Buttons -->
+<dtml-var f_submitBtn>
+
+</form>
+
+<dtml-var f_eo_area>
+<dtml-var manage_page_footer>

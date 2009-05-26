@@ -1,0 +1,330 @@
+<dtml-call "REQUEST.RESPONSE.setHeader('Content-Type','text/css')">
+<dtml-if "isDirectEdit( REQUEST)">
+<dtml-var f_css_sys>
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- [DirectEdit2.0]
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+form.DirectEdit
+	{
+	}
+	
+a.DirectEdit:link, a.DirectEdit:visited
+	{
+	background-color: white;
+	}
+
+a.DirectEdit:hover, a.DirectEdit:active
+	{
+	background-color: yellow;
+	}
+
+div.DirectEditManageForm
+	{
+ 	border: 1px solid black; 
+ 	background-color: black;
+ 	width: 749px; 
+ 	}
+
+div.DirectEditManageForm div.zmiNeutralColorMedium0
+	{
+ 	padding: 10px;
+	}
+
+div.DirectEditManageForm div.zmiNeutralColorMedium0 div.zmiNeutralColorLight0
+	{
+ 	padding: 4px;
+	}
+
+div.DirectEditActionList
+	{
+	font-size:xx-small;
+ 	border: 1px solid black; 
+ 	background-color: white;
+ 	}
+
+div.DirectEditActionList div.action,
+div.DirectEditActionList div.action a:link, div.DirectEditActionList div.action a:visited
+	{
+	white-space: nowrap;
+	font-size:xx-small;
+	color: black;
+	background-color: white;
+	text-decoration: none;
+	}
+
+div.DirectEditActionList div.action
+	{
+	border: 1px solid white;
+	}
+
+div.DirectEditActionList div.actionActive,
+div.DirectEditActionList div.actionActive a:hover, div.DirectEditActionList div.actionActive a:active
+	{
+	white-space: nowrap;
+	font-size:xx-small;
+	color: black;
+	background-color: silver;
+	text-decoration: none;
+	}
+
+div.DirectEditActionList div.actionActive
+	{
+	border: 1px dotted gray;
+	}
+
+</dtml-if>
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- Body
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+ 
+body.print 
+	{ 
+	background-color:#fff; 
+	}
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- [WAI] ZMSLinkContainer
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+div.ZMSLinkContainer
+	{
+	background-color: #EEEEEE;
+	}
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- [WAI] ZMSFile
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+div.ZMSFile div.title a:link,
+div.ZMSFile div.title a:visited,
+div.ZMSFile div.title
+	{
+	font-weight:bold;
+	font-size:x-small;
+	text-decoration:none;
+	color:black;
+	}
+
+div.ZMSFile div.text
+	{
+	font-size:xx-small;
+	}
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- [WAI] ZMSLinkElement
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+div.ZMSLinkElement
+	{
+	background-color: #EEEEEE;
+	padding: 2px;
+	}
+
+div.ZMSLinkElement div.title a:link,
+div.ZMSLinkElement div.title a:visited,
+div.ZMSLinkElement div.title
+	{
+	font-weight:bold;
+	font-size:x-small;
+	text-decoration:none;
+	color:black;
+	}
+
+div.ZMSLinkElement div.text
+	{
+	font-size:xx-small;
+	}
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- [WAI] ZMSGraphic
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+div.ZMSGraphic 
+	{ 
+	background-color:transparent; 
+	margin: 4px;
+	}
+
+div.ZMSGraphic.left 
+	{
+	text-align:left;
+	}
+	
+div.ZMSGraphic.right 
+	{
+	text-align:right;
+	}
+
+div.ZMSGraphic.center 
+	{
+	text-align:center;
+	}
+
+div.ZMSGraphic.floatleft
+	{ 
+	float:left;
+	}
+
+div.ZMSGraphic.floatright
+	{ 
+	float:right;
+	}
+
+div.ZMSGraphic.center
+	{ 
+	text-align:center;
+	}
+
+div.graphic.alignleft
+	{
+	float:left;
+	text-align:right;
+	}
+	
+div.graphic.alignright
+	{
+	float:right;
+	text-align:right;
+	}
+	
+div.ZMSGraphic div.text
+	{
+	padding: 4px;
+	}
+	
+a.zoom img.zoom
+	{
+	width: 23px;
+	height: 21px;
+	background: url(<dtml-var MISC_ZMS>zoom.gif);
+	}
+
+a.download img.download
+	{
+	width: 23px;
+	height: 21px;
+	background: url(<dtml-var MISC_ZMS>download.gif);
+	}
+
+a.superzoom img.superzoom
+	{
+	width: 23px;
+	height: 21px;
+	background: url(<dtml-var MISC_ZMS>superzoom.gif);
+	}
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- [WAI] ZMSTables
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+table.ZMSTable th 
+	{ 
+	background-color:#DDEFFC; 
+	}
+	
+table.ZMSTable td { 
+	background-color:#EEEEEE; 
+	}
+
+body.print table.ZMSTable th, 
+body.print table.ZMSTable td
+	{ 
+	background-color:transparent; 
+	}	
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- [WAI] ZMSTeaser
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+div#teaser
+	{
+	width:150px;
+	font-size:x-small;
+	}
+
+div.ZMSTeaserContainer
+	{
+	padding:1px;
+	margin-bottom:10px;
+	}
+
+div.ZMSTeaserElement
+	{
+
+	}
+
+div.ZMSTeaserElement img.title
+	{
+	border: none;
+	}
+
+div.ZMSTeaserElement div.title a:link,
+div.ZMSTeaserElement div.title a:visited,
+div.ZMSTeaserElement div.title
+	{
+	font-weight:bold;
+	text-decoration:none;
+	color:black;
+	padding: 2px;
+	display: block;
+	}
+
+div.ZMSTeaserElement div.text a:link,
+div.ZMSTeaserElement div.text a:visited,
+div.ZMSTeaserElement div.text
+	{
+	}
+
+<dtml-in "getMetaobjIds()"
+ ><dtml-let metaObjId=sequence-item metaObj="getMetaobj(metaObjId)"
+  ><dtml-in "metaObj['attrs']"
+   ><dtml-let objAttr=sequence-item
+    ><dtml-if "objAttr['type']=='method' and objAttr['id']=='f_css_defaults'"
+     ><dtml-try
+     ><dtml-var "dt_html(objAttr['custom'],REQUEST)"
+     ><dtml-except
+     >/* >>>>>>>>>> ERROR in <dtml-var metaObjId> - <dtml-var error_type>: <dtml-var error_value> <<<<<<<<<<</dtml-try
+    ></dtml-if
+   ></dtml-let
+  ></dtml-in
+ ></dtml-let
+></dtml-in>
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- [WAI] Misc
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+div.ZMSObject.new, div.ZMSObject.modified {
+  border: 2px dashed blue;
+  background-color: #F0F0FF;
+} 
+div.ZMSObject.deleted {
+  border: 2px dashed red;
+  background-color: #FFF0F0;
+  color: red;
+  text-decoration: line-through;
+} 
+
+span.unicode { 
+  font-family:"Arial Unicode MS", Arial, Helvetica, sans-serif; 
+}
+
+span.highlight { 
+  background-color: yellow;
+  color: red;
+  font-weight: bold;
+  border: 1px dashed blue; 
+}
+

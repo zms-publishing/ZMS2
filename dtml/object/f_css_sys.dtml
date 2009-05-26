@@ -1,0 +1,611 @@
+<dtml-call "REQUEST.RESPONSE.setHeader('Cache-Control','public, max-age=3600')">
+<dtml-call "REQUEST.RESPONSE.setHeader('Content-Type','text/css')">
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- [ZMI]
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+body.zmi {
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	background: #EFEFEF;
+<dtml-elif "getConfProperty('ZMS.skin','')=='Simple'">
+	background: white;
+<dtml-else>
+	background: #eee url(<dtml-var MISC_ZMS>bggradient.gif) bottom left fixed repeat-x;
+</dtml-if>
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+body.zmi div.zmi {
+	width: 800px; 
+}
+
+h1 {
+	font-size: 1.5em; 
+	line-height: 2.2em; 
+}
+
+h2 {
+	font-size: 1.2em; 
+	line-height: 1.5em; 
+}
+
+h3 {
+	font-size: 1.1em; 
+	line-height: 1.4em; 
+}
+
+a.zmi {
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	text-decoration: underline;
+}
+a.zmi, a.zmi:link, a.zmi:visited {
+	font-family: Arial, Helvetica, sans-serif;
+<dtml-if "getConfProperty('ZMS.skin','')=='Simple'">
+	color: blue;
+<dtml-else>
+	color: black;
+</dtml-if>
+}
+a.zmi:hover, a.zmi:active {
+	font-family: Arial, Helvetica, sans-serif;
+<dtml-if "getConfProperty('ZMS.skin','')=='Simple'">
+	color: blue;
+<dtml-else>
+	color: #FF9900;
+</dtml-if>
+}
+
+.zmiBlank { background-image:url(<dtml-var spacer_gif>); }
+.zmiTableRowOdd { background-color:#FAFAFA; }
+.zmiTableRowEven { background-color:#EFEFEF; }
+
+.zmiNeutralColorTrans { font-family: Arial, sans-serif; background-color:#00FF00; } 
+.zmiNeutralColorWhite { font-family: Arial, sans-serif; background-color:white; }
+.zmiNeutralColorBlack { font-family: Arial, sans-serif; background-color:black; }
+.zmiNeutralColorStrong0 { font-family: Arial, sans-serif; background-color:#999999; background-image:url(<dtml-var spacer_gif>); }
+.zmiNeutralColorMedium0 { font-family: Arial, sans-serif; 
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	background-image:url(<dtml-var MISC_ZMS>mac_box_mtl_ctr.gif);
+<dtml-elif "getConfProperty('ZMS.skin','')=='Simple'">
+	background-color:#F4F4F4; 
+<dtml-else>
+	background-color:#CCCCCC; 
+</dtml-if>
+} 
+.zmiNeutralColorLight0 { font-family: Arial, sans-serif; 
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	background-color:white; 
+<dtml-elif "getConfProperty('ZMS.skin','')=='Simple'">
+	background-color:white; 
+<dtml-else>
+	background-color:#F2F3EE; 
+</dtml-if>
+} 
+.zmiNeutralColorLight1 { font-family: Arial, sans-serif;
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	background-color:#F4F4F4;
+<dtml-else>
+	background-color:#E2E3DE;
+</dtml-if>
+} 
+.zmiTeaserColor { font-family: Arial, sans-serif; 
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	background-color:#F4F4F4;
+<dtml-else>
+	background-color:#E2E3DE;
+</dtml-if>
+} 
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- Footer
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+.zmiBottom {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size:11px;
+	color: white;
+}
+
+a.zmiBottom:link, a.zmiBottom:visited {
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	font-size: 11px;
+	color: white;
+	text-decoration: underline;
+}
+
+a.zmiBottom:hover, a.zmiBottom:active {
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	font-size: 11px;
+	color: #FF9900;
+	text-decoration: underline;
+}
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- Headline
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+.zmiHeadline {
+	line-height: 24px;
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	background-image:url(<dtml-var MISC_ZMS>mac_bg_headline.gif);
+	border: solid 1px #CCCCCC;
+<dtml-elif "getConfProperty('ZMS.skin','')=='Simple'">
+	background-color: #D6DCFE;
+	border: solid 2px #CCCCCC;
+<dtml-else>
+	background-color: #bbb;
+	border: 0px solid #999;
+	height:24px;
+	padding:0px;
+</dtml-if>
+}
+ 
+.zmiFtHeadline {
+	padding-left: 3px;
+	padding-right: 3px;
+	line-height: 25px;
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	font-size: 11px;
+	font-weight: bold;
+	color: #646464;
+<dtml-elif "getConfProperty('ZMS.skin','')=='Simple'">
+	font-size: 14px;
+	font-weight: bold;
+<dtml-else>
+	font-size: 12px;
+	font-weight: bold;
+	text-transform: uppercase;
+</dtml-if>
+}
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- Button
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+td.zmiNeutralColorMedium0 img.button {
+	width: 20px;
+	height: 20px;
+}
+img.vbutton, a.vbutton img  {
+	width: 10px;
+	height: 20px;
+}
+img.hbutton, a.hbutton img  {
+	width: 20px;
+	height: 8px;
+}
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+img.button, a.button:link img, a.button:visited img,
+img.vbutton, a.vbutton:link img, a.vbutton:visited img,
+img.hbutton, a.hbutton:link img, a.hbutton:visited img  {
+	background-color: #CCCCCC;
+        filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr='#D4D4D4', endColorStr='#F4F4F4', gradientType='0')
+	border-top: solid 1px #EFEFEF;
+	border-left: solid 1px #EFEFEF;
+	border-right: solid 1px #888888;
+	border-bottom: solid 1px #888888;
+}
+a.button:hover img, a.button:active img, 
+a.vbutton:hover img, a.vbutton:active img,
+a.hbutton:hover img, a.hbutton:active img  {
+	background-color: #F4F2F4;
+        filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr='#DDDDDD', endColorStr='#FFFFFF', gradientType='0')
+	border-top: solid 1px white;
+	border-left: solid 1px white;
+	border-right: solid 1px black;
+	border-bottom: solid 1px black;
+}
+<dtml-else>
+img.button, a.button:link img, a.button:visited img,
+img.vbutton, a.vbutton:link img, a.vbutton:visited img,
+img.hbutton, a.hbutton:link img, a.hbutton:visited img  {
+	background-color: #CCCCCC;
+	border-top: solid 1px #E6E4E6;
+	border-left: solid 1px #E6E4E6;
+	border-right: solid 1px #B6B4B6;
+	border-bottom: solid 1px #B6B4B6;
+}
+a.button:hover img, a.button:active img, 
+a.vbutton:hover img, a.vbutton:active img,
+a.hbutton:hover img, a.hbutton:active img  {
+	background-color: #E8E8E8;
+	border-top: solid 1px white;
+	border-left: solid 1px white;
+	border-right: solid 1px black;
+	border-bottom: solid 1px black;
+}
+</dtml-if>
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- Separator
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+.zmiHSep {
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	background-color: #919191;
+	border-bottom: solid #D4D4D4 1px;
+<dtml-elif "getConfProperty('ZMS.skin','')=='Simple'">
+	background-color: #F4F4F4;
+	border-bottom: solid #E2E0E0 1px;
+<dtml-else>
+	background-color: #B6B4B6;
+	border-bottom: solid #E6E4E6 1px;
+</dtml-if>
+}
+
+.zmiVSep {
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	background-color: #919191;
+	border-right: solid #D4D4D4 1px;
+<dtml-elif "getConfProperty('ZMS.skin','')=='Simple'">
+	background-color: #F4F4F4;
+	border-right: solid #E2E0E0 1px;
+<dtml-else>
+	background-color: #B6B4B6;
+	border-right: solid #E6E4E6 1px;
+</dtml-if>
+  height: 22px;
+  width: 1px;
+}
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- Tabs
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+.zmiTabBg {
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	background-image:url(<dtml-var MISC_ZMS>mac_nv_bg.gif);
+<dtml-elif "getConfProperty('ZMS.skin','')=='Simple'">
+	border-bottom: solid #D6DCFE 2px;
+</dtml-if>
+}
+
+.zmiTab0 a.zmi, .zmiTab0 a.zmi:link, .zmiTab0 a.zmi:visited, .zmiTab0 a.zmi:active, .zmiTab0 a.zmi:hover, .zmiTab0 a.zmi:focus,
+.zmiTabSub0 a.zmi, .zmiTabSub0 a.zmi:link, .zmiTabSub0 a.zmi:visited, .zmiTabSub0 a.zmi:active, .zmiTabSub0 a.zmi:hover, .zmiTabSub0 a.zmi:focus {
+	text-decoration: none;
+	font-weight: normal;
+}
+
+.zmiTab1 a.zmi, .zmiTab1 a.zmi:link, .zmiTab1 a.zmi:visited, .zmiTab1 a.zmi:active, .zmiTab1 a.zmi:hover, .zmiTab1 a.zmi:focus,
+.zmiTabSub1 a.zmi, .zmiTabSub1 a.zmi:link, .zmiTabSub1 a.zmi:visited, .zmiTabSub1 a.zmi:active, .zmiTabSub1 a.zmi:hover, .zmiTabSub1 a.zmi:focus {
+	text-decoration: none;
+	font-weight: bold;
+}
+
+/* zmiNeutralColorLight1 */
+.zmiTab0 {
+	float: left;
+	text-align: center;
+	vertical-align: middle;
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+        line-height: 22px;
+	height: 22px;
+	width: 75px;
+	background-image:url(<dtml-var MISC_ZMS>mac_nv_tabs0.gif);
+<dtml-elif "getConfProperty('ZMS.skin','')=='Simple'">
+	padding-left: 4px; 
+	padding-right: 4px;
+	background-color: #EEEEF8;
+	border-left: solid white 3px;
+	border-right: solid #CCCCCC 1px;
+<dtml-else>
+	padding-left: 4px; 
+	padding-right: 4px;
+	background-color:#E2E3DE;
+	margin: 0px 1px 2px 1px;
+</dtml-if>
+<dtml-if "manage_lang=='chi'">
+	padding-top: 1px;
+</dtml-if>
+}
+
+/* zmiNeutralColorMedium0 */
+.zmiTab1 {
+	float: left;
+	text-align: center;
+	vertical-align: middle;
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+        line-height: 22px;
+	height: 22px;
+	width: 75px;
+	background-image:url(<dtml-var MISC_ZMS>mac_nv_tabs1.gif);
+<dtml-elif "getConfProperty('ZMS.skin','')=='Simple'">
+	padding-left: 4px; 
+	padding-right: 4px;
+	background-color: #D6DCFE;
+	border-left: solid white 3px;
+	border-right: solid #CCCCCC 1px;
+<dtml-else>
+	padding-left: 4px; 
+	padding-right: 4px;
+	background-color: #CCCCCC;
+	margin: 0px 1px 0px 1px;
+	border-bottom: solid #CCCCCC 2px;
+</dtml-if>
+<dtml-if "manage_lang=='chi'">
+	padding-top: 1px;
+</dtml-if>
+}
+
+.zmiTabBtn0 a.zmi:hover, .zmiTabBtn0 a.zmi:active {
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+<dtml-else>
+	background-color:#E2E3DE;
+</dtml-if>
+}
+
+.zmiTabBtn0 {
+}
+
+.zmiTabBtn1 {
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	background-image:url(<dtml-var MISC_ZMS>mac_tab.gif);
+	border-top: solid 1px #919191;
+	border-left: solid 1px #919191;
+	border-right: solid 1px #F4F4F4;
+	border-bottom: solid 1px #F4F4F4;
+<dtml-else>
+	border-top: solid #CCCCCC 1px;
+	border-left: solid #CCCCCC 1px;
+	border-right: solid #CCCCCC 1px;
+	background-color:#E2E3DE;
+</dtml-if>
+}
+
+.zmiFtTab {
+	white-space: nowrap;
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	font-size: 10px;
+<dtml-elif "getConfProperty('ZMS.skin','')=='Simple'">
+	font-size: 11px;
+<dtml-else>
+	font-size: 11px;
+</dtml-if>
+}
+
+/* zmiNeutralColorLight1 */
+.zmiTabSub0 {
+	float: left;
+	text-align: center;
+	vertical-align: middle;
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	line-height: 22px;
+	height: 22px;
+	width: 75px;
+	vertical-align: middle;
+	background-image:url(<dtml-var MISC_ZMS>mac_nv_tabsub0.gif);
+<dtml-elif "getConfProperty('ZMS.skin','')=='Simple'">
+	padding-left: 4px; 
+	padding-right: 4px;
+	background-color: #EEEEF8;
+	border-left: solid white 3px;
+	border-right: solid #CCCCCC 1px;
+<dtml-else>
+	padding-left: 4px; 
+	padding-right: 4px;
+	background-color:#E2E3DE;
+	margin: 0px 1px 2px 1px;
+</dtml-if>
+<dtml-if "manage_lang=='chi'">
+	padding-top: 1px;
+</dtml-if>
+}
+
+/* zmiNeutralColorMedium0 */
+.zmiTabSub1 {
+	float: left;
+	text-align: center;
+	vertical-align: middle;
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+	line-height: 22px;
+	height: 22px;
+	width: 75px;
+	vertical-align: middle;
+	background-image:url(<dtml-var MISC_ZMS>mac_nv_tabsub1.gif);
+<dtml-elif "getConfProperty('ZMS.skin','')=='Simple'">
+	padding-left: 4px; 
+	padding-right: 4px;
+	background-color:white; 
+	border-left: solid white 3px;
+	border-right: solid #CCCCCC 1px;
+<dtml-else>
+	padding-left: 4px; 
+	padding-right: 4px;
+	background-color:#F2F3EE; 
+	margin: 0px 1px 0px 1px;
+	border-bottom: solid #F2F3EE 2px;
+</dtml-if>
+<dtml-if "manage_lang=='chi'">
+	padding-top: 1px;
+</dtml-if>
+}
+
+.zmiDisplayIcon {
+	margin: 2px;
+}
+
+.form-submit {
+	font-family: Verdana, Helvetica, sans-serif;
+	color: black;
+	margin: 2px;
+}
+
+.form-disabled {
+	font-family: Verdana, Helvetica, sans-serif;
+	font-size: 12px;
+	color: gray;
+}
+
+.form-small * {
+	font-size: 11px;
+}
+
+.form-small {
+	font-size: 11px;
+	font-family: Arial Unicode MS, Arial, Helvetica, sans-serif;
+	color: black;
+}
+
+.form-label-disabled {
+	font-family: Verdana, Helvetica, sans-serif; 
+	font-weight: bold;
+	font-size: 12px; 
+	color: gray;
+}
+
+.form-small-disabled {
+	font-family: Arial Unicode MS, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: gray;
+}
+
+.form-fixed {
+	font-family: Courier New, Courier, monospace;
+	font-size: 11px;
+	color: black;
+	background-color: #F4F4F4;
+}
+
+.form-fixed-disabled {
+	font-family: Courier New, Courier, monospace;
+	font-size: 11px;
+	color: gray;
+	background-color: #F4F4F4;
+}
+
+.form-radio,
+.form-checkbox {
+	border: none;
+}
+
+<dtml-if "getConfProperty('ZMS.skin','')=='Mac'">
+.form-label,
+.form-optional,
+.form-text,
+.form-small,
+.form-element,
+.form-submit {
+	font-weight: normal;
+	color: #484848;
+}
+.form-submit {
+	background-image:url(<dtml-var MISC_ZMS>mac_tab.gif);
+	border-top: solid 1px #D4D4D4;
+	border-left: solid 1px #D4D4D4;
+	border-right: solid 1px #919191;
+	border-bottom: solid 1px #919191;
+}
+</dtml-if>
+
+div.note {
+	font-size: 11px;
+	background-color: #FFFFD0;
+	color: black;
+	border: 1px solid black;
+	margin-bottom: 6px;
+	margin-top: 6px;
+	padding: 4px;
+	width: 100%;
+}
+
+p.teaser, span.teaser {
+	font-size: 11px;
+	margin-bottom: 2px;
+	margin-top: 2px;
+	margin-left: 2px;
+	margin-right: 2px;
+	padding: 2px;
+	width: 100%;
+}
+
+p.title, span.title {
+	margin-bottom: 2px;
+	margin-top: 2px;
+	margin-left: 2px;
+	margin-right: 2px;
+	padding: 2px;
+	width: 100%;
+}
+
+div.img-border {
+	border: 1px solid black;
+}
+ 
+form {
+	border: none;
+	margin: 0;
+}
+
+<dtml-if "getConfProperty('ZMS.skin','')=='Simple'">
+
+textarea:focus, textarea:active,
+input:focus, input:active,
+select:focus, select:active {
+	background-color: #FFFFE0;
+}
+
+<dtml-else>
+
+textarea {
+	border: 1px solid #666666;  
+	color: black;
+	width: 88%;
+	padding: 0.1em;
+}
+
+input {
+	font: 100% Verdana, Helvetica, Arial, sans-serif;
+	border: 1px solid #666666;  
+	color: black;
+	vertical-align: middle;
+	margin-bottom: 1px; /* IE bug fix */
+	padding: 0.1em;
+}
+
+select {
+	font: 100% Verdana, Helvetica, Arial, sans-serif;
+	border: 1px solid #666666;  
+	color: black;
+	vertical-align: top;
+}
+
+</dtml-if>
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- [ZMI] SQL DB
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+input.lazy {
+  width:26em;
+}
+
+/* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ * +- [ZMI] Sitemap
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+ */
+
+body#zmiSitemap {
+	background-color:#ffffff;
+	margin:0px;
+	padding:0px;
+	border:0px;
+}
+
+body#zmiSitemap div.form-small {
+	white-space:nowrap;
+	padding:0px;
+} 

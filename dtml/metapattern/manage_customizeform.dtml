@@ -1,0 +1,146 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('TAB_CONFIGURATION',manage_lang)"> <dtml-var "display_type(REQUEST)"></title>
+
+<dtml-if "not REQUEST.has_key('id') or not REQUEST['id']">
+ <dtml-call "REQUEST.set('id','')">
+</dtml-if>
+
+<script language="JavaScript">
+<!--//
+
+  function onFormSubmit(fm) {
+    var b = true;
+    if (self.btnClicked=="<dtml-var "getLangStr('BTN_DELETE',manage_lang)" html_quote>") {
+      b = b && confirm("<dtml-var "getLangStr('MSG_CONFIRM_DELOBJ',manage_lang)">");
+    }
+    if (self.btnClicked=="<dtml-var "getLangStr('BTN_IMPORT',manage_lang)" html_quote>") {
+      b = b && !disallowBlank(fm.elements['file'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_FILE',manage_lang)">",false);
+    }
+    return b;
+  }
+
+//-->
+</script>
+
+</head>
+
+<dtml-var manage_tabs>
+<dtml-var "manage_tabs_sub(_,_,my_manage_options=customize_manage_options(lang,manage_lang,REQUEST))">
+
+<dtml-var f_bo_area>
+
+<div class="form-text"><dtml-var "getLangStr('MSG_METAPATTERN',manage_lang)"></div><br />
+  
+ <form name="form0" action="manage_changeMetapattern" method="post" enctype="multipart/form-data" onsubmit="return onFormSubmit(this)" style="margin:8px">
+ <input type="hidden" name="lang" value="<dtml-var lang>">
+ <input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+ <input type="hidden" name="preview" value="preview">
+
+  <table cellspacing="1" cellpadding="0" border="0" class="zmiNeutralColorStrong0">
+
+  <dtml-if "getMetapatternIds(REQUEST)">
+  
+  <!-- Header -->
+  <tr>
+   <td colspan="6"><dtml-var "f_headline(_,_,headline=getLangStr('TAB_EDIT',manage_lang))"></td>
+  </tr>
+  <tr class="zmiNeutralColorStrong0">
+   <td>&nbsp;</td>
+   <td><div class="form-label"><dtml-var "getLangStr('ATTR_ID',manage_lang)"></div></td>
+   <td><div class="form-label"><dtml-var "getLangStr('ATTR_TITLE',manage_lang)"></div></td>
+   <td><div class="form-label"><dtml-var "getLangStr('ATTR_TYPE',manage_lang)"></div></td>
+   <td><div class="form-label"><dtml-var "getLangStr('ATTR_SOURCE',manage_lang)"></div></td>
+   <td>&nbsp;</td>
+  </tr>
+  
+  <dtml-in "getMetapatternIds(REQUEST)">
+   <dtml-let oMetapattern="getMetapattern(_['sequence-item'],REQUEST)">
+    <dtml-if "REQUEST['id']==oMetapattern['id']">
+     <tr valign="middle" class="zmiNeutralColorMedium0">
+        <td rowspan="2" valign="top"><input class="form-element" type="radio" name="id" value="<dtml-var "oMetapattern['id']">" checked="checked" onclick="radioOnClick(this,'<dtml-var URL0>');"></td>
+        <td class="form-element"><dtml-var "getTextInput('form0','new_id',10,oMetapattern['id'])"></td>
+        <td class="form-element"><dtml-var "getTextInput('form0','new_title',15,oMetapattern['title'])"></td>
+        <td class="form-text">&nbsp;<dtml-var "display_type(REQUEST,oMetapattern['type'])">&nbsp;</td>
+        <td class="form-element" align="center">&nbsp;
+         <dtml-if "oMetapattern['src']">
+          <a href="<dtml-var "oMetapattern['src'].relative_obj_path()">/manage_main?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>" target="_blank" class="zmi">{$<dtml-var "oMetapattern['src'].relative_obj_path()">}</a>
+         <dtml-else>
+          <dtml-var "getLangStr('ATTR_NONE',manage_lang)">
+         </dtml-if>
+        &nbsp;</td>
+        <td class="form-element">
+         <input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_CHANGE',manage_lang)" html_quote>" onclick="self.btnClicked=this.value;">
+         <input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_DELETE',manage_lang)" html_quote>" onclick="self.btnClicked=this.value;">
+        </td>
+     </tr>
+     <!-- Export Metapattern -->
+     <tr class="zmiNeutralColorMedium0">
+      <td colspan="5">
+       <table cellspacing="0" cellpadding="1" border="0" width="100%">
+       <tr class="zmiNeutralColorStrong0">
+        <td class="form-small"><b>&nbsp;<dtml-var "getLangStr('ATTR_EXPORT',manage_lang)">&nbsp;</b></td>
+       </tr>
+       <tr valign="middle">
+        <td class="form-small">
+         <a href="manage_changeMetapattern?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&id=<dtml-var "REQUEST['id']">&btn=<dtml-var "getLangStr('BTN_EXPORT',manage_lang)" html_quote>" class="zmi"><img src="<dtml-var MISC_ZMS>zexpdoc.gif" title="ZPAT" border="0" align="absmiddle" />ZPAT</a>
+        </td>
+       </tr>
+       </table>
+      </td>
+     </tr>
+    <dtml-else>
+     <dtml-if "REQUEST.get('id','')==''">
+      <tr class="<dtml-if sequence-odd>zmiTableRowOdd<dtml-else>zmiTableRowEven</dtml-if>">
+       <td class="form-element"><input class="form-element" type="radio" name="id" value="<dtml-var "oMetapattern['id']">" onclick="radioOnClick(this,'<dtml-var URL0>');"></td>
+       <td class="form-text"><dtml-var "oMetapattern['id']"></td>
+       <td class="form-text"><dtml-var "oMetapattern['title']"></td>
+       <td class="form-text"><dtml-var "display_type(REQUEST,oMetapattern['type'])"></td>
+       <td class="form-element" colspan="2">
+        <dtml-if "oMetapattern['src']">
+         <a href="<dtml-var "oMetapattern['src'].relative_obj_path()">/manage_main?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>" target="_blank" class="zmi">{$<dtml-var "oMetapattern['src'].relative_obj_path()">}</a>
+        <dtml-else>
+         <dtml-var "getLangStr('ATTR_NONE',manage_lang)">
+        </dtml-if>
+       </td>
+      </tr>
+     </dtml-if>
+    </dtml-if>
+   </dtml-let>
+  </dtml-in>
+  </dtml-if>
+
+  <!-- Import Metapattern -->
+  <dtml-if "REQUEST.get('id','')==''">
+   <tr>
+    <td colspan="6"><dtml-var "f_headline(_,_,headline=getLangStr('BTN_IMPORT',manage_lang))"></td>
+   </tr>
+   <tr class="zmiNeutralColorLight0">
+    <td colspan="6">
+      <table cellspacing="0" cellpadding="1" border="0">
+      <tr valign="middle">
+        <td>
+         <table cellspacing="0" cellpadding="0" border="0">
+         <tr valign="middle">
+          <td><img src="<dtml-var MISC_ZMS>zexpdoc.gif" title="ZPAT" border="0"></td>
+          <td><div class="form-label"><dtml-var "getLangStr('ATTR_FILE',manage_lang)">&nbsp;</div></td>
+          <td><div class="form-text">(ZPAT)&nbsp;</div></td>
+         </tr>
+         </table>
+        </td>
+        <td><input class="form-element" name="file" type="file" size="25"></td>
+      </tr>
+      <tr valign="middle">
+       <td>&nbsp;</td>
+       <td><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_IMPORT',manage_lang)" html_quote>" onclick="self.btnClicked=this.value;"></td>
+      </tr>
+      </table>
+    </td>
+   </tr>
+  </dtml-if>
+
+  </table>
+ </form>
+
+<dtml-var f_eo_area>
+
+<dtml-var manage_page_footer>

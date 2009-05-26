@@ -1,0 +1,74 @@
+<!-- ### Image -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_IMAGE',manage_lang)"></div></td>
+ <td><dtml-var "getObjInput('img',REQUEST)"></td>
+</tr>
+
+<!-- ### HighRes -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_IMAGE',manage_lang)">&nbsp;(<dtml-var "getLangStr('ATTR_HIRES',manage_lang)">)</div></td>
+ <td><dtml-var "getObjInput('imghires',REQUEST)">
+</tr>
+
+<!-- ### SuperRes -->
+<dtml-if "getConfProperty('InstalledProducts.pil.superres',0)==1">
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_IMAGE',manage_lang)">&nbsp;(<dtml-var "getLangStr('ATTR_SUPERRES',manage_lang)">)</div></td>
+ <td><dtml-var "getObjInput('imgsuperres',REQUEST)">
+</tr>
+</dtml-if>
+
+<!-- ### Special Attributes -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_ATTRS_SPEC',manage_lang)"></div></td>
+ <td><dtml-var "getObjInput('img_attrs_spec',REQUEST)"></td>
+</tr>
+
+<!-- ### Url -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_URL',manage_lang)"></div></td>
+ <td><dtml-var "getObjInput('attr_url',REQUEST)"></td>
+</tr>
+
+<!-- ### Align -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_IMGALIGN',manage_lang)"></div></td>
+ <td><dtml-var "getObjInput('align',REQUEST)"></td>
+</tr>
+
+<!-- ### SUBMIT -->
+<tr>
+ <td colspan="2"><dtml-var f_submitBtn></td>
+</tr>
+
+<!-- ########### -->
+<!-- ### TEXT    -->
+<!-- ########### -->
+
+<!-- ### Caption -->
+<tr>
+ <td colspan="2" class="form-label"><div class="zmiHeadline"><div class="zmiFtHeadline"><dtml-var "getLangStr('ATTR_CAPTION',manage_lang)"></div></div></td>
+</tr>
+
+<!-- ### Format -->
+<tr>
+ <td height="22" colspan="2" class="zmiNeutralColorMedium0">
+  <table cellspacing="0" cellpadding="0" border="0">
+  <tr valign="middle">
+   <!-- ### Paragraph-Format -->
+   <td><dtml-var f_selectTextformat></td>
+   <!-- ### Character-Format (Bold, Italic, Underline) -->
+   <td><dtml-var "f_selectCharformat(_,_,fmName=fmName,elName='text_%s'%lang)"></td>
+   <!-- ### Align -->
+   <dtml-var f_selectAlign>
+   <!-- ### Displaytype -->
+   <dtml-var f_selectDisplaytype>
+  </tr>
+  </table>
+ </td>
+</tr>
+
+<!-- ### Text -->
+<tr>
+ <td align="center" colspan="2"><dtml-var "getObjInput('text',REQUEST)"></td>
+</tr>

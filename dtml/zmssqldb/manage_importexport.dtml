@@ -1,0 +1,105 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('CAPTION_IMPORTEXPORT',manage_lang)%display_type(REQUEST)"></title>
+<script language="JavaScript">
+<!--//
+
+  function onImportFormSubmit(fm) {
+    var b = true;
+    b = b && !disallowBlank(fm.elements['file'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_FILE',manage_lang)">",false);
+    return b;
+  }
+  
+  function onExportFormSubmit(fm) {
+    processMultiselectsOnFormSubmit();
+    var b = true;
+    b = b && !disallowBlank(fm.elements['ids:list'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_TABLE',manage_lang)">",false);
+    return b;
+  }
+  
+//-->
+</script>
+</head>
+
+<dtml-var "manage_tabs(_,_,my_manage_languages=1)">
+<dtml-var f_bo_area>
+
+<table cellspacing="0" cellpadding="1" border="0" width="100%">
+<colgroup>
+ <col width="20%" />
+ <col width="80%" />
+</colgroup>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   I M P O R T
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+  <form name="importForm" action="manage_import" method="post" onsubmit="return onImportFormSubmit(this)" enctype="multipart/form-data">
+  <input type="hidden" name="lang" value="<dtml-var lang>">
+  <input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+  <input type="hidden" name="preview" value="preview">
+  <tr>
+   <td colspan="2">
+    <dtml-var "f_headline(_,_,headline=getLangStr('ATTR_IMPORT',manage_lang))">
+   </td>
+  </tr>
+  <tr valign="middle">
+   <td><div class="form-label"><dtml-var "getLangStr('ATTR_FILE',manage_lang)"></div></td>
+   <td><input class="form-element" name="file" type="file" size="25"></td>
+  </tr>
+  <tr valign="middle">
+   <td>&nbsp;</td>
+   <td class="form-element"><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_IMPORT',manage_lang)" html_quote>"></td>
+  </tr>
+  <tr>
+   <td>&nbsp;</td>
+  </tr>
+  </form>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   E X P O R T
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+
+  <form name="exportForm" action="pub_export" target="_blank" method="get" onsubmit="return onExportFormSubmit(this)">
+  <input type="hidden" name="lang" value="<dtml-var lang>">
+  <input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+  <tr valign="top">
+   <td colspan="2">
+    <dtml-var "f_headline(_,_,headline=getLangStr('ATTR_EXPORT',manage_lang))">
+   </td>
+  </tr>
+  <tr valign="top">
+   <td><div class="form-label"><dtml-var "getLangStr('ATTR_TABLE',manage_lang)"></div></td>
+   <td>
+    <dtml-call "REQUEST.set('value',[])">
+    <dtml-call "REQUEST.set('optpl',[])">
+    <dtml-in "getEntities()" mapping sort=id>
+     <dtml-call "value.append(id)">
+     <dtml-call "optpl.append([id,id])">
+    </dtml-in>
+    <dtml-var "getSelect(fmName='exportForm', elName='ids:list', value=value, inputtype='multiselect', lang_str=getLangStr('ATTR_TABLE',manage_lang), required=0, optpl=optpl, enabled=1, REQUEST=REQUEST)">
+   </td>
+  <tr valign="top">
+   <td>&nbsp;</td>
+   <td><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_EXPORT',manage_lang)" html_quote>"></td>
+  </tr>
+  <tr>
+   <td>&nbsp;</td>
+  </tr>
+  </form>
+
+</table>
+  
+<dtml-var f_eo_area>
+
+<dtml-var manage_page_footer>

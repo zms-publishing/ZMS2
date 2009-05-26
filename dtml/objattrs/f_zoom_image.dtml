@@ -1,0 +1,29 @@
+<!-- BO f_zoomImage -->
+
+<dtml-call "REQUEST.set( 'lang', REQUEST.form.get( 'lang', REQUEST.get( 'lang')))">
+<html>
+ <head>
+  <title><dtml-var "getLangStr('BTN_ZOOM',lang)"> - [<dtml-var "getLangStr('TYPE_ZMSGRAPHIC',lang)">]</title>
+ </head>
+ <body bgcolor="#ffffff" alink="#990000" vlink="#cc0000" link="#336699" leftmargin="0" topmargin="0" marginheight="0" marginwidth="0">
+  <center><div align="center">
+   <dtml-let key="REQUEST.get('key','')">
+    <dtml-if "meta_type=='ZMSCustom' and getType()=='ZMSRecordSet' and key.find(':')>0">
+     <dtml-let id="key[:key.find(':')]" rowid="_.int(key[key.find(':')+1:])" obj_attr="getObjAttr(id)">
+      <dtml-call "REQUEST.set('res',getObjProperty(getMetaobjAttrIds(meta_id)[0],REQUEST))">
+      <dtml-call "REQUEST.set('row',res[rowid])">
+      <dtml-call "REQUEST.set('f',formatObjAttrValue(obj_attr,row.get(id,''),lang))">
+     </dtml-let>
+     <dtml-else>
+      <dtml-call "REQUEST.set('f',getObjProperty(key,REQUEST))">
+     </dtml-if>
+    </dtml-let>
+   <dtml-if f>
+    <img src="<dtml-var "f.getHref(REQUEST)">" title="" border="0"<dtml-if "f.getWidth()"> width="<dtml-var "f.getWidth()">"</dtml-if><dtml-if "f.getHeight()"> height="<dtml-var "f.getHeight()">"</dtml-if>/>
+   </dtml-if>
+  </div></center>
+ </body>
+</html>
+
+<!-- EO f_zoomImage -->
+

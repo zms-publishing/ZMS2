@@ -1,0 +1,46 @@
+<!-- ### Title.Alt -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_TITLESHORT',manage_lang)"> <sup style="color:red">*</sup></div></td>
+ <td><dtml-var "getObjInput('titleshort',REQUEST)"></td>
+</tr>
+ 
+<!-- ### Title -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_TITLE',manage_lang)"> <sup style="color:red">*</sup></div></td>
+ <td><dtml-var "getObjInput('title',REQUEST)"></td>
+</tr>
+
+<!-- ### Title.Image -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_TITLEIMAGE',manage_lang)"></div></td>
+ <td><dtml-var "getObjInput('titleimage',REQUEST)"></td>
+</tr>
+ 
+<!-- ### Level.Numbering -->
+<dtml-if "'levelnfc' in getObjAttrs().keys()">
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_LEVELNFC',manage_lang)"></div></td>
+ <td><dtml-var "getObjInput('levelnfc',REQUEST)"></td>
+</tr>
+</dtml-if>
+
+<!-- ### Cacheable -->
+<dtml-if "REQUEST['AUTHENTICATED_USER'].has_permission('ZMS Administrator',this()) and getConfProperty('ZMS.cache.active')==1 and 'attr_cacheable' in getObjAttrs().keys()">
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_CACHEABLE',manage_lang)"></div></td>
+ <td>
+  <table cellspacing="0" cellpadding="0" border="0">
+  <tr valign="middle">
+   <td><div class="form-element"><dtml-var "getObjInput('attr_cacheable',REQUEST)"></div></td>
+   <td>&nbsp;&nbsp;</td>
+   <td class="zmiNeutralColorMedium0" style="padding:2px"
+    ><a href="javascript:location.href='manage_clearCachePages?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&attr_cacheable_levels:int='+document.forms['<dtml-var fmName>'].elements['attr_cacheable_levels:int'].value;" class="button"><img class="button" src="<dtml-var MISC_ZMS>btn_delete1.gif" title="<dtml-var "getLangStr('BTN_DELETE',manage_lang)">" border="0" align="absmiddle"/></a
+    ><a href="javascript:location.href='manage_getCachedPages?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&attr_cacheable_levels:int='+document.forms['<dtml-var fmName>'].elements['attr_cacheable_levels:int'].value;" class="button"><img class="button" src="<dtml-var MISC_ZMS>btn_refresh.gif" title="<dtml-var "getLangStr('BTN_REFRESH',manage_lang)">" border="0" align="absmiddle"/></a
+    >&nbsp;<img src="<dtml-var MISC_ZMS>op_sitemap.gif" title="#Levels" border="0" align="absmiddle"/>
+    <input class="form-small" type="text" name="attr_cacheable_levels:int" value="2" size="2"/>
+   </td>
+  </tr>
+  </table>
+ </td>
+</tr>
+</dtml-if>

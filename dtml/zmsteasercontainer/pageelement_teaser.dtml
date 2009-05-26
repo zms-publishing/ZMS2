@@ -1,0 +1,55 @@
+<dtml-call "REQUEST.set('__default_pageelement_Teaser__',_.True)">
+<dtml-in "getHome().absolute_url()[_.len(REQUEST['BASE0'])+1:].split('/')" reverse>
+ <dtml-if "REQUEST.get('__default_pageelement_Teaser__')">
+  <dtml-try>
+   <dtml-with "_[_['sequence-item']]">
+    <dtml-if "'pageelement_Teaser' in objectIds()">
+     <dtml-var pageelement_Teaser>
+     <dtml-call "REQUEST.set('__default_pageelement_Teaser__',_.False)">
+    <dtml-elif "'bodyContent_Teaser' in objectIds()">
+     <dtml-var bodyContent_Teaser>
+     <dtml-call "REQUEST.set('__default_pageelement_Teaser__',_.False)">
+    </dtml-if>
+   </dtml-with>
+  <dtml-except></dtml-try>
+ </dtml-if>
+</dtml-in>
+
+<dtml-if "REQUEST.get('__default_pageelement_Teaser__')">
+ <dtml-call "REQUEST.set('last_borderstyle',_.None)">
+ <dtml-call "REQUEST.set('last_bgcolor_border',_.None)">
+ <dtml-let res="getTeaserElements(REQUEST)">
+  <dtml-if res>
+   <div id="teaser">
+   <dtml-in res>
+    <dtml-let teaserElmnt=sequence-item teaserCntnr="teaserElmnt.getParentNode()">
+     <dtml-call "REQUEST.set('borderstyle',teaserCntnr.getObjProperty('attr_borderstyle',REQUEST))">
+     <dtml-call "REQUEST.set('bgcolor_border',teaserCntnr.getObjProperty('attr_bgcolor_border',REQUEST))">
+     <dtml-call "REQUEST.set('bgcolor_title',teaserCntnr.getObjProperty('attr_bgcolor_title',REQUEST))">
+     <dtml-call "REQUEST.set('bgcolor_text',teaserCntnr.getObjProperty('attr_bgcolor_text',REQUEST))">
+     <dtml-if "last_borderstyle != borderstyle or 
+               last_bgcolor_border != bgcolor_border or 
+               borderstyle==2">
+      <dtml-if "last_borderstyle is not _.None and last_bgcolor_border is not _.None ">
+       <dtml-if "last_borderstyle != 3">
+        </div>
+       </dtml-if>
+      </dtml-if>
+      <dtml-if "borderstyle != 3">
+       <div class="<dtml-var "teaserCntnr.meta_type">"<dtml-if bgcolor_border> style="background-color: <dtml-var "get_colormap().get(bgcolor_border,'black')">;"</dtml-if>>
+      </dtml-if>
+     </dtml-if>
+     <dtml-var "teaserElmnt.getBodyContent(REQUEST)">
+     <dtml-call "REQUEST.set('last_borderstyle',borderstyle)">
+     <dtml-call "REQUEST.set('last_bgcolor_border',bgcolor_border)">
+    </dtml-let>
+   </dtml-in>
+   <dtml-if "last_borderstyle is not _.None  and last_bgcolor_border is not _.None ">
+    <dtml-if "last_borderstyle != 3">
+     </div>
+    </dtml-if>
+   </dtml-if>
+   </div>
+  </dtml-if>
+ </dtml-let>
+</dtml-if>

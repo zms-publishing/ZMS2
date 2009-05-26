@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+<item key="dtml"><![CDATA[<!-- BO bodyContentZMSCustom_LgReview -->
+
+
+<!-- EO bodyContentZMSCustom_LgReview -->]]></item>
+<item key="enabled" type="int">1</item>
+<item key="key"><![CDATA[LgReview]]></item>
+<item key="value" type="dictionary"><dictionary>
+<item key="__obj_attrs__" type="list"><list>
+<item type="dictionary"><dictionary>
+<item key="custom"><![CDATA[<!--// BO bodyContent //-->
+
+<dtml-var "getBodyContent(REQUEST)">
+
+<script language="JavaScript">
+<!--//
+  function LgReviewImg_<dtml-var id>_OnClick()
+  {
+    var img = document.getElementById('LgReviewImg_<dtml-var id>');
+    var div = document.getElementById('LgReviewDiv_<dtml-var id>');
+    if (img.title == '+') {
+      img.title = '-';
+      img.src = '/p_/mi';
+      div.style.display = 'inline';
+      div.style.visibility = 'visible';
+    } 
+    else {
+      img.title = '+';
+      img.src = '/p_/pl';
+      div.style.display = 'none';
+      div.style.visibility = 'hidden';
+    }
+  }
+//-->
+</script>
+
+<dtml-call "REQUEST.set('comments_id',_.None)">
+<dtml-if "REQUEST['comments']=='True'">
+ <dtml-in "['attr__comments','_comments']">
+  <dtml-unless comments_id>
+   <dtml-let id=sequence-item>
+    <dtml-if "id in getObjAttrs().keys()">
+     <dtml-call "REQUEST.set('comments_id',id)">
+    </dtml-if>
+   </dtml-let>
+  </dtml-unless>
+ </dtml-in>
+</dtml-if>
+<dtml-if comments_id>
+<div style="height:0; font-size:1px; margin:0; clear:left;">&nbsp;</div>
+ <table cellspacing="4" style="clear:both;width:99%;margin:-0.5em 0em 0.75em 0em;background-color:#ffffe0;border: 1px dotted blue;">
+ <tr>
+  <td>
+   <div style="padding:0px;"><a 
+    href="javascript:LgReviewImg_<dtml-var id>_OnClick();"><img 
+    id="LgReviewImg_<dtml-var id>" src="/p_/pl" title="Please add your comment to the upper content element!" border="0" align="absmiddle" 
+    /></a></div><div id="LgReviewDiv_<dtml-var id>" style="display:none;visibility:hidden;">
+   <form style="margin:0px;padding:0px" action="<dtml-var id>/LgReview_submitComment" method="post">
+    <input type="hidden" name="comments_id" value="<dtml-var comments_id>">
+    <input type="hidden" name="comments" value="<dtml-var comments>">
+    <input type="hidden" name="lang" value="<dtml-var lang>">
+    <input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+    <div style="font-weight:bold;">Your Comment:</div>
+    <textarea style="font-size:11px;width:99%" name="attr__comment" cols="60" rows="5" wrap="on"></textarea><br/>
+    <input style="font-size:9px;" type="submit" name="btn" value="Submit"/><br/>
+   </form>
+   </div>
+   </div>
+  </td>
+ </tr>
+ <dtml-let v="getObjProperty(comments_id,REQUEST)">
+  <dtml-try>
+   <dtml-in v mapping>
+    <tr>
+     <td style="background-color:#eee;font-weight:bold;">&laquo;<dtml-var userid>&raquo; <dtml-var "getLangFmtDate(datetime,lang,'DATETIME_FMT')"></td>
+    </tr>
+    <tr>
+     <td><dtml-var comment newline_to_br></td>
+    </tr>
+   <dtml-else>
+    <tr>
+     <td><em>No comments.</em></td>
+    </tr>
+   </dtml-in>
+  <dtml-except>
+   <dtml-var error_type>: <dtml-var error_value><br/><dtml-var v>
+  </dtml-try>
+ </dtml-let>
+ </table>
+
+</dtml-if>
+
+<!--// EO bodyContent //-->]]></item>
+<item key="default"/>
+<item key="id"><![CDATA[bodyContent]]></item>
+<item key="keys" type="list"><list>
+</list>
+</item>
+<item key="mandatory" type="int">0</item>
+<item key="multilang" type="int">0</item>
+<item key="name"><![CDATA[LgReview: Body-Content]]></item>
+<item key="repetitive" type="int">0</item>
+<item key="type"><![CDATA[DTML Method]]></item>
+</dictionary>
+</item>
+<item type="dictionary"><dictionary>
+<item key="custom"><![CDATA[<!--// BO LgReview_submitComment //-->
+
+<dtml-call "REQUEST.set('v',getObjProperty(comments_id,REQUEST))">
+<dtml-if "_.len(v)==0">
+ <dtml-call "REQUEST.set('v',[])">
+</dtml-if>
+<dtml-call "v.append({
+     'userid':_.str(AUTHENTICATED_USER),
+     'comment':attr__comment,
+     'datetime':parseLangFmtDate(_.DateTime()),
+})">
+<dtml-call "setObjStateModified(REQUEST)">
+<dtml-call "setObjProperty(comments_id,v,lang)">
+<dtml-call "onChangeObj(REQUEST)">
+<dtml-call "RESPONSE.redirect(url_append_params(getHref2IndexHtml(REQUEST),{'comments':comments,'lang':lang,'manage_lang':manage_lang}))">
+
+<!--// EO LgReview_submitComment //-->]]></item>
+<item key="default"/>
+<item key="id"><![CDATA[LgReview_submitComment]]></item>
+<item key="keys" type="list"><list>
+</list>
+</item>
+<item key="mandatory" type="int">0</item>
+<item key="multilang" type="int">0</item>
+<item key="name"><![CDATA[LgReview: Submit comment]]></item>
+<item key="repetitive" type="int">0</item>
+<item key="type"><![CDATA[DTML Method]]></item>
+</dictionary>
+</item>
+</list>
+</item>
+<item key="access" type="dictionary"><dictionary>
+<item key="delete" type="list"><list>
+</list>
+</item>
+<item key="delete_custom"/>
+<item key="edit" type="list"><list>
+</list>
+</item>
+<item key="edit_custom"/>
+<item key="insert" type="list"><list>
+</list>
+</item>
+<item key="insert_custom"/>
+</dictionary>
+</item>
+<item key="acquired" type="int">0</item>
+<item key="name"><![CDATA[Review]]></item>
+<item key="package"/>
+<item key="type"><![CDATA[ZMSLibrary]]></item>
+</dictionary>
+</item>
+</dictionary>

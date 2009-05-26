@@ -1,0 +1,72 @@
+<dtml-if "'change_uid' in getObjAttrs().keys()">
+
+<dtml-comment>
+<!-- ### Lock  -->
+</dtml-comment>
+<dtml-unless "REQUEST.form.has_key('ZMS_VERSION_%s'%id)">
+<dtml-if "isCheckedOut(REQUEST)">
+<img src="<dtml-var MISC_ZMS>state_locked.gif" border="0" title="<dtml-var "getLangStr('STATE_LOCKED',manage_lang)"> <dtml-var "getLangStr('BY',manage_lang)"> <dtml-var "_.getattr(ob,'co_uid_%s'%lang)"> (<dtml-var "getLangFmtDate(_.getattr(ob,'co_dat_%s'%lang),manage_lang)">)" align="middle"/>
+</dtml-if>
+</dtml-unless>
+
+<dtml-comment>
+<!-- ### WebDav-Lock  -->
+</dtml-comment>
+<dtml-unless "REQUEST.form.has_key('ZMS_VERSION_%s'%id)">
+<dtml-try>
+ <dtml-if "wl_isLocked()==1">
+  <img src="/p_/davlocked" title="">
+ </dtml-if>
+<dtml-except>
+</dtml-try>
+</dtml-unless>
+
+<dtml-comment>
+<!-- ### Object State  -->
+</dtml-comment>
+<span class="form-small"><dtml-var version_object_state></span>
+
+<div class="form-small">
+
+<dtml-comment>
+<!-- ### Author & Date  -->
+</dtml-comment>
+<dtml-let info="[]">
+<dtml-if "getObjProperty('change_uid',REQUEST)">
+ <dtml-call "info.append(string_maxlen(getObjProperty('change_uid',REQUEST),15)+'\n')">
+</dtml-if>
+<dtml-if "getObjProperty('change_dt',REQUEST)">
+ <dtml-call "info.append(getLangFmtDate(getObjProperty('change_dt',REQUEST),manage_lang,'SHORTDATETIME_FMT')+'\n')">
+</dtml-if>
+<dtml-if "isPageElement()">
+ <dtml-call "info.append(getDataSizeStr(get_size(REQUEST))+'\n')">
+</dtml-if>
+<dtml-if "isPage()">
+ <dtml-call "info.append('%i %s\n'%(_.len(getChildNodes(REQUEST)),getLangStr('ATTR_OBJECTS',manage_lang)))">
+</dtml-if>
+<dtml-var "''.join(info)" newline_to_br>
+</dtml-let>
+
+<dtml-comment>
+<!-- ### DC.Identifier.DOI -->
+</dtml-comment>
+<dtml-if "getObjProperty('attr_dc_identifier_doi',REQUEST)">
+<font style="color:blue;">DOI: <dtml-var "getObjProperty('attr_dc_identifier_doi',REQUEST)"></font>
+</dtml-if>
+
+<dtml-comment>
+<!-- ### Metasets -->
+</dtml-comment>
+<dtml-let objChildrenMetadictAttrs="getObjChildrenMetadictAttrs(REQUEST)">
+<dtml-if objChildrenMetadictAttrs>
+<font style="color:blue;">
+<dtml-in objChildrenMetadictAttrs mapping>
+<dtml-var name><br/>
+</dtml-in>
+</font>
+</dtml-if>
+</dtml-let>
+
+</div>
+
+</dtml-if>
