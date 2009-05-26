@@ -1,0 +1,6 @@
+<table cellspacing="0" cellpadding="0" border="0" width="100%" class="zmiHeadline">
+<tr valign="middle">
+<td><font class="zmiFtTab"><font class="zmiFtHeadline">&nbsp;<dtml-var headline>&nbsp;</font></font></td>
+<td align="right"><font class="zmiFtHeadline"><dtml-if extra>&nbsp;<dtml-var extra></dtml-if><img src="<dtml-var spacer_gif>" title="" border="0" width="2" height="12" align="absmiddle" /></font></td>
+</tr>
+</table>

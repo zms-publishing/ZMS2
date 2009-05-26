@@ -1,0 +1,29 @@
+<dtml-comment> 
+*******************************************************************************
+*	f_metaInputFields
+*	@param my_meta_type
+*******************************************************************************	
+</dtml-comment>
+
+
+<dtml-call "REQUEST.set('count',0)">
+<dtml-in "getMetadictAttrs(my_meta_type,exclude_types=['method'])">
+ <dtml-let metadictAttrId=sequence-item
+           metadictAttr="getMetadictAttr(metadictAttrId)"
+           key="metadictAttr['key']"
+           obj_attr="getObjAttr(key,my_meta_type)">
+  <dtml-unless "metadictAttr['id'].find('_')==0">
+   <dtml-if "REQUEST.get('count')==0">
+    <tr>
+     <td colspan="2" class="form-label"><div class="zmiHeadline"><div class="zmiFtHeadline"><dtml-var "getLangStr('TAB_METADATA',manage_lang)"></div></div></td>
+    </tr>
+   </dtml-if>
+   <dtml-call "REQUEST.set('value',obj_attr.get('default',''))">
+   <dtml-unless ZMS_INSERT>
+    <dtml-call "REQUEST.set('value',getObjAttrValue(obj_attr,REQUEST))">
+   </dtml-unless>
+   <dtml-var "f_metaInputField(_,_,my_meta_type=my_meta_type,key=metadictAttr['key'],required=metadictAttr['mandatory'],lang_str=metadictAttr['name'],type=metadictAttr['type'])">
+   <dtml-call "REQUEST.set('count',REQUEST.get('count')+1)">
+  </dtml-unless>
+ </dtml-let>
+</dtml-in>

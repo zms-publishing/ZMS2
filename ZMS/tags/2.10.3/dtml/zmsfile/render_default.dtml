@@ -1,0 +1,13 @@
+<dtml-let f="getFile(REQUEST)">
+ <div class="<dtml-var meta_type>">
+  <dtml-if f>
+   <div class="title">
+   <img src="<dtml-var "f.getMimeTypeIconSrc()">" title="<dtml-var "f.getContentType()">" border="0" />
+   <a href="<dtml-var url>"><dtml-var "getTitlealt(REQUEST)"></a> (<dtml-var "f.getDataSizeStr()">)
+   </div>
+   <div class="text"><dtml-var "getTitle(REQUEST)"></div>
+  <dtml-else>
+   <dtml-var "getLangStr('ATTR_NONE',REQUEST['manage_lang'])">
+  </dtml-if>
+ </div>
+</dtml-let>

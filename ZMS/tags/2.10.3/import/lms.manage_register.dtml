@@ -1,0 +1,135 @@
+<dtml-comment>
+<!----------// This method needs proxy role "Manager" to add profiles!!! //---------->
+</dtml-comment>
+
+<dtml-call "REQUEST.set('op','registering')">
+<dtml-with content>
+<dtml-let membersFldr="e200000"
+          meta_id="'personalProfile'" 
+          valid_ids="['profileEmail','profileLastname','profileFirstname','profileAcademic','profileSalutation','profileProfession','profileDiscipline','profileCompany','profileStreet','profileZip','profileCity','profileCountry','profileTel','profileFax','profileWWW','profilePublic']">
+<dtml-var f_standard_html_header>
+
+<!-- ############################### -->
+<!----------// BO Register //---------->
+<!-- ############################### -->
+
+<dtml-if "REQUEST.get('ZMS_INSERT','')==meta_id and 
+          REQUEST.get('btn','')==getLangStr('BTN_SEND',lang)">
+
+  <dtml-call "REQUEST.set('message','')">
+
+  <!--// BO Search for existing profile by e-Mail //-->
+  <dtml-call "REQUEST.set('found',0)">
+  <dtml-in "membersFldr.filteredTreeNodes(REQUEST,ZMS_INSERT)">
+   <dtml-call "REQUEST.set('found',found or getObjProperty('profileEmail',REQUEST)==REQUEST['profileEmail'])">
+  </dtml-in>
+  <!--// EO Search for existing profile by e-Mail //-->
+
+  <!--// BO Create profile //-->
+  <dtml-if "found==0">
+
+ <!----------// BO Register: create a new personalProfile //---------->
+  <dtml-call "REQUEST.set('profileRole','Participant')">
+  <dtml-call "REQUEST.set('profilePasswd',_.str(rand_int(999999)))">
+  <dtml-call insertPersonalProfile>
+  <dtml-call "REQUEST.set('message',REQUEST.get('message','')+getLangStr('LMS_REG_REG_OK',lang)+'!<br />')">
+ <!----------// EO Register: create a new personalProfile //---------->
+
+ <!----------// BO Apply for a course: create a new personalTrack //---------->
+ <dtml-if "SESSION.get('sessionRefObjPath',_.None) is not _.None">
+  <dtml-let courseFldr="getLinkObj(SESSION['sessionRefObjPath'],REQUEST)">
+  <dtml-call "personalProfile.manage_addZMSCustom(meta_id='personalTrack',
+   values={'id_prefix':'personalTracks'
+          ,'active':1
+          ,'titlealt':courseFldr.getTitlealt(REQUEST)
+          ,'attrRef':SESSION['sessionRefObjPath']
+          ,'attrData':{}
+          ,'attrCreationDt':ZopeTime()
+   },REQUEST=REQUEST)">
+  <dtml-call "SESSION.set('sessionRefObjPath',_.None)">
+  <dtml-call "REQUEST.set('message',REQUEST.get('message','')+getLangStr('LMS_REG_COURSE',lang)+'!<br/>')">
+  </dtml-let>
+ </dtml-if>
+ <!----------// EO Apply for a course: create a new personalTrack //---------->
+
+<dtml-try>
+<dtml-sendmail MailHost="MailHost">
+To: <dtml-var "REQUEST['profileEmail']">
+From: <dtml-var "getConfProperty('ZMSAdministrator.email')">
+Subject: Registration: <dtml-var "getDocumentElement().getTitle(REQUEST)">
+
+<dtml-var "getLangStr('LMS_REG_SALUTATION',lang)"> <dtml-var "REQUEST['profileSalutation']"> <dtml-var "REQUEST['profileAcademic']"> <dtml-var "REQUEST['profileFirstname']"> <dtml-var "REQUEST['profileLastname']">,
+
+<dtml-var "getLangStr('LMS_REG_REG_OK',lang)">.
+
+  <dtml-var "getLangStr('LMS_REG_LOGIN',lang)">: <dtml-var "REQUEST['profileEmail']">
+  <dtml-var "getLangStr('profilePasswd',lang)">: <dtml-var "REQUEST['profilePasswd']">
+
+<dtml-var "getLangStr('LMS_REG_REGARDS',lang)">.
+
+</dtml-sendmail>
+<dtml-call "REQUEST.set('message',REQUEST.get('message','')+getLangStr('LMS_REG_NOTIFICATION_SENT',lang)+'!<br/>')">
+<dtml-except></dtml-try>
+
+  <!--// EO Create profile //-->
+
+  <dtml-else>
+  <!--// BO Existing profile //-->
+   <dtml-call "REQUEST.set('message',getLangStr('LMS_REG_PROFILE_EXISTS',lang)+'!<br/>')">
+  </dtml-if>
+  <!--// EO Existing profile //-->
+
+  <dtml-call "RESPONSE.redirect('%s?manage_tabs_message=%s'%(getDocumentElement().absolute_url(),url_quote(message)))">
+
+</dtml-if>
+
+<!----------// EO Register //---------->
+
+<!-- ######################################## -->
+<!----------// BO Registration Form //---------->
+<!-- ######################################## -->
+
+<h1><dtml-var "getLangStr('LMS_REG_TITLE',lang)"></h1>
+<p class="standard"><dtml-var "getLangStr('LMS_REG_PLEASE_ENTER',lang)">.</p>
+<dtml-call "REQUEST.set('ZMS_INSERT',meta_id)">
+<form name="form0" action="<dtml-var URL>" method="post" encoding="multipart/form-data">
+<input type="hidden" name="ZMS_INSERT" value="<dtml-var ZMS_INSERT>">
+<table cellspacing="0" cellpadding="2" border="1">
+<dtml-if "SESSION.get('sessionRefObjPath',_.None) is not _.None">
+<dtml-with "getLinkObj(SESSION['sessionRefObjPath'],REQUEST)">
+<tr>
+ <td><div class="form-label"><dtml-var "getLangStr('REGISTER_COURSE',lang)"></div></td>
+ <td class="form-element">
+  <h1><dtml-var "getTitle(REQUEST)"></h1>
+  <p class="description"><dtml-var "getObjProperty('attr_dc_description',REQUEST)"></p>
+ </td>
+</tr>
+</dtml-with>
+</dtml-if>
+<dtml-in "getMetaobjAttrIds(meta_id)">
+ <dtml-let metaObjAttr="getMetaobjAttr(meta_id,_['sequence-item'])">
+  <dtml-if "metaObjAttr['id'] in valid_ids">
+   <tr>
+    <td><div class="form-label"><dtml-var "getLangStr(metaObjAttr['id'],lang)"><dtml-if "metaObjAttr.get('mandatory',0)==1"><sup style="color:red">*</sup></dtml-if></div></td>
+    <td><dtml-var "getObjInput(metaObjAttr['id'],REQUEST)">
+   </tr>
+  </dtml-if>
+ </dtml-let>
+</dtml-in>
+</table>
+<hr size="1" />
+<p><dtml-var "getLangStr('LMS_REG_HINT',lang)">: 
+[<sup style="color:red">*</sup>] <dtml-var "getLangStr('LMS_REG_MANDATORY',lang)">. <br />
+<dtml-var "getLangStr('LMS_REG_CONFIRM_ANNOUNCE',lang)">.<br />
+<hr size="1" />
+<p class="form-element">
+ <input class="form-submit" type="submit" name="btn" value="<dtml-var "getLangStr('BTN_SEND',lang)">"> &nbsp;&nbsp;&nbsp;&nbsp; 
+ <input class="form-submit" type="reset" name="btn" value="<dtml-var "getLangStr('BTN_RESET',lang)">">
+</p>
+</form>
+
+<!----------// EO Registration Form //---------->
+
+<dtml-var f_standard_html_footer>
+</dtml-let>
+</dtml-with>

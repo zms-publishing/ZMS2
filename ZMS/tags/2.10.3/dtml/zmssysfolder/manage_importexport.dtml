@@ -1,0 +1,69 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('CAPTION_IMPORTEXPORT',manage_lang)%display_type(REQUEST)"></title>
+</head>
+
+<dtml-var manage_tabs>
+
+<dtml-var f_bo_area>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   I M P O R T
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+  <form action="manage_import" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="lang" value="<dtml-var lang>">
+  <input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+  <input type="hidden" name="preview" value="preview">
+  <dtml-var "f_headline(_,_,headline=getLangStr('ATTR_IMPORT',manage_lang))">
+  <table cellpadding="2" cellspacing="0" border="0">
+  <tr valign="middle">
+    <td><div class="form-label"><dtml-var "getLangStr('ATTR_FILE',manage_lang)"></div></td>
+    <td><input class="form-element" name="file" type="file" size="25"></td>
+  </tr>
+  <tr valign="middle">
+    <td>&nbsp;</td>
+    <td><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_IMPORT',manage_lang)" html_quote>"></td>
+  </tr>
+  </table>
+  </form>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   E X P O R T
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+  <form action="pub_export" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="lang" value="<dtml-var lang>">
+  <input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+  <a name="_export"></a>
+  <dtml-var "f_headline(_,_,headline=getLangStr('ATTR_EXPORT',manage_lang))">
+  <table cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td>&nbsp;</td>
+    <td colspan="4"><div class="form-label"><dtml-var "getLangStr('ATTR_FORMAT',manage_lang)"></div></td>
+  </tr>
+  <tr valign="middle">
+    <td>&nbsp;</td>
+    <td><input name="export_format:int" type="radio" value="0"
+    <dtml-unless export_format>checked="checked"</dtml-unless>
+    <dtml-if export_format><dtml-if "_.int(export_format)==0">checked="checked"</dtml-if></dtml-if>></td>
+    <td><img src="<dtml-var MISC_ZMS>zexpdoc.gif" title="ZEXP"></td>
+    <td><div class="form-text">ZEXP</td>
+    <td><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_EXPORT',manage_lang)" html_quote>"></td>
+    <td width="100%"></td>
+  </tr>
+  </table>
+  </form>
+
+<dtml-var f_eo_area>
+
+<dtml-var manage_page_footer>

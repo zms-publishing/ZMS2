@@ -1,0 +1,472 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('TAB_CONFIGURATION',manage_lang)"> <dtml-var "display_type(REQUEST)"></title>
+<script language="JavaScript">
+<!--//
+
+  /**
+   *
+   * @param fm		Html-Form
+   */
+  function onFormSubmit(fm) 
+  {
+    var b = true;
+    if (self.btnClicked=="<dtml-var "getLangStr('BTN_ACQUIRE',manage_lang)" html_quote>") 
+    {
+      b = b && !disallowBlank(fm.elements['aq_id'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('BTN_ACQUIRE',manage_lang)">",false);
+    }
+    if (self.btnClicked=="<dtml-var "getLangStr('BTN_INSERT',manage_lang)" html_quote>") 
+    {
+      b = b && !disallowBlank(fm.elements['_id'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_ID',manage_lang)">",false);
+      b = b && !disallowBlank(fm.elements['_name'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_DISPLAY',manage_lang)">",false);
+      b = b && !disallowBlank(fm.elements['_type'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_TYPE',manage_lang)">",false);
+    }
+    if (self.btnClicked=="<dtml-var "getLangStr('BTN_DELETE',manage_lang)" html_quote>") 
+    {
+      b = confirm("<dtml-var "getLangStr('MSG_CONFIRM_DELOBJ',manage_lang)">");
+    }
+    if (self.btnClicked=="<dtml-var "getLangStr('BTN_IMPORT',manage_lang)" html_quote>") 
+    {
+        var elFile = fm.elements['file'];
+        var elInit = fm.elements['init'];
+    	if (isBlank(elFile.value) && isBlank(elInit.value))
+	{
+            b = b && !disallowBlank(elFile,"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_FILE',manage_lang)">",false);
+	}
+    }
+    return b;
+  }
+
+  /**
+   *
+   */
+  function exportBtnClick() 
+  {
+    fm = document.forms['form0'];
+    href = fm.action+'?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&btn=<dtml-var "getLangStr('BTN_EXPORT',manage_lang)" html_quote>';
+    for (i = 0; i < fm.elements.length; i++) 
+    {
+      el = fm.elements[i];
+      if (el.name=='attrs:list' && el.type=='checkbox' && el.checked)
+        href+='&'+el.name+'='+el.value;
+    }
+    window.open(href);
+  }
+
+  /**
+   *
+   * @param el		Html-Form Element
+   */
+  function btnClick(el) 
+  {
+    self.btnClicked = el.value;
+  }
+
+//-->
+</script>
+</head>
+
+<dtml-var manage_tabs>
+<dtml-var "manage_tabs_sub(_,_,my_manage_options=customize_manage_options(lang,manage_lang,REQUEST))">
+
+<dtml-var f_bo_area>
+
+<dtml-let datatypes="['amount','boolean','color','date','datetime','delimiter','dictionary','file','float','hint','image','int','interface','list','method','multiselect','password','select','string','text','time','url','xml']"
+          meta_types="getMetaTypes(REQUEST,excl_meta_types=['ZMSCustom'])">
+
+<div class="form-text"><dtml-var "getLangStr('MSG_METADICT',manage_lang)"></div><br />
+ 
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   E D I T
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+ <form name="form0" action="manage_changeMetadicts" method="post" onsubmit="return onFormSubmit(this)" enctype="multipart/form-data" style="margin:8px">
+ <input type="hidden" name="lang" value="<dtml-var lang>">
+ <input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+ <input type="hidden" name="preview" value="preview">
+  <table cellspacing="1" cellpadding="0" border="0" class="zmiNeutralColorStrong0">
+  <colgroup>
+   <col width="40" />
+   <col width="20" />
+   <col />
+   <col />
+   <col />
+   <col width="20" />
+   <col width="20" />
+   <col width="20" />
+   <col width="15%" />
+   <col width="20" />
+  </colgroup>
+
+  <dtml-if "getMetadictAttrs()">
+  
+  <dtml-unless "REQUEST.has_key('attr')">
+   <dtml-call "REQUEST.set('attr','')">
+  </dtml-unless>
+
+  <!-- Header -->
+  <tr>
+   <td colspan="10"><dtml-var "f_headline(_,_,headline=getLangStr('TAB_EDIT',manage_lang),extra='<a href='+QUOT+'javascript:exportBtnClick()'+QUOT+'><img src='+QUOT+MISC_ZMS+'mime_type.text_xml.gif'+QUOT+' title='+QUOT+getLangStr('BTN_EXPORT',manage_lang)+' (XML)'+QUOT+' border='+QUOT+'1'+QUOT+' align='+QUOT+'absmiddle'+QUOT+'/></a>')"></td>
+  </tr>
+  <!-- Headline -->
+  <dtml-if "REQUEST.get('attr','')!=''">
+   <tr class="zmiNeutralColorStrong0">
+     <td>&nbsp;</td>
+     <td><input class="form-element" type="radio" name="id" value="" <dtml-if "REQUEST.get('attr','')==''">checked="checked"</dtml-if> onclick="radioOnClick(this,'<dtml-var URL0>');"></td>
+     <td><div class="form-label"><dtml-var "getLangStr('ATTR_ID',manage_lang)"></div></td>
+     <td><div class="form-label"><dtml-var "getLangStr('ATTR_DISPLAY',manage_lang)"></div></td>
+     <td><div class="form-label"><dtml-var "getLangStr('ATTR_TYPE',manage_lang)"></div></td>
+     <td><div class="form-label title="<dtml-var "getLangStr('ATTR_MANDATORY',manage_lang)">" align="center">(<sup style="color:red">*</sup>)</div></td>
+     <td><div class="form-label align="center"><img src="<dtml-var MISC_ZMS>btn_multilang1.gif" title="<dtml-var "getLangStr('ATTR_MULTILANG',manage_lang)">" border="0"></div></td>
+     <td title="<dtml-var "getLangStr('ATTR_REPETITIVE',manage_lang)">" align="center"><div class="form-label">0..n</div></td>
+     <td>&nbsp;</td>
+     <td>&nbsp;</td>
+   </tr>
+  </dtml-if>
+
+  <dtml-in "getMetadictAttrs()">
+  <dtml-let metadictAttrId=sequence-item metadictAttr="getMetadictAttr(metadictAttrId)">
+
+    <dtml-call "REQUEST.set('has_acquisition',[])">
+    <dtml-in "getPortalClients()">
+     <dtml-let portalClient=sequence-item portalClientMetadictAttr="portalClient.getMetadictAttr(metadictAttrId)">
+      <dtml-if "portalClientMetadictAttr is not _.None and portalClientMetadictAttr.get('acquired',0)==1">
+       <dtml-call "has_acquisition.append(portalClient.getHome().id)">
+      </dtml-if>
+     </dtml-let>
+    </dtml-in>
+
+  <dtml-if "REQUEST['attr']==metadictAttr['key']">
+   <dtml-if "metadictAttr.get('acquired',0) == 1">
+
+    <!-- Acquired Metadata -->
+    <tr valign="middle" class="zmiNeutralColorMedium0">
+     <td rowspan="2" valign="top">&nbsp;</td>
+     <td rowspan="2" valign="top" class="form-element"><input class="form-element" type="radio" name="attr" value="<dtml-var "metadictAttr['key']">" onclick="radioOnClick(this,'<dtml-var URL0>');" checked="checked"></td>
+     <td class="form-text">
+        <dtml-if "metadictAttr['type'] == 'method'"
+         ><img src="<dtml-var MISC_ZMS>ico_method.gif" title="Method" border="0" align="absmiddle"
+        ><dtml-elif "metadictAttr['type'] in datatypes"
+         ><img src="<dtml-var MISC_ZMS>ico_attr.gif" title="Attribute" border="0" align="absmiddle"
+        ><dtml-else
+         ><img src="<dtml-var "display_icon(REQUEST,metadictAttr['type'])">" title="<dtml-var "display_type(REQUEST,metadictAttr['type'])">" border="0" align="absmiddle"
+        ></dtml-if
+	      ><dtml-if "metadictAttr.get('zms_system',0) == 1"><img src="<dtml-var MISC_ZMS>ico_default.gif" title="default / unmodified" style="margin-right:2" align="absmiddle"></dtml-if
+        ><dtml-if "metadictAttr.get('acquired',0) == 1"><a href="<dtml-var "getPortalMaster().absolute_url()+'/'+URL.split('/')[-1]">?attr=<dtml-var "metadictAttr['key']">" target="_blank"><img src="<dtml-var MISC_ZMS>ico_is_acquired.gif" title="is acquired: <dtml-var "getConfProperty('Portal.Master')">" border="0" align="absmiddle"/></a></dtml-if
+        ><dtml-if has_acquisition><img src="<dtml-var MISC_ZMS>ico_has_acquisition.gif" title="has acquisitions: <dtml-var has_acquisition>" border="0" align="absmiddle"/></dtml-if
+        ><dtml-var "string_maxlen(metadictAttr['id'],20)">
+     </td>
+     <td class="form-text"><dtml-var "metadictAttr['name']"></td>
+     <td class="form-text"><i>(<dtml-var "metadictAttr['type']">)</i></td>
+     <td class="form-element"><img src="<dtml-var MISC_ZMS>checkbox_disabled<dtml-var "boolint(metadictAttr['mandatory']==1)">.gif" title="" border="0" align="absmiddle" /></td>
+     <td class="form-element"><img src="<dtml-var MISC_ZMS>checkbox_disabled<dtml-var "boolint(metadictAttr['multilang']==1)">.gif" title="" border="0" align="absmiddle" /></td>
+     <td class="form-element" nowrap="nowrap">
+      <input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_COPY',manage_lang)" html_quote>" onclick="btnClick(this);">
+      <dtml-unless has_acquisition><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_DELETE',manage_lang)" html_quote>" onclick="btnClick(this);"></dtml-unless>
+     </td>
+     <td rowspan="2" valign="top" class="form-element"><img src="<dtml-var MISC_ZMS>checkbox_disabled0.gif" title="" border="0" align="absmiddle" /></td>
+    </tr>
+    <!-- Acquired Metadata-Properties -->
+    <tr class="zmiNeutralColorMedium0">
+     <td colspan="7">
+      <table cellspacing="0" cellpadding="5" border="0" width="80%">
+      <tr>
+       <td>
+        <table cellspacing="1" cellpadding="2" border="0" class="zmiNeutralColorStrong0">
+        <tr valign="top">
+         <td class="form-small" nowrap="nowrap"><b><dtml-var "getLangStr('ATTR_OBJECTS',manage_lang)"></b></td>
+         <td class="form-small" nowrap="nowrap"><b>DTML</b></td>
+        </tr>
+        <tr valign="top" class="zmiNeutralColorLight0">
+         <td class="form-small"><dtml-in "metadictAttr['dst_meta_types']"><nobr><dtml-var "display_type(REQUEST,_['sequence-item'])"></nobr><br/></dtml-in></td>
+         <td class="form-small"><code>getObjProperty('<dtml-var "metadictAttr['key']">',REQUEST)</code></td>
+        </tr>
+        </table>
+       </td>
+      </tr>
+      </table>
+     </td>
+    </tr>
+
+  <dtml-else>
+
+   <!-- Metadata -->
+   <tr valign="middle" class="zmiNeutralColorMedium0">
+    <td rowspan="2" valign="top">&nbsp;</td>
+    <td rowspan="2" valign="top" class="form-element"><input class="form-element" type="radio" name="attr" value="<dtml-var "metadictAttr['key']">" onclick="radioOnClick(this,'<dtml-var URL0>');" checked="checked"></td>
+    <td class="form-element" nowrap="nowrap">
+     <dtml-if "metadictAttr['type'] == 'method'"
+      ><img src="<dtml-var MISC_ZMS>ico_method.gif" title="Method" border="0" align="absmiddle"
+     ><dtml-elif "metadictAttr['type'] in datatypes"
+      ><img src="<dtml-var MISC_ZMS>ico_attr.gif" title="Attribute" border="0" align="absmiddle"
+     ><dtml-else
+      ><img src="<dtml-var "display_icon(REQUEST,metadictAttr['type'])">" title="<dtml-var "display_type(REQUEST,metadictAttr['type'])">" border="0" align="absmiddle"
+     ></dtml-if
+     ><dtml-if "metadictAttr.get('zms_system',0) == 1"><img src="<dtml-var MISC_ZMS>ico_default.gif" title="default / unmodified" style="margin-right:2" align="absmiddle"></dtml-if
+     ><dtml-if "metadictAttr.get('acquired',0) == 1"><a href="<dtml-var "getPortalMaster().absolute_url()+'/'+URL.split('/')[-1]">?attr=<dtml-var "metadictAttr['key']">" target="_blank"><img src="<dtml-var MISC_ZMS>ico_is_acquired.gif" title="is acquired: <dtml-var "getConfProperty('Portal.Master')">" border="0" align="absmiddle"/></a></dtml-if
+     ><dtml-if has_acquisition><img src="<dtml-var MISC_ZMS>ico_has_acquisition.gif" title="has acquisitions: <dtml-var has_acquisition>" border="0" align="absmiddle"/></dtml-if
+     ><dtml-var "getTextInput('form0','id',10,metadictAttr['id'])">
+    </td>
+    <td class="form-element"><dtml-var "getTextInput('form0','name',10,metadictAttr['name'])"></td>
+    <td class="form-element">
+     <select class="form-element" name="metatype">
+      <option value="">--- <dtml-var "getLangStr('ATTR_PRIMITIVE',manage_lang)"> ---</option>
+      <dtml-in datatypes>
+       <option value="<dtml-var sequence-item>" <dtml-if "_['sequence-item']==metadictAttr['type']">selected="selected"</dtml-if>><dtml-var sequence-item></option>
+      </dtml-in>
+      <dtml-call "REQUEST.set('count',0)">
+      <dtml-in "getMetaobjIds()">
+       <dtml-let metaObj="getMetaobj(_['sequence-item'])">
+        <dtml-unless "metaObj['type']=='ZMSPackage'">
+         <dtml-if "count==0"><option value="">--- <dtml-var "getLangStr('ATTR_OBJECTS',manage_lang)"> ---</option></dtml-if>
+         <option value="<dtml-var "metaObj['id']">" <dtml-if "metaObj['id']==metadictAttr['type']">selected="selected"</dtml-if>><dtml-var "string_maxlen(metaObj['name'],15)"></option>
+         <dtml-call "REQUEST.set('count',count+1)">
+        </dtml-unless>
+       </dtml-let>
+      </dtml-in>
+     </select>
+    </td>
+    <td class="form-element">
+     <dtml-var "getCheckbox(fmName='form0',elName='mandatory:int',value=boolint(metadictAttr.get('mandatory',0)==1),enabled=metadictAttr['type'] in datatypes,hidden=1,REQUEST=REQUEST)">
+    </td>
+    <td class="form-element">
+     <dtml-var "getCheckbox(fmName='form0',elName='multilang:int',value=boolint(metadictAttr.get('multilang',0)==1),enabled=0,hidden=1,REQUEST=REQUEST)">
+    </td>
+    <td class="form-element">
+     <dtml-var "getCheckbox(fmName='form0',elName='repetitive:int',value=boolint(metadictAttr.get('repetitive',0)==1),enabled=0,hidden=1,REQUEST=REQUEST)">
+    </td>
+    <td class="form-element" nowrap="nowrap">
+     <input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_CHANGE',manage_lang)" html_quote>" onclick="btnClick(this);">
+     <dtml-unless has_acquisition><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_DELETE',manage_lang)" html_quote>" onclick="btnClick(this);"></dtml-unless>
+    </td>
+    <td rowspan="2" valign="top" class="form-element"><input class="form-checkbox" type="checkbox" name="attrs:list" value="<dtml-var "metadictAttr['key']">" checked="checked"></td>
+   </tr>
+   <!-- Metadata-Properties -->
+   <tr class="zmiNeutralColorMedium0">
+    <td colspan="7">
+     <table cellspacing="0" cellpadding="5" border="0" width="80%">
+     <tr>
+      <td>
+       <table cellspacing="1" cellpadding="2" border="0" class="zmiNeutralColorStrong0">
+       <tr>
+        <td nowrap="nowrap" class="form-small"><b><dtml-if "metadictAttr['type']=='method'">DTML Method<dtml-else><dtml-var "getLangStr('ATTR_KEYS',manage_lang)"></b> (Select|Multiselect)</dtml-if></td>
+        <td nowrap="nowrap" class="form-small"><b><dtml-var "getLangStr('ATTR_OBJECTS',manage_lang)"></b></td>
+        <td nowrap="nowrap" class="form-small"><b>DTML</b></td>
+       </tr>
+       <tr valign="top" class="zmiNeutralColorMedium0">
+        <td class="form-element">
+         <dtml-if "metadictAttr['type']=='method'">
+          <dtml-var "getTextArea(fmName='form0',elName='custom',cols=20,rows=8,value=metadictAttr['custom'],enabled=1,REQUEST=REQUEST,css='form-fixed',wrap='off')">
+         <dtml-else>
+          <dtml-var "getTextArea(fmName='form0',elName='keys',cols=20,rows=8,value=metadictAttr['keys'],enabled=1,REQUEST=REQUEST)">
+         </dtml-if>
+        </td>
+        <td>
+         <table cellspacing="0" cellpadding="0" border="0">
+          <dtml-in meta_types>
+           <dtml-let meta_type=sequence-item>
+            <dtml-if "dGlobalAttrs.has_key(meta_type) and dGlobalAttrs[meta_type]['obj_attrs'].has_key('$metadict')">
+             <tr>
+              <td><input class="form-checkbox" type="checkbox" name="dst_meta_types:list" value="<dtml-var meta_type>"
+               <dtml-if "meta_type in metadictAttr['dst_meta_types']">
+                checked="checked"
+               </dtml-if>
+              ></td>
+              <td class="form-small">&nbsp;<dtml-var "display_type(REQUEST,meta_type)"></td>
+             </tr>
+            </dtml-if>
+           </dtml-let>
+          </dtml-in>
+         </table>
+        </td>
+        <td class="form-small"><code>getObjProperty('<dtml-var "metadictAttr['key']">',REQUEST)</code></td>
+       </tr>
+       </table>
+      </td>
+     </tr>
+     </table>
+    </td>
+   </tr>
+
+     </dtml-if>
+    <dtml-else>
+     <dtml-if "REQUEST.get('attr','')==''">
+ 
+      <tr valign="middle" <dtml-if "metadictAttr['type']=='delimiter'">bgcolor="#F4F4F4"<dtml-else>class="neutralColorWhite"</dtml-if>>
+       <td class="zmiNeutralColorStrong0"><dtml-var "f_collectionBtn(_,_,url='manage_changeMetadicts?attr=%s'%(metadictAttr['key']))"></td>
+       <td><input class="form-element" type="radio" name="attr" value="<dtml-var "metadictAttr['key']">" onclick="radioOnClick(this,'<dtml-var URL0>');"></td>
+       <td colspan="7">
+        <div class="form-text">
+         <dtml-unless "metadictAttr['type'] in ['delimiter','hint','interface']">
+         <img src="<dtml-var MISC_ZMS>btn_multilang<dtml-var "boolint(metadictAttr['multilang']==1)">.gif" title="<dtml-var "getLangStr('ATTR_MULTILANG',manage_lang)">" border="0" align="absmiddle"/>
+         <dtml-if "metadictAttr['type'] == 'method'"
+          ><img src="<dtml-var MISC_ZMS>ico_method.gif" title="<dtml-var "metadictAttr['id']">: Method" border="0" align="absmiddle"
+         ><dtml-elif "metadictAttr['type'] in datatypes"
+          ><img src="<dtml-var MISC_ZMS>ico_attr.gif" title="<dtml-var "metadictAttr['id']">: Attribute" border="0" align="absmiddle"
+         ><dtml-else
+          ><img src="<dtml-var "display_icon(REQUEST,metadictAttr['type'])">" title="<dtml-var "metadictAttr['id']">: <dtml-var "display_type(REQUEST,metadictAttr['type'])">" border="0" align="absmiddle"
+         ></dtml-if
+         ></dtml-unless
+         ><dtml-if "metadictAttr.get('zms_system',0) == 1"><img src="<dtml-var MISC_ZMS>ico_default.gif" title="default / unmodified" style="margin-right:2" align="absmiddle"></dtml-if
+         ><dtml-if "metadictAttr.get('acquired',0) == 1"><a href="<dtml-var "getPortalMaster().absolute_url()+'/'+URL.split('/')[-1]">?attr=<dtml-var "metadictAttr['key']">" target="_blank"><img src="<dtml-var MISC_ZMS>ico_is_acquired.gif" title="is acquired: <dtml-var "getConfProperty('Portal.Master')">" border="0" align="absmiddle"/></a></dtml-if
+         ><dtml-if has_acquisition><img src="<dtml-var MISC_ZMS>ico_has_acquisition.gif" title="has acquisitions: <dtml-var has_acquisition>" border="0" align="absmiddle"/></dtml-if>
+         <b><dtml-var "metadictAttr['name']"><dtml-if "metadictAttr['mandatory']"><sup style="color:red">*</sup></dtml-if></b>
+         <i>(<dtml-if "metadictAttr['type'] in datatypes"><dtml-var "metadictAttr['type']"><dtml-else><dtml-var "display_type(REQUEST,metadictAttr['type'])"></dtml-if>)</i>
+        </div>
+       </td>
+       <td class="form-element"><input class="form-checkbox" type="checkbox" name="attrs:list" value="<dtml-var "metadictAttr['key']">" <dtml-if "metadictAttr.get('acquired',0) == 1">disabled="disabled"</dtml-if>/></td>
+      </tr>
+
+     </dtml-if>
+    </dtml-if>
+
+    </dtml-let>
+
+  </dtml-in>
+
+  </dtml-if>
+
+  <!-- Insert Metadata -->
+  <dtml-if "REQUEST.get('attr','')==''">
+  <tr>
+   <td colspan="10"><dtml-var "f_headline(_,_,headline=getLangStr('BTN_INSERT',manage_lang))"></td>
+  </tr>
+  <tr class="zmiNeutralColorLight0" valign="bottom">
+    <td colspan="2">&nbsp;</td>
+    <td class="form-element">
+     <dtml-var "getTextInput('form0','_id',10,'')">
+     <div align="right" class="form-small"><dtml-var "getLangStr('ATTR_ID',manage_lang)"></div>
+    </td>
+    <td class="form-element">
+     <dtml-var "getTextInput('form0','_name',10,'')">
+     <div align="right" class="form-small"><dtml-var "getLangStr('ATTR_DISPLAY',manage_lang)"></div>
+    </td>
+    <td class="form-element">
+     <select class="form-element" name="_type">
+      <option value="">--- <dtml-var "getLangStr('ATTR_PRIMITIVE',manage_lang)"> ---</option>
+      <dtml-in datatypes>
+       <option value="<dtml-var sequence-item>"><dtml-var sequence-item></option>
+      </dtml-in>
+      <dtml-call "REQUEST.set('count',0)">
+      <dtml-in "getMetaobjIds()">
+       <dtml-let metaObj="getMetaobj(_['sequence-item'])">
+        <dtml-unless "metaObj['type']=='ZMSPackage'">
+         <dtml-if "count==0"><option value="">--- <dtml-var "getLangStr('ATTR_OBJECTS',manage_lang)"> ---</option></dtml-if>
+         <option value="<dtml-var "metaObj['id']">"><dtml-var "string_maxlen(metaObj['name'],15)"></option>
+         <dtml-call "REQUEST.set('count',count+1)">
+        </dtml-unless>
+       </dtml-let>
+      </dtml-in>
+     </select>
+     <div align="right" class="form-small"><dtml-var "getLangStr('ATTR_TYPE',manage_lang)"></div>
+    </td>
+    <td class="form-element" align="center">
+     <input class="form-checkbox" type="checkbox" name="_mandatory:int" value="1"/>
+     <div align="right" class="form-small" style="margin:0px 2px 0px 2px"><dtml-var "getLangStr('ATTR_MANDATORY',manage_lang)"></div>
+    </td>
+    <td class="form-element" align="center">
+     <input class="form-checkbox" type="checkbox" name="_multilang:int" value="1" checked="checked"/>
+     <div align="right" class="form-small" style="margin:0px 2px 0px 2px"><dtml-var "getLangStr('ATTR_MULTILANG',manage_lang)"></div>
+    </td>
+    <td class="form-element" align="center">
+     <input class="form-checkbox" type="checkbox" name="_repetitive:int" value="1"/>
+     <div align="right" class="form-small" style="margin:0px 2px 0px 2px"><dtml-var "getLangStr('ATTR_REPETITIVE',manage_lang)"></div>
+    </td>
+    <td class="form-element" colspan="2">
+     <input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_INSERT',manage_lang)" html_quote>" onclick="btnClick(this);">
+    </td>
+  </tr>
+  </dtml-if>
+
+ <!-- Acquire Metadata -->
+ <dtml-if "REQUEST.get('attr','')=='' and getPortalMaster() is not _.None">
+  <dtml-call "REQUEST.set('count',0)">
+  <dtml-let thisIds="getMetadictAttrs()" portalMaster="getPortalMaster()">
+    <dtml-in "portalMaster.getMetadictAttrs()">
+     <dtml-let metadictAttrId=sequence-item metadictAttr="portalMaster.getMetadictAttr(metadictAttrId)">
+     <dtml-if "metadictAttrId not in thisIds or not ZMS_THIS.getMetadictAttr(metadictAttrId).get('acquired',0) == 1">
+      <dtml-unless count>
+       <tr>
+        <td colspan="10"><dtml-var "f_headline(_,_,headline='%s: %s'%(getLangStr('BTN_ACQUIRE',manage_lang),portalMaster.getHome().id))"></td>
+       </tr>
+       <tr class="zmiNeutralColorLight0">
+        <td colspan="2">&nbsp;</td>
+        <td colspan="8" class="form-element">
+         <table cellspacing="0" cellpadding="0" border="0">
+         <tr valign="top">
+          <td class="form-element">
+           <select class="form-element" name="aq_id">
+            <option value="">----- <dtml-var "getLangStr('ACTION_SELECT',manage_lang)%getLangStr('TAB_METADATA',manage_lang)"> -----</option>
+      </dtml-unless>
+      <option value="<dtml-var "metadictAttr['id']">"><dtml-var "metadictAttr['id']"> (<dtml-var "search_quote(metadictAttr['name'],30)">)</option>
+      <dtml-call "REQUEST.set('count',count+1)">
+     </dtml-if>
+     </dtml-let>
+    </dtml-in>
+  </dtml-let>
+  <dtml-if count>
+       </select> 
+       <div align="right" class="form-small"><dtml-var "getLangStr('ATTR_ID',manage_lang)"> (<dtml-var "getLangStr('ATTR_DISPLAY',manage_lang)">)</div>
+      </td>
+      <td class="form-element"><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_ACQUIRE',manage_lang)" html_quote>" onclick="btnClick(this);"></td>
+     </tr>
+     </table>
+    </td>
+   </tr>
+  </dtml-if>
+ </dtml-if>
+
+  <!-- Import Metadata-Set -->
+  <dtml-if "REQUEST.get('attr','')==''">
+  <tr>
+   <td colspan="10"><dtml-var "f_headline(_,_,headline='<img src=%smime_type.text_xml.gif alt=XML border=0 align=absmiddle>&nbsp;%s'%(MISC_ZMS,getLangStr('BTN_IMPORT',manage_lang)))"></td>
+  </tr>
+  <tr class="zmiNeutralColorLight0">
+   <td colspan="10">
+    <table cellspacing="0" cellpadding="2" border="0">
+    <tr valign="middle">
+     <td align="right"><div class="form-label"><img src="<dtml-var MISC_ZMS>upload.gif" title="XML" border="0" align="absmiddle"><dtml-var "getLangStr('ATTR_FILE',manage_lang)"></div></td>
+     <td><input class="form-element" name="file" type="file" size="25" accept="text/xml"></td>
+    </tr>
+    <dtml-let pattern="'.metadict.'" conf_files="getConfFiles(pattern)">
+     <dtml-if conf_files>
+      <tr>
+       <td align="right"><div class="form-label"><dtml-var "getLangStr('OR',manage_lang).lower()"></div></td>
+       <td>
+        <select class="form-element" name="init">
+	 <option value="">--- <dtml-var "getLangStr('BTN_INIT',manage_lang)"> (default)... ---</option>
+         <dtml-in conf_files>
+	  <dtml-let conf_file=sequence-item>
+           <option value="<dtml-var conf_file>">$ZMS_HOME/import/<dtml-var conf_file></option>
+	  </dtml-let>
+         </dtml-in>
+        </select>
+       </td>
+      </tr>
+     </dtml-if>
+    </dtml-let>
+    <tr valign="middle">
+     <td>&nbsp;</td>
+     <td><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_IMPORT',manage_lang)" html_quote>" onclick="btnClick(this,'obj');"></td>
+    </tr>
+    </table>
+   </td>
+  </tr>
+  </dtml-if>
+
+  </table>
+ </form>
+
+<dtml-comment>
+<!-- ###################################################################### -->
+</dtml-comment>
+
+</dtml-let>
+
+<dtml-var f_eo_area>
+
+<dtml-var manage_page_footer>

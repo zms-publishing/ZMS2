@@ -1,0 +1,80 @@
+<dtml-comment>
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
++- Language
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+</dtml-comment>
+<dtml-if "_.len(getLangIds())>1">
+<dtml-if "getObjProperty('change_uid',REQUEST)">
+<dtml-let coverage="getDCCoverage(REQUEST)"
+          seq_lang="coverage[coverage.find('.')+1:]"
+          seq_desc_langs="getDescendantLanguages(seq_lang)">
+  <dtml-if "_.len(seq_desc_langs)>1">
+   <dtml-if "coverage.find('global')>=0">
+    <dtml-if "seq_lang!=lang">
+     <dtml-if "isModifiedInParentLanguage(lang,REQUEST)">
+      <dtml-if "getHistory()"
+       ><a href="javascript:open_frame('<dtml-var "getLangStr('ATTR_LANG',manage_lang)">: <dtml-var seq_lang> (<dtml-var "getLangStr('STATE_MODIFIED',manage_lang)">)','<dtml-var absolute_url>/manage_VersionLangModified','lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>',440,320,',resizable=yes,scrollbars=yes')" class="button"
+      ></dtml-if
+      ><img src="<dtml-var MISC_ZMS>btn_lang_modified.gif" title="<dtml-var "getLangStr('ATTR_LANG',manage_lang)">: <dtml-var seq_lang> (<dtml-var "getLangStr('STATE_MODIFIED',manage_lang)">)" border="0" align="absmiddle"
+      ><dtml-if "getHistory()"
+       ></a
+      ></dtml-if>
+     <dtml-else>
+      <img src="<dtml-var MISC_ZMS>btn_lang_local.gif" title="<dtml-var "getLangStr('ATTR_LANG',manage_lang)">: <dtml-var seq_lang>" border="0" align="absmiddle"/>
+     </dtml-if>
+    <dtml-else>   
+     <img src="<dtml-var MISC_ZMS>btn_lang_global.gif" title="<dtml-var "getLangStr('ATTR_LANG',manage_lang)">: <dtml-in seq_desc_langs><dtml-var sequence-item><dtml-unless sequence-end>, </dtml-unless></dtml-in>" border="0" align="absmiddle"/>
+    </dtml-if>
+   </dtml-if>
+  </dtml-if>
+</dtml-let>
+<dtml-else>
+<img src="<dtml-var MISC_ZMS>state_untranslated.gif" border="0" title="<dtml-var "getLangStr('STATE_TRANSLATE',manage_lang)">" border="0" align="absmiddle"/>
+</dtml-if>
+</dtml-if>
+
+<dtml-comment>
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
++- Workflow
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+</dtml-comment>
+<dtml-unless "getAutocommit()">
+<dtml-unless ZMS_VERSION>
+<dtml-if "getObjProperty('work_uid',REQUEST)">
+<dtml-if "getObjProperty('work_dt',REQUEST)">
+<dtml-in "getWfStates(REQUEST)">
+<dtml-let wfState=sequence-item itm="getWfActivity(wfState)">
+<dtml-if "itm.get('icon',_.None)">
+<img src="<dtml-var "getDocumentElement().absolute_url()">/get_conf_blob?path=ZMS.workflow.activities/<dtml-var "itm['id']">/icon" title="<dtml-var "itm['name']"> <dtml-var "getLangStr('BY',manage_lang)"> <dtml-var "getObjProperty('work_uid',REQUEST)"> (<dtml-var "getLangFmtDate(getObjProperty('work_dt',REQUEST),manage_lang)">)" border="0" align="absmiddle" />
+</dtml-if>
+</dtml-let>
+</dtml-in>
+</dtml-if>
+</dtml-if>
+<a href="<dtml-var "getVersionManagerContainer().absolute_url()">/manage_main" class="zmi"
+><dtml-if "inObjStates(['STATE_NEW'],REQUEST)"
+><img src="<dtml-var MISC_ZMS>state_new.gif" title="<dtml-var "getLangStr('STATE_NEW',manage_lang)">" border="0" align="absmiddle"
+></dtml-if
+><dtml-if "inObjStates(['STATE_MODIFIED'],REQUEST)"
+><img src="<dtml-var MISC_ZMS>state_modified.gif" title="<dtml-var "getLangStr('STATE_MODIFIED',manage_lang)">" border="0" align="absmiddle"
+><dtml-elif "_.len(getWfStates(REQUEST)) > 0 and (meta_type == 'ZMSCustom' or not isPageElement()) and (meta_type == 'ZMSLinkContainer' or 'work_uid' in getObjAttrs().keys()) and hasObjModifiedChildren(REQUEST)"
+><img src="<dtml-var MISC_ZMS>state_modified_objs.gif" title="<dtml-var "getLangStr('STATE_MODIFIED',manage_lang)">" border="0" align="absmiddle"
+></dtml-if
+><dtml-if "inObjStates(['STATE_DELETED'],REQUEST)"
+><img src="<dtml-var MISC_ZMS>state_deleted.gif" title="<dtml-var "getLangStr('STATE_DELETED',manage_lang)">" border="0" align="absmiddle"
+></dtml-if
+></a>
+</dtml-unless>
+</dtml-unless>
+
+<dtml-comment>
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
++- Version Info
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+</dtml-comment>
+<dtml-if "getHistory()">
+<dtml-if "REQUEST.form.has_key('ZMS_VERSION_%s'%id)"><b><i></dtml-if>
+v.<dtml-var "getObjProperty('master_version',REQUEST)">.<dtml-var "getObjProperty('major_version',REQUEST)">.<dtml-var "getObjProperty('minor_version',REQUEST)"><dtml-if "REQUEST.get('ZMS_VERSION_%s'%id,'').find(_.str(version_live_id))>=0"> - <dtml-var "getLangStr('TAB_LIVE',manage_lang)"><dtml-elif "REQUEST.get('ZMS_VERSION_%s'%id,'').find(_.str(version_work_id))>=0"> - <dtml-var "getLangStr('TAB_PREVIEW',manage_lang)"></dtml-if>
+<dtml-if "REQUEST.form.has_key('ZMS_VERSION_%s'%id)"></i></b></dtml-if>
+</dtml-if>
+

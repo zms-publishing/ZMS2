@@ -1,0 +1,36 @@
+<table cellspacing="0" cellpadding="0" border="0" width="100%">
+<tr valign="middle" style="background:url(<dtml-var MISC_ZMS>bggradient_black.gif) #000;">
+ <td class="zmiBottom">
+  &nbsp;&copy;&nbsp;<dtml-var "ZopeTime().year()">&nbsp;<a href="http://www.hoffmannliebenberg.de" target="_blank" class="zmiBottom">HOFFMANN+LIEBENBERG</a> 
+ </td>
+ <td align="right">
+  <table cellspacing="0" cellpadding="0" border="0">
+  <form name="manageLangSelectForm" action="<dtml-var URL>" method="get">
+  <input type="hidden" name="lang" value="<dtml-var lang>">
+  <tr valign="middle">
+   <td>
+    <select name="manage_lang" class="zmiBottom" onchange="document.forms['manageLangSelectForm'].submit();" style="color:white;border:0;background-color:#323232">
+    <dtml-in "getManageLanguages()">
+     <option value="<dtml-var sequence-item>" <dtml-if "_['sequence-item']==manage_lang">selected="selected"</dtml-if>><dtml-var "getLangStr('LANG',_['sequence-item'])"></option>
+    </dtml-in>
+    </select>
+   </td>
+   <td class="zmiBottom">
+    <dtml-if ZMI_TIME>
+    <img src="<dtml-var MISC_ZMS>bottom_line.gif" border="0" title="" align="absmiddle"/>
+    <dtml-var "_.float(_.int((ZopeTime().timeTime()-ZMI_TIME)*100.0)/100.0)"> secs.
+    </dtml-if>
+    <img src="<dtml-var MISC_ZMS>bottom_line.gif" border="0" title="" align="absmiddle"/>
+    <dtml-var "getLangStr('YOU_ARE',manage_lang)">: <a href="javascript:open_frame('<dtml-var AUTHENTICATED_USER>','manage_userForm','lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>',440,320,',resizable=yes,scrollbars=yes')" class="zmiBottom"><b><dtml-var "string_maxlen(_.str(AUTHENTICATED_USER),15)"></b></a>
+    <img src="<dtml-var MISC_ZMS>bottom_line.gif" border="0" title="" align="absmiddle"/>
+    <a href="#_top" class="zmiBottom"><img src="<dtml-var MISC_ZMS>bottom_pagetop.gif" border="0" title="<dtml-var "getLangStr('PAGETOP',manage_lang)">" align="absmiddle"/></a>
+   </td>
+  </tr>
+  </form>
+  </table>
+ </td>
+</tr>
+</table>
+</div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<dtml-var f_standard_html_request
+><dtml-if "'headScript' in getHome().objectIds()"
+><dtml-with "getHome()"
+><dtml-var headScript
+></dtml-with
+><dtml-else>
+<script type="text/javascript" charset="UTF-8" src="<dtml-if ZMS_ROOT><dtml-var ZMS_ROOT>/</dtml-if>styleswitcher_js"></script>
+<script type="text/javascript" charset="UTF-8" src="<dtml-if ZMS_ROOT><dtml-var ZMS_ROOT>/</dtml-if>comlib_js?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>"></script>
+<script type="text/javascript" charset="UTF-8" src="<dtml-if ZMS_ROOT><dtml-var ZMS_ROOT>/</dtml-if>managelib_js?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>"></script>
+<script type="text/javascript" charset="UTF-8" src="<dtml-if ZMS_ROOT><dtml-var ZMS_ROOT>/</dtml-if>formlib_js"></script>
+<script type="text/javascript" charset="UTF-8" src="<dtml-if ZMS_ROOT><dtml-var ZMS_ROOT>/</dtml-if>datelib_js"></script>
+</dtml-if>

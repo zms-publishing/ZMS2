@@ -1,0 +1,231 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('CAPTION_EDIT',manage_lang)%display_type(REQUEST)"></title>
+</head>
+
+<dtml-unless skey><dtml-call expr="REQUEST.set('skey', 'id')"></dtml-unless>
+<dtml-unless rkey><dtml-call expr="REQUEST.set('rkey', '')"></dtml-unless>
+
+<dtml-var manage_tabs>
+
+<dtml-var f_bo_area>
+
+<table border="0" width="100%">
+<tr>
+<form action="&dtml-URL1;/" method="get">
+<input type="hidden" name="lang" value="<dtml-var lang>">
+<input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+
+    <!-- ### Icon -->
+    <td valign="middle" nowrap="nowrap">
+    <a name="_<dtml-var id>"></a>
+    <a href="manage_properties?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>"
+      ><img src="<dtml-var "display_icon(REQUEST)">" title="<dtml-var "getLangStr('CAPTION_PROPERTIES',manage_lang)%display_type(REQUEST)">" border="0"
+    ></a
+    ></td>
+
+    <!-- ### Display Type -->
+    <td valign="middle" nowrap="nowrap" class="form-small"> 
+    <a href="manage_properties?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>" class="zmi"
+      ><b><dtml-var "getLangStr('CAPTION_PROPERTIES',manage_lang)%display_type(REQUEST)" fmt="html-quote"></b
+    ></a
+    ></td>
+
+    <!-- ### Action_List -->
+    <td align="right" valign="middle" nowrap="nowrap" class="form-small" width="100%">
+    <dtml-if filtered_meta_types>
+      <select class="form-small" name=":action"
+         onChange="location.href='&dtml-URL1;/'+this.options[this.selectedIndex].value">
+        <option value="manage_workspace">----- <dtml-var "getLangStr('ACTION_INSERT',manage_lang)%display_type(REQUEST)"> -----</option>
+        <dtml-in filtered_meta_types mapping sort=name>
+        <dtml-unless "name.find('ZMS')==0">
+          <option value="&dtml.url_quote-action;"><dtml-var name></option>
+        </dtml-unless>
+        </dtml-in>
+      </select>
+    </dtml-if>
+    </td>
+
+</form>
+</tr>
+</table>
+
+<table cellspacing="0" cellpadding="2" border="0" width="100%" class="zmiNeutralColorStrong0">
+<form name="form0" action="&dtml-URL1;/" name="objectItems" method="post">
+<tr>
+<td valign="top">
+<dtml-if objectItems>
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+<tr class="list-header">
+  <td width="5%" valign="middle"
+    ><a href="javascript:var btn=document.getElementById('slctBtn');var slct=btn.src.indexOf('btn_slctall.gif')>0;if(slct){btn.src='<dtml-var MISC_ZMS>btn_slctnone.gif'} else {btn.src='<dtml-var MISC_ZMS>btn_slctall.gif'};selectCheckboxes(document.forms['form0'],slct);" class="button"
+     ><img id="slctBtn" src="<dtml-var MISC_ZMS>btn_slctall.gif" title="" border="0" width="20" height="20"
+    ></a
+  ></td>
+  <td width="5%" align="right"><div
+   class="list-item"><a href="./manage_main?skey=meta_type<dtml-if
+   "rkey == ''">&rkey=meta_type</dtml-if>"
+   onMouseOver="window.status='Sort objects by type'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if
+   "skey == 'meta_type' or rkey == 'meta_type'"
+   ><strong><dtml-var "getLangStr('ATTR_TYPE',manage_lang)"></strong><dtml-else><dtml-var "getLangStr('ATTR_TYPE',manage_lang)"></dtml-if></a></div>
+  </td>
+  <td width="50%"><div class="list-item"><a
+   href="./manage_main?skey=id<dtml-if
+   "rkey == ''">&rkey=id</dtml-if>"
+   onMouseOver="window.status='Sort objects by name'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if
+   "skey == 'id' or rkey == 'id'"
+   ><strong><dtml-var "getLangStr('ATTR_NAME',manage_lang)"></strong><dtml-else><dtml-var "getLangStr('ATTR_NAME',manage_lang)"></dtml-if></a></div>
+  </td>
+  <td width="15%"><div class="list-item"><a
+   href="./manage_main?skey=get_size<dtml-if
+   "rkey == ''">&rkey=get_size</dtml-if>"
+   onMouseOver="window.status='Sort objects by size'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if
+   "skey == 'get_size' or rkey == 'get_size'"
+   ><strong><dtml-var "getLangStr('ATTR_SIZE',manage_lang)"></strong><dtml-else><dtml-var "getLangStr('ATTR_SIZE',manage_lang)"></dtml-if></a></div>
+  </td>
+  <td width="29%"><div class="list-item"><a
+   href="./manage_main?skey=bobobase_modification_time<dtml-if
+   "rkey == ''">&rkey=bobobase_modification_time</dtml-if
+   >"
+   onMouseOver="window.status='Sort objects by modification time'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if
+   "skey == 'bobobase_modification_time' or rkey == 'bobobase_modification_time'"
+   ><strong><dtml-var "getLangStr('ATTR_LAST_MODIFIED',manage_lang)"></strong><dtml-else><dtml-var "getLangStr('ATTR_LAST_MODIFIED',manage_lang)"></dtml-if></a></div>
+  </td>
+</tr>
+<dtml-in objectItems sort_expr="skey" reverse_expr="rkey">
+<dtml-unless "meta_type=='ZMSAttributeContainer'">
+<dtml-if sequence-odd>
+<tr class="zmiNeutralColorLight0">
+<dtml-else>
+<tr class="zmiNeutralColorMedium0">
+</dtml-if>
+  <td align="center" valign="top"
+    ><input type="checkbox" name="ids:list" value="&dtml-sequence-key;" /></td>
+  <td valign="top">
+  <dtml-if icon>
+  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
+  <img src="&dtml-BASEPATH1;/&dtml-icon;" title="&dtml-meta_type;"
+   title="&dtml-meta_type;" border="0" /></a>
+  <dtml-else>
+  &nbsp;
+  </dtml-if>
+  </td>
+  <td valign="top">
+  <div class="list-item">
+  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
+  &dtml-sequence-key; <dtml-if title>(&dtml-title;)</dtml-if>
+  </a>
+  <dtml-if locked_in_version>
+    <dtml-if modified_in_version>
+      <img src="&dtml-BASEPATH1;/p_/locked"
+       title="This item has been modified in this version" />
+    <dtml-else>
+      <img src="&dtml-BASEPATH1;/p_/lockedo"
+       title="This item has been modified in another version" />
+       (<em>&dtml-locked_in_version;</em>)
+    </dtml-if>
+  </dtml-if>
+  </div>
+  </td>
+
+  <dtml-with sequence-key>
+  <td>
+  <div class="list-item">
+  <dtml-try>
+  <dtml-if get_size>
+  <dtml-let ob_size=get_size>
+  <dtml-if "ob_size < 1024">
+  1 Kb
+  <dtml-elif "ob_size > 1048576">
+  <dtml-var "ob_size / 1048576.0" fmt="%0.02f"> Mb
+  <dtml-else>
+  <dtml-var "_.int(ob_size / 1024)"> Kb
+  </dtml-if>
+  </dtml-let>
+  <dtml-else>
+  &nbsp;
+  </dtml-if>
+  <dtml-except>
+  &nbsp;
+  </dtml-try>
+  </div>
+  </td>
+
+  <td>
+  <div class="list-item">
+  <dtml-var "getLangFmtDate(bobobase_modification_time(),manage_lang)">
+  </div>
+  </td>
+  </dtml-with>
+</tr>
+</dtml-unless>
+</dtml-in>
+</table>
+
+<table cellspacing="0" cellpadding="1" border="0" width="100%">
+<tr>
+  <td valign="top" width="16"></td>
+  <td valign="top" nowrap="nowrap">
+  <div class="form-element">
+  <dtml-unless dontAllowCopyAndPaste>
+  <input class="form-submit" type="submit" name="manage_renameForm:method"
+   value="<dtml-var "getLangStr('BTN_RENAME',manage_lang)" html_quote>" />
+  <input class="form-submit" type="submit" name="manage_cutObjects:method"
+   value="<dtml-var "getLangStr('BTN_CUT',manage_lang)" html_quote>" />
+  <input class="form-submit" type="submit" name="manage_copyObjects:method"
+   value="<dtml-var "getLangStr('BTN_COPY',manage_lang)" html_quote>" />
+  <dtml-if cb_dataValid>
+  <input class="form-submit" type="submit" name="manage_pasteObjects:method"
+   value="<dtml-var "getLangStr('BTN_PASTE',manage_lang)" html_quote>" />
+  </dtml-if>
+  </dtml-unless>
+  <dtml-if "_.SecurityCheckPermission('Delete objects',this())">
+  <input class="form-submit" type="submit" name="manage_delObjects:method"
+   value="<dtml-var "getLangStr('BTN_DELETE',manage_lang)" html_quote>" />
+  </dtml-if>
+  <dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
+  <input class="form-submit" type="submit"
+   name="manage_importExportForm:method"
+   value="Import/Export" />
+  </dtml-if>
+  </div>
+  </td>
+</tr>
+</table>
+
+<dtml-else>
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+<td>
+<div class="std-text">
+<dtml-var "getLangStr('MSG_EMPTYCONTAINER',manage_lang)"> <dtml-var "display_type(REQUEST)"> <em><dtml-var "getTitlealt(REQUEST)">
+<br /><br />
+</div>
+<dtml-unless dontAllowCopyAndPaste>
+<dtml-if cb_dataValid>
+<div class="form-element">
+<input class="form-submit" type="submit" name="manage_pasteObjects:method"
+ value="Paste" />
+</div>
+</dtml-if>
+</dtml-unless>
+<dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
+<input class="form-submit" type="submit"
+  name="manage_importExportForm:method" value="Import/Export" />
+</dtml-if>
+</td>
+</tr>
+</table>
+</dtml-if>
+</td>
+</tr>
+</form>
+</table>
+
+<dtml-var f_eo_area>
+
+<dtml-var manage_page_footer>
+

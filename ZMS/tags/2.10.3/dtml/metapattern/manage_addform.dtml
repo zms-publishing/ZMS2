@@ -1,0 +1,154 @@
+<dtml-call "REQUEST.set('ZMS_INSERT','MetaPattern')">
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('ACTION_INSERT_METAPATTERN',manage_lang)"></title>
+
+<script language="JavaScript">
+<!--//
+
+  function onFormSubmit(fmName) {
+    if (self.btnClicked == "<dtml-var "getLangStr('BTN_INSERT',manage_lang)" html_quote>") {
+      if (document.forms[fmName].elements['id'].value.length==0) {
+         alert("<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_ID',manage_lang)">");
+         return false;
+      }
+      if (document.forms[fmName].elements['title'].value.length==0) {
+         alert("<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_TITLE',manage_lang)">");
+         return false;
+      }
+    }
+    if (self.btnClicked == "<dtml-var "getLangStr('BTN_OVERWRITE',manage_lang)" html_quote>") {
+      if (document.forms[fmName].elements['overwrite_id'].value.length==0) {
+         alert("<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_TITLE',manage_lang)">");
+         return false;
+      }
+    }
+    return true;
+  }
+
+//-->
+</script>
+</head>
+
+<dtml-var "manage_tabs(_,_,my_manage_options=[{'label':getLangStr('TAB_METAPATTERN',manage_lang),'action':''}])">
+
+<dtml-var f_bo_area>
+
+    <dtml-call "REQUEST.set('_count',0)">
+    <dtml-in "getMetapatternIds(REQUEST,meta_type)">
+     <dtml-let oMetapattern="getMetapattern(_['sequence-item'],REQUEST)">
+       <dtml-if "oMetapattern['path']==relative_obj_path()">
+         <dtml-call "REQUEST.set('_count',1)">
+       </dtml-if>
+     </dtml-let>
+    </dtml-in>
+
+  <form name="form0" action="manage_addMetapattern" method="post" onsubmit="return onFormSubmit('form0')" enctype="multipart/form-data">
+  <input type="hidden" name="lang" value="<dtml-var lang>">
+  <input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+  <input type="hidden" name="preview" value="preview">
+
+  <table cellspacing="0" cellpadding="1" border="0" width="100%">
+  <tr>
+   <td width="1%"><input class="form-radio" type="radio" name="overwrite" value="0" <dtml-if "REQUEST['_count']==0">checked="checked"</dtml-if>><td>
+   <td width="100%"><dtml-var "f_headline(_,_,headline=getLangStr('ACTION_INSERT_METAPATTERN',manage_lang))"></td>
+  </tr>
+  <tr>
+   <td width="1%">&nbsp;<td>
+   <td>
+    <table cellspacing="2">
+    <!-- ### ID -->
+    <tr valign="middle">
+     <td nowrap="nowrap" class="form-label"><dtml-var "getLangStr('ATTR_ID',manage_lang)"></td>
+     <td nowrap="nowrap" class="form-element">
+      <dtml-var "getTextInput('form0','id',20,id_quote(getTitlealt(REQUEST)))">
+      <!-- SUBMIT -->
+      <input class="form-submit" type="submit" name="btn" value="<dtml-var "getLangStr('BTN_INSERT',manage_lang)" html_quote>" onclick="self.btnClicked='<dtml-var "getLangStr('BTN_INSERT',manage_lang)" html_quote>';">
+     </td>
+    </tr>
+    <!-- ### Title -->
+    <tr valign="middle">
+     <td><div class="form-label"><dtml-var "getLangStr('ATTR_TITLE',manage_lang)"></div></td>
+     <td><dtml-var "getTextInput('form0','title',40,getTitlealt(REQUEST))"></td>
+    </tr>
+    <!-- ### Size -->
+    <tr valign="middle">
+     <td><div class="form-label"><dtml-var "getLangStr('ATTR_SIZE',manage_lang)"></div></td>
+     <td>
+             <dtml-try>
+              ~
+              <dtml-let ob_size="_.len(aq_parent.manage_exportObject(id=id,download=1))">
+              <dtml-if "ob_size < 1024">
+              1 Kb
+              <dtml-elif "ob_size > 1048576">
+              <dtml-var "ob_size / 1048576.0" fmt="%0.02f"> Mb
+              <dtml-else>
+              <dtml-var "_.int(ob_size / 1024)"> Kb
+              </dtml-if>
+              </dtml-let>
+              <dtml-except>
+              &nbsp;
+             </dtml-try>
+     </td>
+    </tr>
+    	<!-- ### Type -->
+        <tr valign="middle">
+    	  <td nowrap="nowrap"><div class="form-label"><dtml-var "getLangStr('ATTR_TYPE',manage_lang)"></div></td>
+    	  <td nowrap="nowrap"><div class="form-element"><dtml-var "display_type(REQUEST)"></div></td>
+    	</tr>
+    	<!---->
+        </table>
+      </td>
+    </tr>
+    <dtml-if "getMetapatternIds(REQUEST,meta_type)">
+	<tr>
+      <td width="1%"><input class="form-radio" type="radio" name="overwrite" value="1" <dtml-if "REQUEST['_count']>0">checked="checked"</dtml-if>><td>
+      <td width="100%"><dtml-var "f_headline(_,_,headline=getLangStr('ACTION_OVERWRITE_METAPATTERN',manage_lang))"></td>
+	</tr>
+	<tr>
+      <td width="1%">&nbsp;<td>
+      <td>
+        <table cellspacing="2">
+        <tr valign="middle">
+         <td><div class="form-label"><dtml-var "getLangStr('ATTR_TITLE',manage_lang)"></div></td>
+         <td>
+          <div class="form-element">
+           <select class="form-element" name="overwrite_id">
+            <option value="">----- <dtml-var "getLangStr('ACTION_SELECT',manage_lang)%getLangStr('ATTR_TITLE',manage_lang)"> -----</option>
+            <dtml-in "getMetapatternIds(REQUEST,meta_type)">
+             <dtml-let oMetapattern="getMetapattern(_['sequence-item'],REQUEST)">
+               <option value="<dtml-var "oMetapattern['id']">"
+                 <dtml-if "oMetapattern['path']==relative_obj_path()">
+                   selected="selected"
+                 </dtml-if>
+                 ><dtml-var "oMetapattern['title']"
+               ></option>
+             </dtml-let>
+            </dtml-in>
+           </select>
+          </div>
+         </td>
+         <td>
+          <div class="form-element">
+           <input class="form-submit" type="submit" name="btn" value="<dtml-var "getLangStr('BTN_OVERWRITE',manage_lang)" html_quote>" onclick="self.btnClicked='<dtml-var "getLangStr('BTN_OVERWRITE',manage_lang)" html_quote>';">
+          </div>
+         </td>
+        </tr>
+        </table>
+      </td>
+    </tr>
+    </dtml-if>
+    </table>
+
+  <!-- ### SUBMIT -->
+  <hr size="1">
+  <div>
+    <input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_CANCEL',manage_lang)" html_quote>" onclick="self.btnClicked=this.value;">
+    <input class="form-submit" name="btn" type="reset"  value="<dtml-var "getLangStr('BTN_RESET',manage_lang)" html_quote>" onclick="self.btnClicked=this.value;">
+  </div>
+  <br/><br/>
+
+  </form>
+
+<dtml-var f_eo_area>
+
+<dtml-var manage_page_footer>

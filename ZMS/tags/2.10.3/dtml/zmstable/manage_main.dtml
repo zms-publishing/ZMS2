@@ -1,0 +1,257 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('CAPTION_EDIT',manage_lang)%display_type(REQUEST)"></title>
+<script language="JavaScript">
+<!--//
+
+  function table_cell_edit_function(col, row) {
+    if (self.msgWindow) self.msgWindow.close();
+    self.table_fmName = 'form0';
+    self.table_elName = '_' + col + '_' + row;
+    url = "table_cell_edit_html";
+    url += "?lang=<dtml-var lang>";
+    url += "&manage_lang=<dtml-var manage_lang>";
+    url += "&col=" + col;
+    url += "&row=" + row;
+    url += "&cols=<dtml-var "getObjProperty('cols',REQUEST)">";
+    url += "&rows=<dtml-var "getObjProperty('rows',REQUEST)">";
+    open_function(url,550,300,",resizable=no,scrollbars=no");
+  }
+
+  function actionBtnClick(fmName, f, col, row) {
+    var b = true;
+    if (f.indexOf('delete') == 0)
+      b = confirm("<dtml-var "getLangStr('MSG_CONFIRM_DELOBJ',manage_lang)">");
+    if (b) {
+      document.forms[fmName].elements['function'].value = f;
+      document.forms[fmName].elements['col'].value = col;
+      document.forms[fmName].elements['row'].value = row;
+      document.forms[fmName].submit();
+    }
+  }
+
+//-->
+</script>
+</head>
+<dtml-var "manage_tabs(_,_,my_manage_languages=1)">
+<dtml-var f_bo_area>
+<dtml-var checkout>
+
+<form name="form0" action="manage_changeProperties" method="post">
+<input type="hidden" name="function" value="">
+<input type="hidden" name="row" value="">
+<input type="hidden" name="col" value="">
+<dtml-var f_submitInputFields>
+
+<!-- ### Table -->
+<table cellspacing="0" cellpadding="0" border="0">
+<dtml-let inp_size="_.max(4,28/_.max(getObjProperty('cols',REQUEST),1))">
+
+ <tr valign="middle">
+
+  <td class="zmiNeutralColorStrong0">&nbsp;</td>
+  <td class="zmiNeutralColorStrong0"><img src="<dtml-var spacer_gif>" width="8" height="1" border="0" title=""></td>
+
+  <dtml-in "_.range(getObjProperty('cols',REQUEST))">
+   <td align="center" class="zmiNeutralColorStrong0">
+    <table cellspacing="0" cellpadding="0" border="0">
+    <tr class="zmiNeutralColorMedium0">
+     <td class="zmiNeutralColorStrong0"><img src="<dtml-var MISC_ZMS>table_col.gif" border="0" title=""></td>
+     <td
+       ><dtml-if "_['sequence-start'] and getObjProperty('type',REQUEST) in [3,4]"
+       ><img src="<dtml-var spacer_gif>" title="" border="0" class="button"
+       ><dtml-else
+       ><a href="javascript:actionBtnClick('form0','insert_col',<dtml-var sequence-item>,-1)" class="button"
+        ><img src="<dtml-var MISC_ZMS>btn_add.gif" border="0" title="<dtml-var "getLangStr('ACTION_INSERT_COL',manage_lang)">"
+       ></a
+       ></dtml-if
+     ></td>
+     <dtml-unless sequence-start>
+     <td
+       ><a href="javascript:actionBtnClick('form0','move_col_left',<dtml-var sequence-item>,-1)" class="vbutton"
+        ><img src="<dtml-var MISC_ZMS>btn_arr_left.gif" title="<dtml-var "getLangStr('ACTION_MOVELEFT',manage_lang)">" border="0"
+       ></a
+     ></td>
+     </dtml-unless>
+     <dtml-unless sequence-end>
+     <td
+       ><a href="javascript:actionBtnClick('form0','move_col_right',<dtml-var sequence-item>,-1)" class="vbutton"
+        ><img src="<dtml-var MISC_ZMS>btn_arr_right.gif" title="<dtml-var "getLangStr('ACTION_MOVERIGHT',manage_lang)">" border="0"
+       ></a
+     ></td>
+     </dtml-unless>
+     <td
+       ><dtml-if "_['sequence-start'] and getObjProperty('type',REQUEST) in [3,4]"
+       ><img src="<dtml-var spacer_gif>" title="" border="0" class="button"
+       ><dtml-else
+       ><a href="javascript:actionBtnClick('form0','delete_col',<dtml-var sequence-item>,-1)" class="button"
+        ><img src="<dtml-var MISC_ZMS>btn_delete1.gif" border="0" title="<dtml-var "getLangStr('ACTION_DELETE_COL',manage_lang)">"
+       ></a
+       ></dtml-if
+     ></td>
+   </tr>
+   </table>
+ </td>
+ </dtml-in>
+
+  <td class="zmiNeutralColorStrong0"><img src="<dtml-var spacer_gif>" width="8" height="1" border="0" title=""></td>
+  <td class="zmiNeutralColorStrong0">
+   <table cellspacing="0" cellpadding="0" border="0">
+   <tr class="zmiNeutralColorMedium0">
+   <td class="zmiNeutralColorStrong0"><img src="<dtml-var MISC_ZMS>table_col.gif" border="0" title=""></td>
+   <td
+     ><a href="javascript:actionBtnClick('form0','insert_col',<dtml-var "getObjProperty('cols',REQUEST)">,-1)" class="button"
+      ><img src="<dtml-var MISC_ZMS>btn_add.gif" border="0" title="<dtml-var "getLangStr('ACTION_INSERT_COL',manage_lang)">"
+     ></a
+   ></td>
+   </tr>
+   </table>
+  </td>
+ <td class="zmiNeutralColorStrong0"><img src="<dtml-var spacer_gif>" width="8" height="1" border="0" title=""></td>
+
+ </tr>
+ 
+ <tr>
+  <td class="zmiNeutralColorStrong0"><img src="<dtml-var spacer_gif>" border="0" title="" height="8" /></td>
+ </tr>
+
+	<dtml-in "_.range(getObjProperty('rows',REQUEST))">
+	  <dtml-call "REQUEST.set('row',_['sequence-item'])">
+	  <tr valign="middle" <dtml-if sequence-odd>class="ftTRodd"<dtml-else>class="ftTReven"</dtml-if>>
+	   <td class="zmiNeutralColorStrong0">
+	    <table cellspacing="0" cellpadding="0" border="0">
+	    <tr valign="middle" class="zmiNeutralColorMedium0">
+	     <td class="zmiNeutralColorStrong0"><img src="<dtml-var MISC_ZMS>table_row.gif" border="0" title=""></td>
+	     <td
+	      ><dtml-if "_['sequence-start'] and not getObjProperty('type',REQUEST) == 3"
+	       ><img src="<dtml-var spacer_gif>" title="" border="0" class="button"
+	      ><dtml-else
+	       ><a href="javascript:actionBtnClick('form0','insert_row',-1,<dtml-var sequence-item>)" class="button"
+	        ><img src="<dtml-var MISC_ZMS>btn_add.gif" border="0" title="<dtml-var "getLangStr('ACTION_INSERT_ROW',manage_lang)">"
+               ></a
+	      ></dtml-if
+	    ></td>
+	    <td
+	      ><table cellspacing="0" cellpadding="0" border="0"
+	      ><tr
+	       ><td
+	        ><dtml-if "_['sequence-start'] or (_['sequence-index']==1 and not getObjProperty('type',REQUEST) == 3)"
+	         ><img src="<dtml-var spacer_gif>" title="" border="0" class="hbutton"
+	        ><dtml-else
+	         ><a href="javascript:actionBtnClick('form0','move_row_up',-1,<dtml-var sequence-item>)" class="hbutton"
+	          ><img src="<dtml-var MISC_ZMS>btn_arr_up.gif" title="<dtml-var "getLangStr('ACTION_MOVEUP',manage_lang)">" border="0"
+		 ></a
+    	        ></dtml-if
+	       ></td
+	      ></tr
+	      ><tr
+	       ><td
+                ><dtml-if "(_['sequence-start'] and not getObjProperty('type',REQUEST) == 3) or _['sequence-end']"
+	         ><img src="<dtml-var spacer_gif>" title="" border="0" class="hbutton"
+	        ><dtml-else
+	         ><a href="javascript:actionBtnClick('form0','move_row_down',-1,<dtml-var sequence-item>)" class="hbutton"
+	          ><img src="<dtml-var MISC_ZMS>btn_arr_down.gif" title="<dtml-var "getLangStr('ACTION_MOVEDOWN',manage_lang)">" border="0"
+		 ></a
+	        ></dtml-if
+	       ></td
+	      ></tr
+	      ></table
+	    ></td>
+	    <td
+	     ><dtml-if "_['sequence-start'] and not getObjProperty('type',REQUEST) == 3"
+	      ><img src="<dtml-var spacer_gif>" title="" width="20" height="8" border="0" class="button"
+	     ><dtml-else
+	      ><a href="javascript:actionBtnClick('form0','delete_row',-1,<dtml-var sequence-item>)" class="button"
+	       ><img src="<dtml-var MISC_ZMS>btn_delete1.gif" border="0" title="<dtml-var "getLangStr('ACTION_DELETE_ROW',manage_lang)">"
+	      ></a
+	     ></dtml-if
+	    ></td>
+	    </tr>
+	    </table
+
+	  ></td>
+
+	  <td></td>
+
+	  <dtml-in "getRow(row,REQUEST)">
+	    <dtml-call "REQUEST.set('col',_['sequence-index'])">
+	    <dtml-if "row==0 and col==0 and getObjProperty('type',REQUEST) == 4">
+	     <td>&nbsp;</td>
+	    <dtml-else>
+	    <dtml-let oCell="getCell(row,col,REQUEST)">
+	    <td colspan="<dtml-var "oCell['colspan']">">
+	    <div class="ZMSTable">
+	    <table>
+	    <tr>
+	    <<dtml-var "oCell['tag']"> nowrap="nowrap">
+	     <input type="hidden" name="tag_<dtml-var col>_<dtml-var row>" value="<dtml-var "oCell['tag']">">
+	     <input type="hidden" name="format_<dtml-var col>_<dtml-var row>" value="<dtml-var "oCell['format']">">
+	     <dtml-var "getTextArea('form0','cell_%i_%i'%(col,row),_.int(inp_size)*_.int(oCell['colspan']),1,oCell['content'],enabled=_.True,REQUEST=REQUEST,css='form-element',extra=' style=width:%ipx;'%(8*_.int(inp_size)*_.int(oCell['colspan'])))">
+	     <a href="javascript:table_cell_edit_function(<dtml-var col>,<dtml-var row>)"><img src="<dtml-var MISC_ZMS>table_cell_edit.gif" border="0" title="<dtml-var "getLangStr('ACTION_EDIT_CELL',manage_lang)">"></a>
+	    </<dtml-var "oCell['tag']">>
+	    </tr>
+	    </table>
+	    </div>
+	    </td>
+	    </dtml-let>
+	    </dtml-if>
+	  </dtml-in>
+	  <td colspan="3" style="border-left: solid 1px black; border-top: solid 1px #CCCCCC; border-right: solid 1px #CCCCCC;">&nbsp;</td>
+
+	  </tr>
+	</dtml-in>
+
+	<tr valign="top">
+	 <td class="zmiNeutralColorStrong0"
+	  ><table cellspacing="0" cellpadding="0" border="0">
+	   <tr>
+	    <td class="zmiNeutralColorStrong0"><img src="<dtml-var MISC_ZMS>table_row.gif" border="0" title=""></td>
+	    <td class="zmiNeutralColorMedium0" width="100%"
+	      ><a href="javascript:actionBtnClick('form0','insert_row',-1,<dtml-var "getObjProperty('rows',REQUEST)">)" class="button"
+	       ><img src="<dtml-var MISC_ZMS>btn_add.gif" border="0" title="<dtml-var "getLangStr('ACTION_INSERT_ROW',manage_lang)">"
+	      ></a
+	    ></td>
+	   </tr>
+	   </table
+	 ></td>
+	 <td><img src="<dtml-var spacer_gif>" title="" width="8" height="1" border="0"></td>
+	 <dtml-in "_.range(getObjProperty('cols',REQUEST))">
+	  <td style="border-left: solid 1px #CCCCCC; border-top: solid 1px black; border-bottom: solid 1px #CCCCCC;">&nbsp;</td>
+	 </dtml-in>
+	 <td colspan="3" style="border-left: solid 1px #CCCCCC; border-top: solid 1px #CCCCCC; border-right: solid 1px #CCCCCC; border-bottom: solid 1px #CCCCCC;">&nbsp;</td>
+	</tr>
+
+</dtml-let>
+
+</table>
+
+<table cellspacing="0" cellpadding="0" border="0" height="24" width="100%">
+<colgroup>
+ <col width="20%" />
+ <col width="80%" />
+</colgroup>
+
+<!-- ### Caption -->
+<tr>
+ <td><div class="form-label"><dtml-var "getLangStr('ATTR_CAPTION',manage_lang)"></div></td>
+ <td><dtml-var "getObjInput('caption',REQUEST)"></td>
+</tr>
+
+<!-- ### Align -->
+<tr>
+ <td><div class="form-label"><dtml-var "getLangStr('ALIGN',manage_lang)"></div></td>
+ <td><dtml-var "getObjInput('align',REQUEST)"></td>
+</tr>
+
+<!-- ### Meta-Attributes -->
+<dtml-var "f_metaInputFields(_,_,fmName='form0',my_meta_type=this().meta_type)">
+
+</table>
+
+<!-- ### Buttons -->
+<dtml-var f_submitBtn>
+
+</form>
+
+<dtml-var f_eo_area>
+<dtml-var manage_page_footer>
+

@@ -1,0 +1,5 @@
+<!-- BO manage_login -->
+
+<dtml-call "RESPONSE.redirect(getHref2IndexHtml(REQUEST)+'?manage_tabs_message='+url_quote(REQUEST.get('manage_tabs_message','')))">
+
+<!-- EO manage_login -->

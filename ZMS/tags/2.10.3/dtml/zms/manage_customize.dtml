@@ -1,0 +1,610 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('TAB_CONFIGURATION',manage_lang)"> <dtml-var "display_type(REQUEST)"></title>
+</head>
+
+<dtml-var manage_tabs>
+<dtml-var "manage_tabs_sub(_,_,my_manage_options=customize_manage_options(lang,manage_lang,REQUEST))">
+
+<dtml-var f_bo_area>
+
+<table cellspacing="1" cellpadding="1" border="0" class="zmiNeutralColorStrong1" width="100%">
+<!------------------------------------------------------------------------>
+<tr valign="top" class="zmiNeutralColorLight0">
+<td width="50%">
+
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   C O N F I G U R A T I O N
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+<a name="_Import"></a>
+<form name="CatalogForm" action="manage_customizeSystem" method="post" enctype="multipart/form-data">
+<input type="hidden" name="key" value="Import">
+<input type="hidden" name="lang" value="<dtml-var lang>">
+<input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+<dtml-var "f_headline(_,_,headline='<img src=%smime_type.application_zip.gif alt=ZIP border=0 align=absmiddle>&nbsp;%s'%(MISC_ZMS,'CONFIGURATION'))">
+<div class="form-small">Import complete configuration packages with language-dictionaries, metadata-, special-object-, action- and filter-definitions contained in one single zip-archive.</div>
+<table cellspacing="0" cellpadding="1" border="0">
+<tr valign="middle">
+ <td class="form-label" align="right"><img src="<dtml-var MISC_ZMS>upload.gif" title="ZIP" border="0" align="absmiddle"><dtml-var "getLangStr('ATTR_FILE',manage_lang)"></td>
+ <td class="form-small"><input class="form-small" name="file" type="file" size="25" accept="text/xml"></td>
+</tr>
+    <dtml-let pattern="'.conf.zip'" conf_files="getConfFiles(pattern)">
+     <dtml-if conf_files>
+      <tr>
+       <td class="form-label" align="right">
+        <dtml-var "getLangStr('OR',manage_lang).lower()">
+       </td>
+       <td colspan="7" class="form-small" nowrap="nowrap">
+        <select class="form-small" name="init">
+	 <option value="">--- Init... ---</option>
+         <dtml-in conf_files>
+	  <dtml-let conf_file=sequence-item>
+           <option value="<dtml-var conf_file>">$ZMS_HOME/import/<dtml-var conf_file></option>
+	  </dtml-let>
+         </dtml-in>
+        </select>
+       </td>
+      </tr>
+     </dtml-if>
+    </dtml-let>
+<tr valign="middle">
+ <td>&nbsp;</td>
+ <td class="form-element"><input class="form-submit" name="btn" type="submit" value="Import" onclick="btnClick(this,'obj');"></td>
+</tr>
+</table>
+</form>
+<br/>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   Z C A T A L O G
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+<a name="_Catalog"></a>
+<form name="CatalogForm" action="manage_customizeSystem" method="post">
+<input type="hidden" name="key" value="Catalog">
+<input type="hidden" name="lang" value="<dtml-var lang>">
+<input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+<dtml-var "f_headline(_,_,headline='Search')">
+<div class="form-small">Refresh the zcatalog-indices if objects were modified.</div>
+<table cellspacing="0" cellpadding="1" border="0">
+<dtml-with "getCatalog()">
+<tr valign="middle">
+ <td class="form-small"><b>Catalog-Id</b></td>
+ <td class="form-small"><dtml-var id> <i>(<dtml-var meta_type>)</i></td>
+</tr>
+<tr valign="middle">
+ <td class="form-small"><b>Catalog-Awareness</b></td>
+ <td class="form-small"><input class="form-checkbox" type="checkbox" name="active:int" value="1" <dtml-if "getConfProperty('ZMS.CatalogAwareness.active',1)==1">checked="checked"</dtml-if>></td>
+</tr>
+<tr valign="middle">
+ <td class="form-small">&nbsp;</td>
+ <td class="form-small">
+  <input class="form-submit" type="submit" name="btn" value="Change" onclick="self.btnClicked=this.value;">
+  <input class="form-submit" type="submit" name="btn" value="Refresh" onclick="self.btnClicked=this.value;">
+ </td>
+</tr>
+</dtml-with>
+</table>
+</form>
+<br/>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   H I S T O R Y  ( V E R S I O N )
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+<a name="_History"></a>
+<form name="HistoryForm" action="manage_customizeSystem" method="post">
+<input type="hidden" name="key" value="History">
+<input type="hidden" name="lang" value="<dtml-var lang>">
+<input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+<input type="hidden" name="preview" value="preview">
+<dtml-var "f_headline(_,_,headline='History')">
+<div class="form-small">Activate or deactivate the integrated history-mechanism.</div>
+<table cellspacing="0" cellpadding="1" border="0">
+<tr valign="middle">
+ <td class="form-small" nowrap="nowrap"><b>Active</b></td>
+ <td class="form-small"><input class="form-checkbox" type="checkbox" name="active:int" value="1" <dtml-if "getConfProperty('ZMS.Version.active',0)==1">checked="checked"</dtml-if>></td>
+ <td class="form-small"><textarea class="form-small" title="Nodes" cols="20" rows="1" name="nodes" wrap="virtual" style="height:20px"><dtml-var "'\n'.join(getConfProperty('ZMS.Version.nodes',['{$}']))"></textarea></td>
+ <td class="form-small"><input class="form-small" type="submit" value="?" onclick="return versionNodesDivDisplay(this);"/></td>
+</tr>
+<tr valign="middle">
+ <td></td>
+ <td class="form-small" colspan="2">
+  <input class="form-submit" type="submit" name="btn" value="Change" onclick="self.btnClicked=this.value;">
+ </td>
+</tr>
+</table>
+ <script language="JavaScript">
+ <!--//
+   function versionNodesDivDisplay(el) {
+     var versionNodesDiv = document.getElementById( 'versionNodesDiv');
+     if (el) {
+       var coords = {x: 0, y: 0};
+       var element = el;
+       while (element) {
+         coords.x += element.offsetLeft;
+         coords.y += element.offsetTop;
+         element = element.offsetParent;
+       }    
+       versionNodesDiv.style.visibility = 'visible';
+       versionNodesDiv.style.display = 'block';
+       versionNodesDiv.style.position = 'absolute';
+       versionNodesDiv.style.top = (coords['y']+el.height)+"px";
+       versionNodesDiv.style.left = (coords['x']+el.width)+"px";    
+     }
+     else {
+       versionNodesDiv.style.visibility = 'hidden';
+       versionNodesDiv.style.display = 'none';
+     }
+     return false;
+   }
+ //-->
+ </script>
+ <div id="versionNodesDiv" class="form-small" style="background-color:#ffffe0;visibility:hidden;display:none;position:absolute;">
+  <div align="right"><a href="#" onclick="versionNodesDivDisplay(null);" onmouseover="document.icon_logout.src='<dtml-var MISC_ZMS>icon_logout1.gif'" onmouseout="document.icon_logout.src='<dtml-var MISC_ZMS>icon_logout0.gif'"><img id="icon_logout" src="<dtml-var MISC_ZMS>icon_logout0.gif" alt="<dtml-var "getLangStr('BTN_CLOSE',manage_lang)">" border="0" align="absmiddle"/></a></div>
+  <div class="form-small" style="padding:4px;">
+  <dtml-in "getConfProperty('ZMS.Version.nodes',['{$}'])">
+   <dtml-let node=sequence-item ob="getLinkObj(node,REQUEST)">
+    <div class="form-small">    
+     <dtml-if "ob is not _.None">
+      <dtml-var "f_breadcrumbs(_,_,objectPathElements=ob.breadcrumbs_obj_path(),no_icon=1,REQUEST=REQUEST)">
+     <dtml-else>
+      <img src="<dtml-var MISC_ZMS>internal_link_broken.gif" title="" alt="" border="0" align="absmiddle"/> <dtml-var node>
+     </dtml-if>
+    </div>
+   </dtml-let>
+  </dtml-in>
+  </div>
+ </div>
+</form>
+<br/>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   S T A T I C   C A C H E
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+<form name="cacheForm" action="manage_changeCacheProperties" method="post">
+<input type="hidden" name="lang" value="<dtml-var lang>">
+<input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+<a name="_cache"></a>
+<dtml-var "f_headline(_,_,headline='Static Cache')">
+<div class="form-small">Activate or deactivate the integrated static-cache.</div>
+<table cellspacing="0" cellpadding="1" border="0">
+<tr valign="middle">
+ <td class="form-small"><b>Mechanism</b></td>
+ <td class="form-small">
+  <input class="form-checkbox" type="checkbox" name="cache_active:int" value="1" <dtml-if "getConfProperty('ZMS.cache.active')==1">checked="checked"</dtml-if>>&nbsp;Pages&nbsp;&nbsp;&nbsp;
+ </td>
+</tr>
+<dtml-if "getConfProperty('ZMS.cache.active')==1">
+<tr valign="middle">
+ <td class="form-small"><b>Last refresh</b></td>
+ <td class="form-small"><dtml-var "getLangFmtDate(getConfProperty('ZMS.cache.cleared.time',_.None),manage_lang)"> <dtml-if "getConfProperty('ZMS.cache.empty',1)==1">(<i>empty</i>)</dtml-if></td>
+</tr>
+</dtml-if>
+<tr valign="middle">
+ <td></td>
+ <td class="form-small">
+  <input class="form-submit" type="submit" name="btn" value="Change" onclick="self.btnClicked=this.value;">
+  <dtml-if "getConfProperty('ZMS.cache.active')==1">
+   <input class="form-submit" type="submit" name="btn" value="Clear" onclick="self.btnClicked=this.value;">
+  </dtml-if>
+ </td>
+</tr>
+</table>
+</form>
+<br/>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   I N S E R T   S E L E C T
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+<a name="_StandardObjects"></a>
+<form name="StandardObjectsForm" action="manage_customizeSystem" method="post">
+<input type="hidden" name="key" value="StandardObjects">
+<input type="hidden" name="lang" value="<dtml-var lang>">
+<input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+<dtml-var "f_headline(_,_,headline='Insertable Objects')">
+<div class="form-small">Select all objects that can be inserted by the select-lists of the management interface.</div>
+<table cellspacing="0" cellpadding="1" border="0">
+<tr valign="top">
+ <td class="form-small"><b>Active</b></td>
+ <td class="form-small">
+  <select class="form-small" name="meta_types:list" size="10" multiple="multiple">
+  <dtml-in "getMetaTypes(REQUEST)">
+   <dtml-let meta_type=sequence-item>
+    <option value="<dtml-var meta_type>"
+     <dtml-if "getConfProperty('%s.enabled'%meta_type,1)==1">selected="selected"</dtml-if>
+     ><dtml-var "display_type(REQUEST,meta_type)"
+    ></option>
+   </dtml-let>
+  </dtml-in>
+  </select>
+ </td>
+</tr>
+<tr valign="top">
+ <td class="form-small">&nbsp;</td>
+ <td class="form-small"><input class="form-submit" name="btn" type="submit" value="Change"></td>
+</tr>
+</table>
+</form>
+<br/>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   A S P
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+<a name="_ASP"></a>
+<form name="form3" action="manage_customizeSystem" method="post">
+<input type="hidden" name="key" value="ASP">
+<input type="hidden" name="lang" value="<dtml-var lang>">
+<input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+<input type="hidden" name="preview" value="preview">
+<dtml-var "f_headline(_,_,headline='ASP')">
+<table cellspacing="0" cellpadding="1" border="0">
+<tr valign="top">
+  <td colspan="2" class="form-label"><dtml-var "getLangStr('ATTR_URL',manage_lang)"></td>
+</tr>
+<tr valign="top">
+  <td class="form-small"><b>IP / Domain</b></td>
+  <td class="form-small">
+   <dtml-var "getTextInput(fmName='form3',elName='asp_ip_or_domain',value=getConfProperty('ASP.ip_or_domain',''),size=15,enabled=1,REQUEST=REQUEST,css='form-small')"></td>
+   <dtml-if "_.hasattr(this(),'zms_vhost.conf')">
+    <dtml-if "getConfProperty('ASP.ip_or_domain','')">
+     <b>[</b><a href="zms_vhost.conf" target="_blank" class="form-text"><dtml-var "getHome().id">_vhost.conf</a><b>]</b>
+    </dtml-if>
+   </dtml-if>
+  </td>
+</tr>
+<tr valign="top">
+  <td class="form-small"><b>Admin e-Mail</b></td>
+  <td class="form-small"><dtml-var "getTextInput(fmName='form3',elName='zmsadministrator_email',value=getConfProperty('ZMSAdministrator.email',''),size=15,enabled=1,REQUEST=REQUEST,css='form-small')"></td>
+</tr>
+<tr valign="middle">
+  <td></td>
+  <td class="form-small"><input class="form-submit" type="submit" name="btn" value="Change" onclick="self.btnClicked=this.value; "></td>
+</tr>
+</table>
+</form>
+<br />
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   L o g
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+<a name="_Log"></a>
+<form name="LogForm" action="manage_customizeSystem" method="post">
+<input type="hidden" name="key" value="Log">
+<input type="hidden" name="lang" value="<dtml-var lang>">
+<input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+<dtml-var "f_headline(_,_,headline='Log')">
+<div class="form-small">This page lists the messages that have occurred in ZMS recently.  You can configure how many messages should be kept.</div>
+<table cellspacing="0" cellpadding="1" border="0">
+<tr>
+ <dtml-if zms_log>
+  <td class="form-small" nowrap="nowrap"><a href="<dtml-var "zms_log.absolute_url()">/manage_properties" target="_blank" class="zmi"><img src="<dtml-var "zms_log.icon">" title="<dtml-var "zms_log.meta_type">" border="0" align="absmiddle"/><dtml-var "zms_log.id"></a></td>
+  <td class="form-small"><input type="submit" name="btn" value="Remove" /></td>
+ <dtml-else>
+  <td class="form-small" nowrap="nowrap"></td>
+  <td class="form-small"><input type="submit" name="btn" value="Create" /></td>
+ </dtml-if>
+</tr>
+</table>
+</form>
+<br />
+
+</td>
+<!------------------------------------------------------------------------>
+<td width="50%">
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   P o r t a l - C l i e n t s
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+<a name="_Clients"></a>
+<form action="manage_customizeSystem" method="post">
+<input type="hidden" name="key" value="Clients">
+<input type="hidden" name="lang" value="<dtml-var lang>">
+<input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+<dtml-var "f_headline(_,_,headline='Portal')">
+<div class="form-small">Register the folder-ids of this site's master- and client-sites.</div>
+<table cellspacing="0" cellpadding="1" border="0">
+<tr valign="top">
+  <td class="form-small"><b>Master</b></td>
+  <td class="form-small"><input class="form-small" type="text" name="portal_master" value="<dtml-var "getConfProperty('Portal.Master','')">" size="40"></td>
+</tr>
+<tr valign="top">
+  <td class="form-small"><b>Clients</b></td>
+  <td class="form-small">
+    <textarea class="form-small" name="portal_clients" cols="40" rows="5" wrap="off"
+     ><dtml-in "getConfProperty('Portal.Clients',[])"
+     ><dtml-var "'%s\n'%_['sequence-item']"></dtml-in
+    ></textarea>
+  </td>
+</tr>
+<tr valign="top">
+  <td></td>
+  <td class="form-small"><input class="form-submit" type="submit" name="btn" value="Change"></td>
+</tr>
+</table>
+</form>
+<br/>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   M i s c e l l e a n e o u s
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+<dtml-let res="[
+   {'key':'ZMS.blobfields.grant_public_access','title':'Grant public access to blob-fields','desc':'Blob-fields in restricted nodes are not visible. You may grant public access to blob-fields by activating this option.','datatype':'boolean'},
+   {'key':'ZMS.blobfields.accept_ranges','title':'Http-Header Accept-Ranges for blob-fields','desc':'Http-Header Accept-Ranges for blob-fields.','datatype':'string','default':'bytes'},
+   {'key':'ZMS.compactview.pagecount.min','title':'Compact-view','desc':'ZMS can display object-lists longer than specified parameter as compact-view.','datatype':'string'},
+   {'key':'ZMS.locale.amount.unit','title':'Currency unit for amount-types','desc':'The currency unit used for amount-types.','datatype':'string','default':'EUR'},
+   {'key':'ZMS.pathhandler','title':'Declarative URLs','desc':'ZMS can use declarative URLs based on DC.Identifier.Url.Node (or DC.Title.Alt).','datatype':'boolean'},
+   {'key':'ZMS.pathcoherence','title':'Coherent URLs','desc':'ZMS can use full path-coherent URLs. Disable this option if you have problems with your VirtualHost-configuration.','datatype':'boolean','default':1},
+   {'key':'ZMS.pathcropping','title':'Crop URLs','desc':'ZMS can crop the SERVER_NAME from URLs.','datatype':'boolean'},
+   {'key':'ZMS.contenteditable','title':'Direct Editing','desc':'Users can change the contents of a Web page when the contentEditable property is set to TRUE.','datatype':'boolean'},
+   {'key':'ZMS.manage_tabs_message','title':'Global Message','desc':'ZMS can display a global message for all users in the management interface.','datatype':'text'},
+   {'key':'ZMS.http_accept_language','title':'Http Accept Language','desc':'ZMS can use the HTTP_ACCEPT_LANGUAGE request-parameter to determine initial language.','datatype':'boolean'},
+   {'key':'ZMS.export.domains','title':'Export resources from external domains','desc':'ZMS can export resources from external domains in the HTML export.','datatype':'string'},
+   {'key':'ZMS.export.pathhandler','title':'Export XHTML with decl. Document Ids','desc':'Please activate this option, if you would like to generate declarative document URLs for static XHTML-Export: /documentname/index_eng.html will be transformed to /documentname.html','datatype':'boolean'},
+   {'key':'ZMS.export.xml.tidy','title':'Export with HTML Tidy Library','desc':'ZMS can use the HTML Tidy Library to process inline (X)HTML in the XML export to avoid CDATA-sections.','datatype':'boolean'},
+   {'key':'ZMS.checkout.max_time','title':'Max. lock-time','desc':'Specify max. time [h] for locked-objects.','datatype':'int','default':1},
+   {'key':'ZMS.input.file.maxlength','title':'Upload-file maxlength','desc':'ZMS can limit the maximum upload-file size to the given value (in Bytes).','datatype':'string'},
+   {'key':'ZMS.input.image.maxlength','title':'Upload-image maxlength','desc':'ZMS can limit the maximum upload-image size to the given value (in Bytes).','datatype':'string'},
+   {'key':'ZCatalog.portalClients','title':'Search portal-clients','desc':'Allow search in portal-clients','datatype':'boolean','default':1},
+   {'key':'ZCatalog.TextIndexNG','title':'Search with TextIndexNG','desc':'Use TextIndexNG for catalog-indexing.','datatype':'boolean'},
+   {'key':'ZMS.cache.synchronize.onpagechange','title':'Synchronize static cache on page change.','desc':'Synchronize static cache on page change. Since the cache for the whole site is synchronized this option is only recommended for smaller sites.','datatype':'boolean'},
+   {'key':'ZMS.cache.synchronize.daily','title':'Synchronize static cache daily.','desc':'Synchronize static cache daily.','datatype':'boolean'},
+   {'key':'ZMS.workflow.highlightChanges','title':'Highlight workflow changes.','desc':'Highlight workflow changes: light-blue box for new/modified objects, light-red box and strike-through red text for deleted objects.','datatype':'boolean'},
+  ]">
+<dtml-if "REQUEST.form.get('option','')=='ZMS.compactview.pagecount.min'">
+ <dtml-call "REQUEST.set('pageCountMin',_.int(getConfProperty('ZMS.compactview.pagecount.min','99999')))">
+ <dtml-call "SESSION.set('pageCountMax',REQUEST.get('pageCountMin'))">
+</dtml-if>
+<a name="Custom"></a>
+<form name="customForm" action="manage_customizeSystem" method="post">
+<input type="hidden" name="key" value="Custom">
+<input type="hidden" name="lang" value="<dtml-var lang>">
+<input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+<dtml-var "f_headline(_,_,headline='Miscellaneous')">
+<table cellspacing="0" cellpadding="1" border="0">
+<dtml-if "_.len( REQUEST.form.get( 'conf_key', '')) == 0">
+ <tr valign="middle">
+  <td class="form-small"><b>Option</b></td>
+  <td class="form-small">
+   <select class="form-small" name="option" onchange="location.href='<dtml-var URL>?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&option='+this.options[this.selectedIndex].value;">
+    <option value="">--- Select option ---</option>
+    <dtml-in res mapping>
+     <option value="<dtml-var key>" <dtml-if "REQUEST.form.get('option','')==key">selected="selected"</dtml-if>><dtml-var title></option>
+    </dtml-in>
+   </select>
+  </td>
+ </tr>
+ <dtml-in res mapping>
+  <dtml-let item=sequence-item>
+  <dtml-if "REQUEST.form.get('option','')==key">
+   <tr valign="middle">
+    <td class="form-small"><b>Value</b></td>
+    <td class="form-small">
+     <dtml-if "datatype=='boolean'">
+      <dtml-var "getCheckbox(fmName='customForm',elName='value:int',value=getConfProperty(key,item.get('default',0)),enabled=1,hidden=0,REQUEST=REQUEST)">
+     <dtml-else>
+      <dtml-var "getTextInput(fmName='customForm',elName='value',value=getConfProperty(key,item.get('default','')),size=15,enabled=1,REQUEST=REQUEST,css='form-small')">
+     </dtml-if>
+     <input class="form-submit" type="submit" name="btn" value="Change">
+    </td>
+   </tr>
+   <tr valign="middle">
+    <td colspan="2" class="form-small"><textarea class="form-small" style="background-color: #FFFFC0; width:280px" cols="20" rows="3"><dtml-var desc></textarea></td>
+   </tr>
+  </dtml-if>
+  </dtml-let>
+ </dtml-in>
+</dtml-if>
+</dtml-let>
+<dtml-if "_.len( REQUEST.form.get( 'option', '')) == 0">
+ <tr valign="middle">
+  <td class="form-small"><b>Key</b></td>
+  <td class="form-small">
+   <input class="form-small" name="conf_key" value="<dtml-var "REQUEST.get('conf_key','')">">
+   <input class="form-small" type="submit" name="btn" value="..." onclick="this.form.action=''">
+  </td>
+ </tr>
+ <dtml-if "_.len(REQUEST.get('conf_key',''))>0">
+ <tr valign="middle">
+  <td class="form-small"><b>Value</b></td>
+  <td class="form-small">
+   <dtml-var "getTextArea(fmName='customForm',elName='conf_value',cols=20,rows=5,value=toXmlString(getConfProperty(conf_key,_.None)),enabled=1,REQUEST=REQUEST,css='form-fixed',wrap='off')">
+   <input class="form-submit" type="submit" name="btn" value="Change">
+  </td>
+ </tr>
+</dtml-if>
+</dtml-if>
+</table>
+</form>
+<br/>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   M e d i a D B
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+<a name="_MediaDb"></a>
+<form action="manage_customizeSystem" method="post">
+<input type="hidden" name="key" value="MediaDb">
+<input type="hidden" name="lang" value="<dtml-var lang>">
+<input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+<dtml-var "f_headline(_,_,headline='Media-Folder')">
+<div class="form-small">Use the Media-Folder to store binary data of media (e.g. images, files) in the file-system of your server instead of ZODB.</div>
+<table cellspacing="0" cellpadding="1" border="0">
+  <dtml-if "getMediaDb() is _.None">
+  <tr valign="middle">
+   <td>&nbsp;</td>
+   <td class="form-small"><b>Location</b></td>
+   <td class="form-small"><input class="form-small" type="text" name="mediadb_location" value="" size="40"></td>
+  </tr>
+  <tr valign="middle">
+   <td></td>
+   <td class="form-small"><input class="form-submit" type="submit" name="btn" value="Create"></td>
+  </tr>
+  <dtml-else>
+  <tr valign="middle">
+   <td class="form-small"><b>Location</b></td>
+   <td class="form-small"><dtml-var "getMediaDb().location"></td>
+  </tr>
+  <tr valign="middle">
+   <td></td>
+   <td class="form-small">
+    <input class="form-submit" type="submit" name="btn" value="Remove">
+    <dtml-if "getMediaDb().location.replace('\\','/').find('/'+getHome().id)>=0">
+     <input class="form-submit" type="submit" name="btn" value="Pack">
+    </dtml-if> 
+   </td>
+  </tr>
+  </dtml-if>
+</table>
+</form>
+<br/>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   I n s t a l l e d   P r o d u c t s
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+<a name="_InstalledProducts"></a>
+<form name="InstalledProductsForm" action="manage_customizeSystem" method="post">
+<input type="hidden" name="key" value="InstalledProducts">
+<input type="hidden" name="lang" value="<dtml-var lang>">
+<input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+<dtml-var "f_headline(_,_,headline='Installed Products')">
+<table cellspacing="0" cellpadding="1" border="0">
+  <tr valign="top">
+    <td class="form-small"><input class="form-checkbox" type="checkbox" name="pil:int" value="1" <dtml-if "getConfProperty('InstalledProducts.pil')==1">checked="checked"</dtml-if>></td>
+    <td class="form-small">
+      <b><a href="http://www.pythonware.com/products/pil/" target="_blank" class="zmi">Python Imaging Library (PIL)</a><br/>required by Image-Processor</b><br/>
+      <dtml-if "Control_Panel.sys_platform().find('win')>=0">
+        <u>IMPORTANT NOTE</u>: The path to the <code>python.exe</code> <b>must be included</b> in the Windows PATH environment variable.
+        Also refer to <a href="http://www.zope.org/Members/SmileyChris/howto/pil_for_windows" class="zmi">Installing PIL into Zope for Windows</a> by SmileyChris
+      <dtml-elif "Control_Panel.sys_platform().find('linux')>=0">
+        <u>IMPORTANT NOTE</u>: The path to the <code>PIL</code> <b>must be included</b> in the PYTHONPATH environment variable.
+        You should replace <code>$PILHOME</code> with your local settings and include the following lines in your <code>/etc/profile.locale</code>:<br/>
+        <code>PYTHONPATH=$PILHOME/:$PILHOME/PIL</code><br/>
+        <code>export PYTHONPATH</code>
+      </dtml-if>
+      <dtml-if "getConfProperty('InstalledProducts.pil')==1">
+      <table cellspacing="0" cellpadding="0" border="0">
+      <tr valign="middle">
+        <td class="form-small"><input class="form-checkbox" type="checkbox" name="pil_scale:int" value="1" <dtml-if "getConfProperty('InstalledProducts.pil.scale')==1">checked="checked"</dtml-if>></td>
+        <td class="form-small">Auto-scale image on resize.</td>
+      </tr>
+      <tr valign="middle">
+        <td class="form-small"><input class="form-checkbox" type="checkbox" name="pil_thumbnail:int" value="1" <dtml-if "getConfProperty('InstalledProducts.pil.thumbnail')==1">checked="checked"</dtml-if>></td>
+        <td class="form-small">HighRes with Auto-Thumbnail max.</td>
+        <td class="form-small"><input class="form-small" type="text" name="pil_thumbnail_max:int" value="<dtml-var "getConfProperty('InstalledProducts.pil.thumbnail.max',100)">" size="4"></td>
+        <td class="form-small">&nbsp;px.</td>
+      </tr>
+      <tr valign="middle">
+        <td class="form-small"><input class="form-checkbox" type="checkbox" name="pil_superres:int" value="1" <dtml-if "getConfProperty('InstalledProducts.pil.superres')==1">checked="checked"</dtml-if>></td>
+        <td class="form-small">SuperRes with Auto-HighRes max.</td>
+        <td class="form-small"><input class="form-small" type="text" name="pil_hires_thumbnail_max:int" value="<dtml-var "getConfProperty('InstalledProducts.pil.hires.thumbnail.max',600)">" size="4"></td>
+        <td class="form-small">&nbsp;px.</td>
+      </tr>
+      </table>
+      </dtml-if>
+    </td>
+  </tr>
+  <tr valign="top">
+    <td></td>
+    <td class="form-small">
+      <input class="form-submit" type="submit" name="btn" value="Change">
+    </td>
+  </tr>
+</table>
+</form>
+<br />
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   S y s t e m
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+<dtml-var "f_headline(_,_,headline='System')">
+<div class="form-fixed" style="font-size:10px;padding:4px;">
+ ZMS: <dtml-var zms_version>&nbsp;(Build #<dtml-var zms_build><dtml-var zms_patch>)<br />
+ <a name="_AutoPack"></a>
+ <dtml-with "Control_Panel">
+  ZOPE: <dtml-var version_txt><br />
+  PYTHON: <dtml-var sys_version><br />
+  System Platform: <dtml-var sys_platform><br />
+  System Time: <dtml-var ZopeTime><br />
+  Running For: <dtml-var process_time><br/>
+ <dtml-with "Database">
+  ZODB Location: <dtml-var db_name><br />
+  Database Size: <dtml-var db_size><br />
+ </dtml-with>
+ </dtml-with>
+</div>
+<br />
+
+</td>
+</tr>
+<!------------------------------------------------------------------------>
+</table>
+
+<br/><br/>
+
+<dtml-var f_eo_area>
+
+<dtml-var manage_page_footer>

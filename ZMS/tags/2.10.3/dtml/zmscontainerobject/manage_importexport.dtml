@@ -1,0 +1,199 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('CAPTION_IMPORTEXPORT',manage_lang)%display_type(REQUEST)"></title>
+<script language="JavaScript">
+<!--//
+
+  function onImportFormSubmit(fm) {
+    var b = true;
+    b = b && !disallowBlank(fm.elements['file'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_FILE',manage_lang)">",false);
+    return b;
+  }
+  
+  function onExportFormSubmit(fm) {
+    var b = true;
+    b = b && !disallowBlank(fm.elements['export_format'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_FORMAT',manage_lang)">",false);
+    return b;
+  }
+  
+//-->
+</script>
+</head>
+
+<dtml-var "manage_tabs(_,_,my_manage_languages=1)">
+<dtml-if "getLevel() == 0 and AUTHENTICATED_USER.has_permission('ZMS Administrator',this())">
+ <dtml-var "manage_tabs_sub(_,_,my_manage_options=[{'label':getLangStr('TAB_IMPORTEXPORT',manage_lang),'action':'manage_importexport'},{'label':getLangStr('FTP',manage_lang),'action':'manage_importexportFtp'}])">
+</dtml-if>
+
+<dtml-var f_bo_area>
+
+<table cellspacing="0" cellpadding="1" border="0" width="100%">
+<colgroup>
+ <col width="20%" />
+ <col width="80%" />
+</colgroup>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   I M P O R T
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+<dtml-if "AUTHENTICATED_USER.has_permission('ZMS Administrator',this())">
+
+  <form name="importForm" action="manage_import" method="post" onsubmit="return onImportFormSubmit(this)" enctype="multipart/form-data">
+  <input type="hidden" name="lang" value="<dtml-var lang>">
+  <input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+  <input type="hidden" name="preview" value="preview">
+  <tr>
+   <td colspan="2">
+    <dtml-var "f_headline(_,_,headline=getLangStr('ATTR_IMPORT',manage_lang))">
+   </td>
+  </tr>
+  <tr valign="middle">
+   <td><div class="form-label"><dtml-var "getLangStr('ATTR_FILE',manage_lang)"></div></td>
+   <td><input class="form-element" name="file" type="file" size="25"></td>
+  </tr>
+  
+  <dtml-comment>
+  ---------------------------------------------------------------------------
+  --- Custom Import Filters
+  ---------------------------------------------------------------------------
+  </dtml-comment>
+     <dtml-call "REQUEST.set('_count',0)">
+     <dtml-in "getFilterIds()">
+      <dtml-let filterId=sequence-item filter="getFilter(filterId)">
+       <dtml-if "(_.len(intersection_list([filter['format']],['import']))>0) and
+                 ((AUTHENTICATED_USER.has_role('Manager')) or
+                  (_.len(intersection_list(getUserRoles(AUTHENTICATED_USER),filter.get('roles',[])))>0)) and
+                 ((meta_type in filter['meta_types']) or 
+                  (meta_type == 'ZMSCustom' and meta_id in filter['meta_types']))">
+        <dtml-if "REQUEST['_count']==0">
+         <tr valign="middle">
+          <td><div class="form-label"><dtml-var "getLangStr('ATTR_FORMAT',manage_lang)"></div></td>
+          <td>
+           <select class="form-element" name="filter">
+            <option value="">--- <dtml-var "getLangStr('ACTION_SELECT',manage_lang)%getLangStr('ATTR_FORMAT',manage_lang)"> ---</option>
+        </dtml-if>
+        <option value="<dtml-var "filter['id']">"><dtml-var "filter['name']"></option>
+        <dtml-call "REQUEST.set('_count',REQUEST['_count']+1)">
+       </dtml-if>
+      </dtml-let>
+     </dtml-in>
+     <dtml-if "REQUEST['_count']>0">
+        </select>
+       </td>
+      </tr>
+     </dtml-if>
+  
+  <dtml-comment>
+  ---------------------------------------------------------------------------
+  </dtml-comment>
+  <tr valign="middle">
+   <td>&nbsp;</td>
+   <td class="form-element"><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_IMPORT',manage_lang)" html_quote>"></td>
+  </tr>
+  <tr>
+   <td>&nbsp;</td>
+  </tr>
+  </form>
+
+</dtml-if>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   E X P O R T
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+  <form name="exportForm" action="pub_export" target="_blank" method="get" onsubmit="return onExportFormSubmit(this)">
+  <input type="hidden" name="lang" value="<dtml-var lang>">
+  <input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+  <tr>
+   <td colspan="2">
+    <dtml-var "f_headline(_,_,headline=getLangStr('ATTR_EXPORT',manage_lang))">
+   </td>
+  </tr>
+  <tr valign="middle">
+   <td><div class="form-label"><dtml-var "getLangStr('ATTR_FORMAT',manage_lang)"></div></td>
+   <td>
+    <select class="form-element" name="export_format">
+     <option value="">----- <dtml-var "getLangStr('ACTION_SELECT',manage_lang)%getLangStr('ATTR_FORMAT',manage_lang)"> -----</option>
+     <option value="2">XML</option>
+     <option value="0">ZEXP</option>
+     
+    <dtml-comment>
+    ---------------------------------------------------------------------------
+    --- HTML (Static)
+    ---------------------------------------------------------------------------
+    </dtml-comment>
+    <option value="1">HTML (<dtml-var "getLangStr('ATTR_STATIC',manage_lang)">)</option>
+     
+    <dtml-comment>
+    ---------------------------------------------------------------------------
+    --- Custom Export Filters
+    ---------------------------------------------------------------------------
+    </dtml-comment>
+     <dtml-call "REQUEST.set('_count',0)">
+     <dtml-in "getFilterIds()">
+      <dtml-let filterId=sequence-item filter="getFilter(filterId)">
+       <dtml-if "(_.len(intersection_list([filter['format']],['export','XML','XHTML']))>0) and
+                 ((AUTHENTICATED_USER.has_role('Manager')) or
+                  (_.len(intersection_list(getUserRoles(AUTHENTICATED_USER),filter.get('roles',[])))>0)) and
+                 ((meta_type in filter['meta_types']) or 
+                  (meta_type == 'ZMSCustom' and meta_id in filter['meta_types']))">
+        <dtml-if "REQUEST['_count']==0">
+         <option value="">----- <dtml-var "getLangStr('TAB_FILTER',manage_lang)"></option>
+        </dtml-if>
+        <option value="<dtml-var "filter['id']">"><dtml-var "filter['name']"></option>
+        <dtml-call "REQUEST.set('_count',REQUEST['_count']+1)">
+       </dtml-if>
+      </dtml-let>
+     </dtml-in>
+    
+    <dtml-comment>
+    ---------------------------------------------------------------------------
+    </dtml-comment>
+    
+    </select>
+    <nobr>
+     <font class="form-small">
+      <dtml-unless "getAutocommit()">
+       <input class="form-checkbox" type="checkbox" name="preview" value="preview">Preview&nbsp;
+      </dtml-unless>
+     </font>
+    </nobr>
+   </td>
+  </tr>
+  <tr>
+   <td>&nbsp;</td>
+   <td class="form-element">
+    <input type="radio" name="download:int" value="1" <dtml-if "REQUEST.form.get('download',1)==1">checked="checked"</dtml-if> onclick="this.form.target='_blank'" />
+    Download to local machine<br />
+    <input type="radio" name="download:int" value="0" <dtml-if "REQUEST.form.get('download',1)==0">checked="checked"</dtml-if> onclick="this.form.target=''"/>
+    Save to file on server<br />
+   </td>
+  </tr>
+  <tr>
+   <td>&nbsp;</td>
+   <td class="form-element"><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_EXPORT',manage_lang)" html_quote>"></td>
+  </tr>
+  <tr>
+   <td>&nbsp;</td>
+  </tr>
+  </form>
+
+</table>
+  
+<dtml-comment>
+<!-- ###################################################################### -->
+</dtml-comment>
+
+<dtml-var f_eo_area>
+
+<dtml-var manage_page_footer>

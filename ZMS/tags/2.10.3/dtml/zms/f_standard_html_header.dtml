@@ -1,0 +1,26 @@
+<dtml-var f_standard_html_request
+><dtml-try><dtml-var headDoctype><dtml-except><dtml-var f_headDoctype></dtml-try
+><dtml-if "REQUEST.get('op','')=='print' or REQUEST.has_key('printversion')"
+><head
+><dtml-var f_headMeta_Locale
+><dtml-var headScript
+><dtml-var headCStyleSheet
+><meta name="Robots" content="noindex,nofollow"
+><title><dtml-var "getTitle(REQUEST)"></title
+></head
+><body class="print"
+><dtml-else
+><dtml-var standard_html_header
+><dtml-in "getMetaobjIds()"
+><dtml-let metaObjId=sequence-item metaObj="getMetaobj(metaObjId)"
+><dtml-in "metaObj['attrs']"
+><dtml-let objAttr=sequence-item
+><dtml-if "objAttr['type']=='method' and objAttr['id']=='standard_html_header'"
+><dtml-var "dt_html(objAttr['custom'],REQUEST)"
+></dtml-if
+></dtml-let
+></dtml-in
+></dtml-let
+></dtml-in
+></dtml-if>
+

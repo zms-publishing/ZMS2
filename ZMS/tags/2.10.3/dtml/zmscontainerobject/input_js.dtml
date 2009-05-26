@@ -1,0 +1,19 @@
+<script type="text/javascript">
+<!--//
+
+  function onFormSubmit(fmName) {
+    if (self.btnClicked != "<dtml-var "getLangStr('BTN_CANCEL',manage_lang)" html_quote>" &&
+        self.btnClicked != "<dtml-var "getLangStr('BTN_BACK',manage_lang)" html_quote>") {
+     <dtml-in "['title','titleshort']">
+      obj = document.forms[fmName].elements['<dtml-var sequence-item>_<dtml-var lang>'];
+      msg = "<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_%s'%_['sequence-item'].upper(),manage_lang)">";
+      dofocus = true;
+      if (disallowBlank(obj,msg,dofocus)) return false;
+     </dtml-in>
+    }
+    <dtml-var "f_metaInputJS(_,_,my_meta_type=my_meta_type)">
+    return true;
+  }
+
+//-->
+</script>

@@ -1,0 +1,13 @@
+<dtml-if "_.len(title)+_.len(text)+_.len(url)>0">
+<div class="<dtml-var meta_type>"<dtml-if bgcolor_title> style="background-color:<dtml-var "get_colormap().get(bgcolor_title,'transparent')">"</dtml-if>>
+<dtml-var title>
+<dtml-if "_.len(text)+_.len(url)>0">
+<div class="text"<dtml-if bgcolor_text> style="background-color:<dtml-var "get_colormap().get(bgcolor_text,'transparent')">"</dtml-if>>
+ <dtml-var text>
+ <dtml-if url>
+  <dtml-var "getLangStr('HREF_MORE',REQUEST['lang'])%(' href='+QUOT+url+QUOT+target)">
+ </dtml-if>
+</div>
+</dtml-if>
+</div>
+</dtml-if>

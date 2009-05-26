@@ -1,0 +1,18 @@
+<dtml-in "getMetadictAttrs(my_meta_type)">
+ <dtml-let metadictAttr="getMetadictAttr(_['sequence-item'])"
+           key="metadictAttr['key']"
+           required="metadictAttr['mandatory']"
+           obj_attr="getObjAttr(key,my_meta_type)"
+           elName="getObjAttrName(obj_attr,lang)">
+   <dtml-if required>
+     obj = document.forms[fmName].elements['<dtml-var elName>'];
+     msg = "<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%metadictAttr['name']">";
+     dofocus = true;
+     if (
+     <dtml-if "metadictAttr['type'] in ['image','file']">
+        document.forms[fmName].elements['exists_<dtml-var elName>'].value==0 &&
+     </dtml-if>
+        disallowBlank(obj,msg,dofocus)) return false;
+   </dtml-if>
+ </dtml-let>
+</dtml-in>

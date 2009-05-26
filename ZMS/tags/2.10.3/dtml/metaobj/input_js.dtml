@@ -1,0 +1,59 @@
+<script type="text/javascript">
+<!--//
+
+  function onFormSubmit(fmName) {
+    if (self.btnClicked != "<dtml-var "getLangStr('BTN_CANCEL',manage_lang)" html_quote>" &&
+        self.btnClicked != "<dtml-var "getLangStr('BTN_BACK',manage_lang)" html_quote>") {
+    <dtml-in "getMetaobjAttrIds(meta_id)">
+     <dtml-let oAttr="getMetaobjAttr(meta_id,_['sequence-item'])"
+               key="oAttr['id']"
+               obj_attr="getObjAttr(key,meta_id)"
+               required="oAttr.get('mandatory',0)==1"
+               visible="oAttr['id'].find('_')!=0 and oAttr['type'] not in [ 'constant', 'method', 'resource', 'DTML Method', 'DTML Document', 'Script (Python)' ]"
+               elName="getObjAttrName(obj_attr,lang)">
+     <dtml-unless "not visible or isDisabledAttr(obj_attr,REQUEST) or oAttr['type']=='method' or oAttr['type'] in ['boolean','*'] or oAttr['type'] in dGlobalAttrs.keys() or oAttr['type'] in getMetaobjIds()">
+      <dtml-if required>
+        obj = document.forms[fmName].elements['<dtml-var elName>'];
+        msg = "<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%oAttr['name']">";
+        dofocus = true;
+        if (
+        <dtml-if "oAttr['type'] in [ 'image', 'file' ]">
+           document.forms[fmName].elements['exists_<dtml-var elName>'].value==0 &&
+        </dtml-if>
+           disallowBlank(obj,msg,dofocus)) return false;
+      </dtml-if>
+     </dtml-unless>
+     </dtml-let>
+    </dtml-in>
+    }
+    return true;
+  }
+
+  function onActionChange(el)
+  {
+    var b = false;
+    var i = el.selectedIndex;
+    var action = el.options[i].value;
+    var label = el.options[i].text;
+    if (el.selectedIndex>0) {
+     <dtml-in "getMetaCmdIds()">
+      <dtml-let metaCmd="getMetaCmd(_['sequence-item'])">
+       <dtml-if "_.len(metaCmd['description'])>0">
+        if (label == '<dtml-var "metaCmd['name']">') {
+          b = confirm("<dtml-var "metaCmd['description']">");
+        }
+       <dtml-else>
+        b = true;
+       </dtml-if>
+      </dtml-let>
+     </dtml-in>
+    }
+    if (b)
+      location.href='<dtml-var URL1>/'+action+'?custom='+escape(label)+'&lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>';
+    else
+      el.selectedIndex=0;
+  }
+
+
+//-->
+</script>

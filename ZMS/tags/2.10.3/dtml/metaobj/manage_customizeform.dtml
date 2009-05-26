@@ -1,0 +1,914 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getLangStr('TAB_CONFIGURATION',manage_lang)"> <dtml-var "display_type(REQUEST)"></title>
+
+<dtml-if "not REQUEST.has_key('id') or not REQUEST['id']">
+ <dtml-call "REQUEST.set('id','')">
+</dtml-if>
+
+<dtml-let objtypes="['ZMSDocument','ZMSObject','ZMSTeaserElement','ZMSRecordSet','ZMSResource','ZMSReference','ZMSLibrary','ZMSPackage']"
+          datatypes="['amount','boolean','color','constant','date','datetime','delimiter','dialog','dictionary','file','float','hint','identifier','image','int','interface','list','method','multiselect','password','resource','richtext','select','string','text','time','url','xml']"
+          meta_types="getMetaTypes(REQUEST)"
+	  zope_types="[ 'DTML Method', 'DTML Document', 'Script (Python)' ]">
+
+<script language="JavaScript">
+<!--//
+
+  /**
+   *
+   * @param el
+   */
+  function changeType(el) 
+  {
+    disallowBlank(el,"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_TYPE',manage_lang)">",false);
+  }
+
+
+  /**
+   *
+   * @param el
+   */
+  function populateType(el, datatypes, foreignkeys, objecttypes, zopetypes) 
+  {
+    if ( el.options.length <= 1) {
+      var selectedValue = '';
+      if ( el.options.length == 1) {
+        selectedValue = el.options[0].value;
+      }
+      el.options.length = 0;
+      if ( datatypes) {
+        addOption( el, '--- <dtml-var "getLangStr('ATTR_PRIMITIVE',manage_lang)"> ---', '', selectedValue);
+        <dtml-in datatypes>
+        addOption( el, '<dtml-var sequence-item>', '<dtml-var sequence-item>', selectedValue);
+        </dtml-in>
+      }
+      if ( foreignkeys) {
+        <dtml-call "REQUEST.set('count',0)"
+        ><dtml-in "getMetaobjIds()"
+         ><dtml-let metaObj="getMetaobj(_['sequence-item'])"
+          ><dtml-if "metaObj['type']=='ZMSRecordSet'"
+           ><dtml-if "count==0">addOption( el, '--- <dtml-var "getLangStr('ATTR_FK',manage_lang)"> ---', '', selectedValue);
+           </dtml-if
+           >addOption( el, '<dtml-var "string_maxlen(metaObj['name'],15)">', '<dtml-var "metaObj['id']">', selectedValue);
+           <dtml-call "REQUEST.set('count',count+1)"
+          ></dtml-if
+         ></dtml-let
+        ></dtml-in>
+      }
+      if ( objecttypes) {
+        addOption( el, '--- <dtml-var "getLangStr('ATTR_OBJECTS',manage_lang)"> ---', '', selectedValue);
+        <dtml-in meta_types><dtml-let meta_type=sequence-item>
+        addOption( el, '<dtml-var "string_maxlen(display_type(REQUEST,meta_type),15)">', '<dtml-var meta_type>', selectedValue);
+        </dtml-let></dtml-in>
+        addOption( el, '--- <dtml-var "getLangStr('ATTR_SEQUENCE',manage_lang)"> ---', '', selectedValue);
+        addOption( el, '<dtml-var "getLangStr('ATTR_CUSTOM',manage_lang)"> (*)', '*', selectedValue);
+      }
+      if ( zopetypes) {
+        addOption( el, '--- Zope ---', '', selectedValue);
+        <dtml-in zope_types><dtml-let meta_type=sequence-item>
+        addOption( el, '<dtml-var meta_type>', '<dtml-var meta_type>', selectedValue);
+        </dtml-let></dtml-in>
+      }
+    }
+  }
+
+
+  /**
+   *
+   * @param fm		Html-Form
+   */
+  function onFormSubmit(fm) 
+  {
+    var b = true;
+    var key = fm.elements['key'].value;
+    if (key=="obj" && self.btnClicked=="<dtml-var "getLangStr('BTN_DELETE',manage_lang)" html_quote>") 
+    {
+      b = b && confirm("<dtml-var "getLangStr('MSG_CONFIRM_DELOBJ',manage_lang)">");
+    }
+    if (key=="obj" && self.btnClicked=="<dtml-var "getLangStr('BTN_IMPORT',manage_lang)" html_quote>") 
+    {
+        var elFile = fm.elements['file'];
+        var elInit = fm.elements['init'];
+    	if (isBlank(elFile.value) && isBlank(elInit.value))
+          b = b && !disallowBlank(elFile,"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_FILE',manage_lang)">",false);
+    }
+    if (key=="obj" && self.btnClicked=="<dtml-var "getLangStr('BTN_ACQUIRE',manage_lang)" html_quote>") 
+    {
+      b = b && !disallowBlank(fm.elements['aq_id'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('BTN_ACQUIRE',manage_lang)">",false);
+    }
+    if (key=="obj" && self.btnClicked=="<dtml-var "getLangStr('BTN_INSERT',manage_lang)" html_quote>") 
+    {
+      b = b && !disallowBlank(fm.elements['_meta_id'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_ID',manage_lang)">",false);
+      b = b && !disallowBlank(fm.elements['_meta_name'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_DISPLAY',manage_lang)">",false);
+      b = b && !disallowBlank(fm.elements['_meta_type'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_TYPE',manage_lang)">",false);
+    }
+    if (key=="attr" && self.btnClicked=="<dtml-var "getLangStr('BTN_INSERT',manage_lang)" html_quote>") 
+    {
+      b = b && !disallowBlank(fm.elements['attr_id'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_ID',manage_lang)">",false);
+      b = b && !disallowBlank(fm.elements['attr_name'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_DISPLAY',manage_lang)">",false);
+      b = b && !disallowBlank(fm.elements['_type'],"<dtml-var "getLangStr('MSG_REQUIRED',manage_lang)%getLangStr('ATTR_TYPE',manage_lang)">",false);
+    }
+    return b;
+  }
+
+  /**
+   * Export xml.
+   *
+   * @param type
+   */
+  function exportBtnClick() {
+    fm = document.forms['form0'];
+    href = fm.action+'?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&btn=<dtml-var "getLangStr('BTN_EXPORT',manage_lang)" html_quote>';
+    for (i = 0; i < fm.elements.length; i++) 
+    {
+      el = fm.elements[i];
+      if (el.name=='ids:list' && el.type=='checkbox' && el.checked)
+        href+='&'+el.name+'='+el.value;
+    }
+    window.open(href);
+  }
+
+  /**
+   *
+   * @param el		Html-Form Element
+   * @param key		Key (obj|attr)
+   */
+  function btnClick(el, key) {
+    var fm = el.form;
+    fm.elements['key'].value = key;
+    self.btnClicked = el.value;
+  }
+
+  <dtml-if "REQUEST.get('id','')!=''">
+  <dtml-let metaObj="getMetaobj(REQUEST['id'])">
+  /**
+   *
+   * @param v		Attribute-ID
+   */
+  function dtmlHintBtnClick(v) {
+    var fm = document.forms['form0'];
+    var el_type = fm.elements['attr_type_'+v];
+    var attr_type = '?';
+    if ( el_type.options) {
+      attr_type = el_type.options[el_type.selectedIndex].value;
+    }
+    else {
+      attr_type = el_type.value;
+    }
+    var obj_prop = <dtml-if "metaObj['type']=='ZMSRecordSet'">v<dtml-else>'getObjProperty(\''+v+'\',REQUEST)'</dtml-if>;
+    var obj_prop_quoted = <dtml-if "metaObj['type']=='ZMSRecordSet'">v<dtml-else>'"getObjProperty(\''+v+'\',REQUEST)"'</dtml-if>;
+    var s = '';
+    s += '<span class="<dtml-var "REQUEST.get('id')">-'+v+'">\n';
+    if ( attr_type == 'image') {
+      s += ' <' + 'dtml-let '+v+'=<dtml-if "metaObj['type']=='ZMSRecordSet'">"formatObjAttrValue(getObjAttr(\''+v+'\'),'+v+',lang)"<dtml-else>"'+obj_prop+'"</dtml-if>>\n';
+      s += '  <' + 'dtml-if '+v+'>\n';
+      s += '   <img src="<'+'dtml-var "'+v+'.getHref(REQUEST)">" alt="" border="0"/>\n';
+      s += '  <' + '/dtml-if>\n';
+      s += ' <' + '/dtml-let>\n';
+    }
+    else if ( attr_type == 'file' || attr_type == 'resource') {
+      s += ' <' + 'dtml-let '+v+'=<dtml-if "metaObj['type']=='ZMSRecordSet'">"formatObjAttrValue(getObjAttr(\''+v+'\'),'+v+',lang)"<dtml-else>"'+obj_prop+'"</dtml-if>>\n';
+      s += '  <' + 'dtml-if '+v+'>\n';
+      s += '   <a href="<'+'dtml-var "'+v+'.getHref(REQUEST)">">\n';
+      s += '    <img src="<'+'dtml-var "'+v+'.getMimeTypeIconSrc()">" alt="<'+'dtml-var "'+v+'.getContentType()">" border="0" align="absmiddle" />\n';
+      s += '    <' + 'dtml-var "'+v+'.getFilename()">\n';
+      s += '   </a>\n';
+      s += '  <' + '/dtml-if>\n';
+      s += ' <' + '/dtml-let>\n';
+    }
+    else if ( attr_type == 'url') {
+      s += ' <'+'dtml-if '+obj_prop_quoted+'>\n';
+      s += '  <a href="<' + 'dtml-var "getLinkUrl('+obj_prop+',REQUEST)">">\n';
+      s += '   <'+'dtml-var '+obj_prop_quoted+'>\n';
+      s += '  </a>\n';
+      s += ' </'+'dtml-if>\n';
+    }
+    else if ( <dtml-in "['date','datetime','time']">attr_type == '<dtml-var sequence-item>'<dtml-unless sequence-end> ||</dtml-unless></dtml-in>) {
+      s += ' <'+'dtml-if '+obj_prop_quoted+'>\n';
+      s += '  <' + 'dtml-var "getLangFmtDate('+obj_prop+',lang,\''+attr_type.toUpperCase()+'_FMT\')">\n';
+      s += ' </'+'dtml-if>\n';
+    }    
+    else if ( <dtml-in zope_types>attr_type == '<dtml-var sequence-item>'<dtml-unless sequence-end> ||</dtml-unless></dtml-in>) {
+      s += '   <'+'dtml-var '+v+'>\n';
+    }
+    else if ( <dtml-in meta_types>attr_type == '<dtml-var sequence-item>'<dtml-unless sequence-end> ||</dtml-unless></dtml-in>) {
+      var repetitive = fm.elements['attr_repetitive_'+v+':int'].value == '1';
+      if ( repetitive) {
+        s += ' <'+'dtml-in "getObjChildren(\''+v+'\',REQUEST)">\n';
+        s += '  <' + 'dtml-var "getBodyContent(REQUEST)">\n';
+        s += ' </'+'dtml-in>\n';
+      }
+      else {
+        s += ' <'+'dtml-if '+v+'>\n';
+        s += '  <' + 'dtml-var "'+v+'.getBodyContent(REQUEST)">\n';
+        s += ' </'+'dtml-if>\n';
+      }
+    }
+    else {
+      s += ' <'+'dtml-if '+obj_prop_quoted+'>\n';
+      s += '  <'+'dtml-var '+obj_prop_quoted+'>\n';
+      s += ' </'+'dtml-if>\n';
+    }
+    s += '</span>\n';
+    var dtmlHintBtn = document.getElementById( 'dtmlHintBtn'+v);
+    var element = dtmlHintBtn;
+    var coords = {x: 0, y: 0};
+    while (element) {
+      coords.x += element.offsetLeft;
+      coords.y += element.offsetTop;
+      element = element.offsetParent;
+    }    
+    var dtmlHintDiv = document.getElementById( 'dtmlHint');
+    dtmlHintDiv.style.visibility = 'visible';
+    dtmlHintDiv.style.display = 'block';
+    dtmlHintDiv.style.position = 'absolute';
+    dtmlHintDiv.style.top = (coords['y']+dtmlHintBtn.height)+"px";
+    dtmlHintDiv.style.left = (0)+"px";    
+    var dtmlHintTextDiv = document.getElementById( 'dtmlHintText');
+    var html = s;
+    var i;
+    while ( ( i = html.indexOf( '<')) >= 0) {
+      html = html.substr( 0, i) + '&lt;' + html.substr( i + 1);
+    }
+    html = html.substr( 0, html.length - 1);
+    dtmlHintTextDiv.innerHTML = '<pre>'+html+'</pre>';
+  }
+
+  /**
+   *
+   */
+  function dtmlHintBtnClose() {
+    var dtmlHintDiv = document.getElementById( 'dtmlHint');
+    dtmlHintDiv.style.visibility = 'hidden';
+    dtmlHintDiv.style.display = 'none';
+  }
+  </dtml-let>
+  </dtml-if>
+
+//-->
+</script>
+</head>
+
+<dtml-var manage_tabs>
+<dtml-var "manage_tabs_sub(_,_,my_manage_options=customize_manage_options(lang,manage_lang,REQUEST))">
+
+<dtml-var f_bo_area>
+
+<div class="form-text"><dtml-var "getLangStr('MSG_METAOBJ',manage_lang)"></div><br/>
+
+<dtml-comment>
+<!-- ######################################################################
+     ###
+     ###   E D I T
+     ###
+     ######################################################################
+-->
+</dtml-comment>
+
+ <form name="form0" action="manage_changeMetaobjs" method="post" onsubmit="return onFormSubmit(this)" enctype="multipart/form-data" style="margin:8px">
+ <input type="hidden" name="key" value="">
+ <input type="hidden" name="lang" value="<dtml-var lang>">
+ <input type="hidden" name="manage_lang" value="<dtml-var manage_lang>">
+ <input type="hidden" name="preview" value="preview">
+ <table cellspacing="1" cellpadding="0" border="0" class="zmiNeutralColorStrong0" width="100%">
+  <colgroup>
+   <col width="20" />
+   <col />
+   <col />
+   <col />
+   <col />
+   <col width="20" />
+  </colgroup>
+
+  <dtml-let metaObjIds="getMetaobjIds()">
+  <dtml-if metaObjIds>
+
+  <!-- Header -->
+  <tr>
+   <td colspan="7"><dtml-var "f_headline(_,_,headline=getLangStr('TAB_EDIT',manage_lang),extra='<a href='+QUOT+'javascript:exportBtnClick()'+QUOT+'><img src='+QUOT+MISC_ZMS+'mime_type.text_xml.gif'+QUOT+' title='+QUOT+getLangStr('BTN_EXPORT',manage_lang)+' (XML)'+QUOT+' border='+QUOT+'1'+QUOT+' align='+QUOT+'absmiddle'+QUOT+'/></a>')"></td>
+  </tr>
+
+ <dtml-call "REQUEST.set('acquisitions',{})"
+ ><dtml-in "getPortalClients()"
+  ><dtml-let portalClient=sequence-item
+   ><dtml-in "portalClient.getMetaobjIds()"
+    ><dtml-let metaObjId=sequence-item portalClientIds="acquisitions.get(metaObjId,[])"
+     ><dtml-if "metaObjId in metaObjIds and portalClient.getMetaobj(metaObjId).get('acquired',0)==1"
+      ><dtml-call "portalClientIds.append(portalClient.getHome().id)"
+      ><dtml-call "operator_setitem(acquisitions,metaObjId,portalClientIds)"
+     ></dtml-if
+    ></dtml-let
+   ></dtml-in 
+  ></dtml-let
+ ></dtml-in>
+ 
+  <dtml-in metaObjIds
+   ><dtml-let metaObj="getMetaobj(_['sequence-item'])"
+    ><dtml-call "REQUEST.set('has_acquisition',acquisitions.get(metaObj['id'],[]))"
+    ><dtml-if "REQUEST['id']==metaObj['id']"
+     ><dtml-if "metaObj.get('acquired',0) == 1">
+
+     <!-- Acquired Object -->
+     <tr valign="top" class="zmiNeutralColorMedium0">
+      <td class="form-element" rowspan="2"><input class="form-element" type="radio" name="id" value="<dtml-var "metaObj['id']">" onclick="radioOnClick(this,'<dtml-var URL0>');" checked="checked"></td>
+      <td class="form-text" colspan="3"
+       ><img src="<dtml-var "display_icon(REQUEST,metaObj['id'])">" title="<dtml-var "metaObj['id']">" border="0" align="absmiddle"
+       ><dtml-if "metaObj.get('zms_system',0) == 1"><img src="<dtml-var MISC_ZMS>ico_default.gif" title="default / unmodified" style="margin-right:2" align="absmiddle"></dtml-if
+       ><dtml-if "metaObj.get('acquired',0) == 1"><a href="<dtml-var "getPortalMaster().absolute_url()+'/'+URL.split('/')[-1]">?id=<dtml-var "metaObj['id']">" target="_blank" class="zmi"><img src="<dtml-var MISC_ZMS>ico_is_acquired.gif" title="is acquired: <dtml-var "getConfProperty('Portal.Master')">" border="0" align="absmiddle"/></a></dtml-if
+       ><dtml-if has_acquisition><img src="<dtml-var MISC_ZMS>ico_has_acquisition.gif" title="has acquisitions: <dtml-var has_acquisition>" border="0" align="absmiddle"/></dtml-if>
+       <b><dtml-var "metaObj['name']"></b>
+       <i>(<dtml-var "getLangStr('SOTYPE_%s'%metaObj['type'].upper(),manage_lang)">)</i>
+      </td>
+      <td colspan="2" nowrap="nowrap" class="form-element">
+       <input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_COPY',manage_lang)" html_quote>" onclick="btnClick(this,'obj');">
+       <dtml-unless has_acquisition><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_DELETE',manage_lang)" html_quote>" onclick="btnClick(this,'obj');"></dtml-unless>
+      </td>
+      <td class="form-element"><input class="form-checkbox" type="checkbox" disabled="disabled"/></td>
+     </tr>
+
+     <dtml-else>
+
+     <!-- Headline -->
+     <tr class="zmiNeutralColorStrong0">
+      <td><input class="form-element" type="radio" name="id" value="" <dtml-if "REQUEST.get('id','')==''">checked="checked"</dtml-if> onclick="radioOnClick(this,'<dtml-var URL0>');"></td>
+      <td><div class="form-label"><dtml-var "getLangStr('ATTR_ID',manage_lang)"></div></td>
+      <td><div class="form-label"><dtml-var "getLangStr('ATTR_DISPLAY',manage_lang)"></div></td>
+      <td><div class="form-label"><dtml-var "getLangStr('ATTR_TYPE',manage_lang)"></div></td>
+      <td><div class="form-label"><dtml-var "getLangStr('SOTYPE_ZMSPACKAGE',manage_lang)"></div></td>
+      <td colspan="2">&nbsp;</td>
+     </tr>
+     <!-- Object -->
+     <tr valign="top" class="zmiNeutralColorMedium0">
+      <td><input class="form-element" type="radio" name="id" value="<dtml-var "metaObj['id']">" onclick="radioOnClick(this,'<dtml-var URL0>');" checked="checked"></td>
+      <td>
+       <img src="<dtml-var "display_icon(REQUEST,metaObj['id'])">" title="<dtml-var "metaObj['id']">" border="0" align="absmiddle"
+       ><dtml-if "metaObj.get('zms_system',0) == 1"><img src="<dtml-var MISC_ZMS>ico_default.gif" title="default / unmodified" style="margin-right:2" align="absmiddle"></dtml-if
+       ><dtml-if has_acquisition><img src="<dtml-var MISC_ZMS>ico_has_acquisition.gif" title="has acquisitions: <dtml-var has_acquisition>" border="0" align="absmiddle"/></dtml-if
+      ></td>
+      <td><dtml-var "getTextInput('form0','obj_name',12,metaObj['name'])"></td>
+      <td>
+       <select class="form-element" name="obj_type">
+        <dtml-in objtypes
+         ><dtml-let objtype=sequence-item
+          ><option value="<dtml-var objtype>" <dtml-if "metaObj['type']==objtype">selected="selected"</dtml-if>><dtml-var "getLangStr('SOTYPE_%s'%objtype.upper(),manage_lang)"></option
+         ></dtml-let
+        ></dtml-in
+       ></select>
+      </td>
+      <td class="form-element">
+       <select class="form-element" name="obj_package">
+        <option value="" <dtml-if "metaObj['package']==''">selected="selected"</dtml-if>>--- <dtml-var "getLangStr('SOTYPE_ZMSPACKAGE',manage_lang)"> ---</option>
+        <dtml-in "getMetaobjIds()"
+         ><dtml-let metaObjPackage="getMetaobj(_['sequence-item'])"
+          ><dtml-if "metaObjPackage['type'] in ['ZMSPackage']"
+           ><option value="<dtml-var "metaObjPackage['id']">" <dtml-if "metaObj['package']==metaObjPackage['id']">selected="selected"</dtml-if>><dtml-var "string_maxlen(metaObjPackage['name'],15)"></option
+          ></dtml-if
+         ></dtml-let
+        ></dtml-in
+       ></select>
+      </td>
+      <td class="form-element" nowrap="nowrap">
+       <input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_CHANGE',manage_lang)" html_quote>" onclick="btnClick(this,'all');">
+       <dtml-unless has_acquisition><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_DELETE',manage_lang)" html_quote>" onclick="btnClick(this,'obj');"></dtml-unless>
+      </td>
+      <td class="form-element" width="20"><input class="form-checkbox" type="checkbox" name="ids:list" value="<dtml-var "metaObj['id']">" checked="checked"/></td>
+     </tr>
+     <dtml-unless "metaObj['type'] in ['ZMSPackage']">
+     <!-- Object-Attributes -->
+     <tr class="zmiNeutralColorMedium0">
+      <td colspan="7">
+       <table cellspacing="0" cellpadding="5" border="0" width="80%">
+       <tr>
+       <td>
+       <!-- Headline -->
+       <table cellspacing="1" cellpadding="0" border="0" class="zmiNeutralColorStrong0" width="80%">
+       <tr valign="middle">
+        <td class="form-small" colspan="2"><b>&nbsp;</b></td>
+        <td class="form-small"><b><dtml-var "getLangStr('ATTR_ID',manage_lang)"></b></td>
+        <td class="form-small"><b><dtml-var "getLangStr('ATTR_DISPLAY',manage_lang)"></b></td>
+        <td class="form-small"><b><dtml-var "getLangStr('ATTR_TYPE',manage_lang)"></b></td>
+        <td class="form-small" title="<dtml-var "getLangStr('ATTR_MANDATORY',manage_lang)">" align="center"><b>(<sup style="color:red">*</sup>)</b></td>
+        <dtml-if "metaObj['type']=='ZMSRecordSet'">
+         <td class="form-small" align="center"><img src="<dtml-var MISC_ZMS>table_col.gif" title="<dtml-var "getLangStr('ATTR_DISPLAY',manage_lang)"> (<dtml-var "getLangStr('ATTR_COL',manage_lang)">)" border="0"></td>
+        <dtml-else>
+         <td class="form-small" align="center"><img src="<dtml-var MISC_ZMS>btn_multilang1.gif" title="<dtml-var "getLangStr('ATTR_MULTILANG',manage_lang)">" border="0"></td>
+         <td class="form-small" title="<dtml-var "getLangStr('ATTR_REPETITIVE',manage_lang)">" align="center"><b>0..n</b></td>
+        </dtml-if>
+        <td class="form-small">&nbsp;</td>
+        <td class="form-small" align="center"><b>DTML</b></td>
+       </tr>
+       <!-- Change / Delete Attributes -->
+       <dtml-in "metaObj['attrs']"
+       ><dtml-let oAttr="getMetaobjAttr(metaObj['id'],_['sequence-item']['id'])">
+        <tr valign="middle" 
+          <dtml-if "REQUEST.has_key('inp_id_name') and REQUEST.get('inp_id_name').find(oAttr['id'])>0">
+           style="background-color:#9CC"
+          <dtml-elif "REQUEST.form.get('attr_id','')==oAttr['id']">
+           style="background-color:#9CC"
+          <dtml-else>
+           class="zmiNeutralColorMedium0"
+          </dtml-if>>
+          <td align="right" class="zmiNeutralColorStrong0">
+           <dtml-var "f_collectionBtn(_,_,url='manage_changeMetaobjs?id=%s&attr_id=%s&key=attr'%(REQUEST['id'],oAttr['id']))">
+          </td>
+
+          <dtml-comment>
+          ##### DELIMITER / HINT / INTERFACE #####
+          </dtml-comment>
+          <dtml-if "oAttr['type'] in ['delimiter','hint','interface']">
+           <dtml-comment>***** Icon *****</dtml-comment>
+           <td align="center" class="zmiNeutralColorStrong0">&nbsp;</td>
+           <dtml-comment>***** Id, Name & Type *****</dtml-comment>
+           <td class="form-small" colspan="8" <dtml-if "oAttr['type']=='delimiter'">bgcolor="#F4F4F4"<dtml-else>bgcolor="#FFFFFF"</dtml-if>>
+            <input type="hidden" name="old_ids:list" value="<dtml-var "oAttr['id']">">
+            <input type="hidden" name="attr_id_<dtml-var "oAttr['id']">" value="<dtml-var "oAttr['id']">">
+            <input type="hidden" name="attr_type_<dtml-var "oAttr['id']">" value="<dtml-var "oAttr['type']">">
+            <dtml-if "oAttr['type'] in ['interface']">
+             <textarea class="form-fixed" name="attr_name_<dtml-var "oAttr['id']">" cols="80" rows="1" title="<dtml-var "oAttr['id']"> (<dtml-var "oAttr['type']">)" wrap="virtual" style="width:563px;height:20px;background-color:white;"><dtml-var "oAttr.get('name','')" html_quote></textarea>
+             <a href="?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&id=<dtml-var "REQUEST.get('id')">&inp_id_name=attr_id_<dtml-var "oAttr['id']">&inp_name_name=attr_id_<dtml-var "oAttr['id']">&inp_value_name=attr_name_<dtml-var "oAttr['id']">#Edit"><img src="<dtml-var MISC_ZMS>table_cell_edit.gif" border="0" align="bottom"></a>
+            <dtml-elif "oAttr['type'] in ['delimiter']">
+             <input class="form-small" type="text" name="attr_name_<dtml-var "oAttr['id']">" value="<dtml-var "oAttr['name']">" size="50" title="<dtml-var "oAttr['id']"> (<dtml-var "oAttr['type']">)" style="background-color:#F4F4F4; color:#424242; font-weight:bold; border-color:#DDDDDD; border-width=1;">
+            <dtml-elif "oAttr['type'] in ['hint']">
+             <textarea class="form-small" name="attr_name_<dtml-var "oAttr['id']">" cols="80" rows="1" title="<dtml-var "oAttr['id']"> (<dtml-var "oAttr['type']">)" wrap="virtual" style="width:563px;height:20px;background-color:white;"><dtml-var "oAttr.get('name','')" html_quote></textarea>
+             <a href="?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&id=<dtml-var "REQUEST.get('id')">&inp_id_name=attr_id_<dtml-var "oAttr['id']">&inp_name_name=attr_id_<dtml-var "oAttr['id']">&inp_value_name=attr_name_<dtml-var "oAttr['id']">#Edit"><img src="<dtml-var MISC_ZMS>table_cell_edit.gif" border="0" align="bottom"></a>
+             </dtml-if>
+           </td>
+          <dtml-else>
+           <dtml-comment>***** Icon *****</dtml-comment>
+           <td align="center" class="zmiNeutralColorStrong0">
+            <dtml-if "oAttr['type'] == 'DTML Method'">
+             <a href="<dtml-var "oAttr['id']">/manage_workspace" target="_blank"><img src="misc_/OFSP/dtmlmethod.gif" title="<dtml-var "oAttr['type']">" border="0" align="absmiddle"/></a>
+            <dtml-elif "oAttr['type'] == 'DTML Document'">
+             <a href="<dtml-var "oAttr['id']">/manage_workspace" target="_blank"><img src="misc_/OFSP/dtmldocument.gif" title="<dtml-var "oAttr['type']">" border="0" align="absmiddle"/></a>
+            <dtml-elif "oAttr['type'] == 'Script (Python)'">
+             <dtml-with "_.getattr(this(),oAttr['id'])">
+              <dtml-if errors>
+               <a href="<dtml-var "oAttr['id']">/manage_workspace" target="_blank"><img src="<dtml-var MISC_ZMS>ico_error.gif" style="background-image:url(misc_/PythonScripts/pyscript.gif)" title="ERROR: <dtml-var expr="'\n'.join(errors)" html_quote>" border="0" align="absmiddle"/></a>
+              <dtml-elif warnings>
+               <a href="<dtml-var "oAttr['id']">/manage_workspace" target="_blank"><img src="<dtml-var MISC_ZMS>ico_warning.gif" style="background-image:url(misc_/PythonScripts/pyscript.gif)" title="WARNING: <dtml-var expr="'\n'.join(warnings)" html_quote>" border="0" align="absmiddle"/></a>
+              <dtml-else>
+               <a href="<dtml-var "oAttr['id']">/manage_workspace" target="_blank"><img src="misc_/PythonScripts/pyscript.gif" title="<dtml-var "oAttr['type']">" border="0" align="absmiddle"/></a>
+              </dtml-if>
+             </dtml-with>
+            <dtml-elif "oAttr['type'] in concat_list(dGlobalAttrs.keys(),getMetaobjIds())">
+             <img src="<dtml-var "display_icon(REQUEST,oAttr['type'])">" title="" border="0" align="absmiddle"/>
+            <dtml-elif "oAttr['type'] == 'resource'">
+             <dtml-let f="oAttr['custom']">
+              <dtml-if f>
+               <img src="<dtml-var "f.getMimeTypeIconSrc()">" title="<dtml-var "f.getContentType()">" border="0" align="absmiddle">
+              <dtml-else>
+               <img src="<dtml-var spacer_gif>" title="" border="0" width="16" height="16" align="absmiddle"/>
+              </dtml-if>
+             </dtml-let>
+            <dtml-elif "oAttr['type']=='method'">
+             <dtml-if "oAttr['errors']">
+              <img src="<dtml-var MISC_ZMS>ico_error.gif" style="background-image:url(<dtml-var MISC_ZMS>ico_method.gif)" title="ERROR: <dtml-var "oAttr['errors']">" border="0" align="absmiddle"/>
+             <dtml-else>
+              <img src="<dtml-var MISC_ZMS>ico_method.gif" title="Method" border="0" align="absmiddle"/>
+             </dtml-if>
+            <dtml-else>
+             <img src="<dtml-var MISC_ZMS>ico_attr.gif" title="Attribute" border="0" align="absmiddle"/>
+            </dtml-if>
+           </td>
+          <dtml-comment>***** Id *****</dtml-comment>
+          <td class="form-small" <dtml-if "oAttr['type']=='delimiter'">bgcolor="#F4F4F4"</dtml-if>>
+           <input type="hidden" name="old_ids:list" value="<dtml-var "oAttr['id']">">
+           <input type="text" name="attr_id_<dtml-var "oAttr['id']">" value="<dtml-var "oAttr['id']">" size="10"
+             <dtml-if "oAttr['type'] in ['delimiter']">
+              class="form-small" style="width:80px; background-color:#F4F4F4; color:#424242; font-weight:bold; border-color:#BBBBBB; border-width=1;"
+             <dtml-elif "oAttr['type'] in ['hint']">
+              class="form-small" style="width:80px; border-width=1;"
+             <dtml-elif "oAttr['type'] in ['method','interface'] or oAttr['type'] in zope_types">
+              class="form-fixed" style="width:80px; "
+             <dtml-else>
+              class="form-small<dtml-if "oAttr['id'].find('_')==0">-disabled</dtml-if>" style="width:80px;"
+             </dtml-if>>
+          </td>
+          <dtml-comment>***** Name *****</dtml-comment>
+          <td class="form-small" <dtml-if "oAttr['type']=='delimiter'">bgcolor="#F4F4F4"</dtml-if>>
+           <input type="text" name="attr_name_<dtml-var "oAttr['id']">" value="<dtml-var "oAttr['name']">" size="15"
+             <dtml-if "oAttr['type'] in ['delimiter']">
+              class="form-small" style="width:120px; background-color:#F4F4F4; color:#424242; font-weight:bold; border-color:#BBBBBB; border-width=1;"
+             <dtml-elif "oAttr['type'] in ['hint']">
+              class="form-small" style="width:120px; border-width=1;"
+             <dtml-elif "oAttr['type'] in ['method','interface'] or oAttr['type'] in zope_types">
+              class="form-fixed" style="width:120px; "
+             <dtml-else>
+              class="form-small<dtml-if "oAttr['id'].find('_')==0">-disabled</dtml-if>" style="width:120px;"
+             </dtml-if>>
+          </td>
+          <dtml-comment>
+          ##### METHOD #####
+          </dtml-comment>
+          <dtml-if "oAttr['type'] == 'method' or
+	            oAttr['type'] in zope_types">
+          <td nowrap="nowrap" colspan="<dtml-if "metaObj['type']=='ZMSRecordSet'">4<dtml-else>5</dtml-if>">
+           <input type="hidden" name="attr_type_<dtml-var "oAttr['id']">" value="<dtml-var "oAttr['type']">">
+           <textarea class="form-fixed" title="<dtml-var "oAttr['type']">" name="attr_custom_<dtml-var "oAttr['id']">" cols="64" rows="1" wrap="virtual" style="width:372px; height:20px;"><dtml-var "oAttr.get('custom','')" html_quote></textarea>
+           <a href="manage_editorForm?came_from=<dtml-var "URL+'?'+QUERY_STRING" url_quote>&lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&fmName=form0&elName=attr_custom_<dtml-var "oAttr['id']">&headline=<dtml-var "getLangStr('TAB_METAOBJ',manage_lang)+': '+id+'.'+oAttr['id']" url_quote>" onclick="javascript:return confirmChanges(this);"><img src="<dtml-var MISC_ZMS>table_cell_edit.gif" border="0" align="bottom"></a>
+          </td>
+          <td align="center"
+           ><a href="javascript:dtmlHintBtnClick('<dtml-var "oAttr['id']">')"><img id="dtmlHintBtn<dtml-var "oAttr['id']">" src="misc_/OFSP/dtmlmethod.gif" title="DTML Method" border="1" align="absmiddle"/></a
+          </td>
+          <dtml-comment>
+          ##### RESOURCE #####
+          </dtml-comment>
+          <dtml-elif "oAttr['type']=='resource'">
+          <td class="form-small" nowrap="nowrap" colspan="<dtml-if "metaObj['type']=='ZMSRecordSet'">4<dtml-else>5</dtml-if>">
+           <input type="hidden" name="attr_type_<dtml-var "oAttr['id']">" value="<dtml-var "oAttr['type']">">
+           <input class="form-small" type="file" name="attr_custom_<dtml-var "oAttr['id']">" size="15">
+           <dtml-if "oAttr.get('custom',_.None)">
+            <dtml-let f="oAttr['custom']">
+             <a href="get_conf_blob?path=ZMS.custom.objects/<dtml-var "metaObj['id']">/__obj_attrs__/<dtml-var "oAttr['id']">/custom" target="_blank" class="zmi"><dtml-var "string_maxlen(f.getFilename(),25)"></a> 
+             <b>(<dtml-var "f.getDataSizeStr()">)</b>
+            </dtml-let>
+           </dtml-if>
+          </td>
+          <td class="form-small" align="center"
+           ><a href="javascript:dtmlHintBtnClick('<dtml-var "oAttr['id']">')"><img id="dtmlHintBtn<dtml-var "oAttr['id']">" src="misc_/OFSP/dtmlmethod.gif" title="DTML Method" border="1" align="absmiddle"/></a
+          </td>
+          <dtml-comment>
+          ##### ATTRIBUTE #####
+          </dtml-comment>
+          <dtml-else>
+          <td class="form-small"
+           ><select class="form-small" name="attr_type_<dtml-var "oAttr['id']">" style="width:150px"
+             onchange="changeType(this)"
+             onfocus="populateType(this,<dtml-var "_.str(oAttr['type'] in datatypes).lower()">,<dtml-var "_.str(metaObj['type']=='ZMSRecordSet').lower()">,<dtml-var "_.str(not oAttr['type'] in datatypes and not metaObj['type']=='ZMSRecordSet').lower()">,<dtml-var "_.str(not oAttr['type'] in datatypes and not metaObj['type']=='ZMSRecordSet').lower()">)" 
+             onmouseover="populateType(this,<dtml-var "_.str(oAttr['type'] in datatypes).lower()">,<dtml-var "_.str(metaObj['type']=='ZMSRecordSet').lower()">,<dtml-var "_.str(not oAttr['type'] in datatypes and not metaObj['type']=='ZMSRecordSet').lower()">,<dtml-var "_.str(not oAttr['type'] in datatypes and not metaObj['type']=='ZMSRecordSet').lower()">)"
+            ><dtml-if "oAttr['type'] in datatypes"
+             ><option value="<dtml-var "oAttr['type']">" selected="selected"><dtml-var "oAttr['type']"></option
+            ></dtml-if
+            ><dtml-if "metaObj['type']=='ZMSRecordSet'"
+             ><dtml-in "getMetaobjIds()"
+              ><dtml-let metaObj="getMetaobj(_['sequence-item'])"
+               ><dtml-if "metaObj['type']=='ZMSRecordSet' and metaObj['id']==oAttr['type']"
+                ><option value="<dtml-var "oAttr['type']">" selected="selected"><dtml-var "string_maxlen(metaObj['name'],15)"></option
+               ></dtml-if
+              ></dtml-let
+             ></dtml-in
+            ></dtml-if
+            ><dtml-in meta_types><dtml-let meta_type=sequence-item
+             ><dtml-if "meta_type==oAttr['type']"
+              ><option value="<dtml-var "oAttr['type']">" selected="selected"><dtml-var "string_maxlen(display_type(REQUEST,oAttr['type']),15)"></option
+             ></dtml-if>
+            ></dtml-let></dtml-in
+            ><dtml-if "oAttr['type']=='*'"
+             ><option value="<dtml-var "oAttr['type']">" selected="selected"><dtml-var "getLangStr('ATTR_CUSTOM',manage_lang)"> (*)</option
+            ></dtml-if
+           ></select>
+          </td>
+          <td title="<dtml-var "getLangStr('ATTR_MANDATORY',manage_lang)">" align="center"
+           ><dtml-if "oAttr['type']=='*' or oAttr['type'] in dGlobalAttrs.keys() or oAttr['type'] in getMetaobjIds()"
+            ><dtml-var "getCheckbox(fmName='form0',elName='attr_mandatory_%s:int'%oAttr['id'],value=boolint(oAttr.get('mandatory',0)==1),enabled=metaObj['type']=='ZMSRecordSet',hidden=1,REQUEST=REQUEST)"
+           ><dtml-else
+            ><dtml-var "getCheckbox(fmName='form0',elName='attr_mandatory_%s:int'%oAttr['id'],value=boolint(oAttr.get('mandatory',0)==1),enabled=not oAttr['type'] in ['constant'],hidden=1,REQUEST=REQUEST)"
+           ></dtml-if
+          ></td>
+          <dtml-if "metaObj['type']=='ZMSRecordSet'">
+           <td title="<dtml-var "getLangStr('ATTR_DISPLAY',manage_lang)"> (<dtml-var "getLangStr('ATTR_COL',manage_lang)">)" align="center"
+            ><dtml-var "getCheckbox(fmName='form0',elName='attr_custom_%s:int'%oAttr['id'],value=boolint(oAttr.get('custom',1)==1),enabled=not _['sequence-start'],hidden=1,REQUEST=REQUEST)"
+           ></td>
+          <dtml-elif "oAttr['type']=='*' or oAttr['type'] in dGlobalAttrs.keys() or oAttr['type'] in getMetaobjIds()">
+           <td>&nbsp;</td>
+          <dtml-else>
+           <td title="<dtml-var "getLangStr('ATTR_MULTILANG',manage_lang)">" align="center"
+            ><dtml-var "getCheckbox(fmName='form0',elName='attr_multilang_%s:int'%oAttr['id'],value=boolint(oAttr.get('multilang',1)==1 and not oAttr['type'] in ['constant']),enabled=_.True,hidden=1,REQUEST=REQUEST)"
+           ></td>
+          </dtml-if>
+          <td title="<dtml-var "getLangStr('ATTR_REPETITIVE',manage_lang)">" align="center"
+           ><dtml-var "getCheckbox(fmName='form0',elName='attr_repetitive_%s:int'%oAttr['id'],value=boolint(oAttr.get('repetitive',1)==1),enabled=_.False,hidden=1,REQUEST=REQUEST)"
+          ></td>
+          <td class="form-small" nowrap="nowrap" width="158"
+           ><nobr
+           ><dtml-if "oAttr['type'] in ['dialog']"
+	    ><select title="Dialog" class="form-small" name="attr_custom_<dtml-var "oAttr['id']">" style="width:158px; height:20px;"
+	     ><option value="">--- <dtml-var "getLangStr('CAPTION_SELECT',REQUEST['manage_lang'])"> ---</option
+	     ><dtml-in "metaObj['attrs']"
+	      ><dtml-let dialog=sequence-item
+	       ><dtml-if "dialog['type'] in ['DTML Method','DTML Document']"
+	        ><option value="<dtml-var "dialog['id']">"
+	         <dtml-if "dialog['id'] == oAttr.get('custom','')">selected="selected"</dtml-if>
+	         ><dtml-var "dialog['id']"
+	        ></option
+	       ></dtml-if
+	      ></dtml-let
+	     ></dtml-in
+	    ></select
+           ><dtml-elif "oAttr['type'] in ['*','multiselect','recordset','select']"
+            ><textarea title="<dtml-var "getLangStr('ATTR_KEYS',manage_lang)">" class="form-small" name="attr_keys_<dtml-var "oAttr['id']">" cols="25" rows="1" wrap="virtual" style="width:158px; height:20px;"
+            ><dtml-in "oAttr.get('keys',[])"><dtml-var "'%s\n'%_.str(_['sequence-item'])"></dtml-in></textarea
+            ><a href="?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&id=<dtml-var "REQUEST.get('id')">&inp_id_name=attr_id_<dtml-var "oAttr['id']">&inp_name_name=attr_name_<dtml-var "oAttr['id']">&inp_value_name=attr_keys_<dtml-var "oAttr['id']">#Edit"><img src="<dtml-var MISC_ZMS>table_cell_edit.gif" border="0" title="" align="bottom"></a
+           ><dtml-elif "oAttr['type'] in ['constant']"
+	    ><textarea title="Default" class="form-small" name="attr_custom_<dtml-var "oAttr['id']">" cols="25" rows="1" wrap="virtual" style="width:158px; height:20px;"><dtml-var "oAttr.get('custom','')" html_quote></textarea
+            ><a href="?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&id=<dtml-var "REQUEST.get('id')">&inp_id_name=attr_id_<dtml-var "oAttr['id']">&inp_name_name=attr_name_<dtml-var "oAttr['id']">&inp_value_name=attr_custom_<dtml-var "oAttr['id']">#Edit"><img src="<dtml-var MISC_ZMS>table_cell_edit.gif" border="0" title="" align="bottom"></a
+           ><dtml-elif "oAttr['type'] in ['amount','date','datetime','float','int','string','text','time','url']"
+            ><img src="<dtml-var MISC_ZMS>ico_default.gif" title="default" style="margin-right:2" align="absmiddle"
+	    ><textarea title="Default" class="form-small" name="attr_default_<dtml-var "oAttr['id']">" cols="25" rows="1" wrap="virtual" style="width:158px; height:20px; color:blue;"><dtml-var "oAttr.get('default','')" html_quote></textarea
+            ><a href="?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&id=<dtml-var "REQUEST.get('id')">&inp_id_name=attr_id_<dtml-var "oAttr['id']">&inp_name_name=attr_name_<dtml-var "oAttr['id']">&inp_value_name=attr_custom_<dtml-var "oAttr['id']">#Edit"><img src="<dtml-var MISC_ZMS>table_cell_edit.gif" border="0" title="" align="bottom"></a
+           ></dtml-if
+           ></nobr
+          ></td>
+          <td align="center"
+           ><a href="javascript:dtmlHintBtnClick('<dtml-var "oAttr['id']">')"><img id="dtmlHintBtn<dtml-var "oAttr['id']">" src="misc_/OFSP/dtmlmethod.gif" title="DTML Method" border="1" align="absmiddle"/></a
+          </td>
+          </dtml-if>
+          </dtml-if>
+        </tr>
+       </dtml-let>
+       </dtml-in>
+
+       <!-- Template -->
+       <dtml-if "_.hasattr(getDocumentElement(),metaObj['tmplt'])">
+       <tr valign="middle"
+        <dtml-if "REQUEST.has_key('inp_id_name') and REQUEST.get('inp_id_name')=='tmpltId'">
+         style="background-color:#9CC"
+        <dtml-else>
+         class="zmiNeutralColorStrong0"
+        </dtml-if>
+       >
+        <td align="right" class="zmiNeutralColorStrong0"><img src="<dtml-var MISC_ZMS>spacer.gif" title="" border="0" width="20" height="20" class="button"/></td>
+        <td class="zmiNeutralColorStrong0">
+         <a href="<dtml-var "metaObj['tmplt']">/manage_workspace" target="_blank"><img src="misc_/OFSP/dtmlmethod.gif" title="DTML Method" border="0" align="absmiddle"/></a>
+        </td>
+        <td class="form-small"><input type="text" name="tmpltId" value="<dtml-var "metaObj['tmplt']">" size="10" class="form-fixed" style="width:80px; font-weight:bold;"></td>
+        <td class="form-small"><input type="text" name="tmpltName" value="Template (DTML Method)" size="15" class="form-fixed" style="width:120px; font-weight:bold;"></td>
+        <td class="form-small" nowrap="nowrap" colspan="7">
+         <textarea class="form-fixed" name="obj_dtml" cols="64" rows="1" wrap="virtual" style="width:372px; height:20px;"><dtml-var "_.getattr(getDocumentElement(),metaObj['tmplt']).raw" html_quote></textarea>
+         <a href="manage_editorForm?came_from=<dtml-var "URL+'?'+QUERY_STRING" url_quote>&lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&fmName=form0&elName=obj_dtml&headline=<dtml-var "getLangStr('TAB_METAOBJ',manage_lang)+': '+metaObj['tmplt']" url_quote>" onclick="javascript:return confirmChanges(this);"><img src="<dtml-var MISC_ZMS>table_cell_edit.gif" border="0" align="bottom"></a>
+        </a>
+       </tr>
+       </dtml-if>
+
+       <!-- Insert Attribute -->
+       <tr valign="middle">
+        <td align="right" class="zmiNeutralColorStrong0"><img src="<dtml-var MISC_ZMS>btn_add.gif" title="<dtml-var "getLangStr('CAPTION_INSERT',manage_lang)%getLangStr('ATTR_ATTR',manage_lang)">" border="0" class="button"/></td>
+        <td class="zmiNeutralColorStrong0">
+         <img src="<dtml-var spacer_gif>" title="" border="0" width="16" height="16" align="absmiddle"/>
+        </td>
+        <td class="form-small"><input class="form-small" type="text" name="attr_id" value="" size="10" style="width:80px;"></td>
+        <td class="form-small"><input class="form-small" type="text" name="attr_name" value="" size="15" style="width:120px;"></td>
+        <td class="form-small">
+         <select class="form-small" name="_type" style="width:150px" onchange="changeType(this)" onfocus="populateType(this,true,true,true,true)" onmouseover="populateType(this,true,true,true,true)">
+          <option value="">--- <dtml-var "getLangStr('ATTR_PRIMITIVE',manage_lang)"> ---</option>
+         </select>
+        </td>
+        <td title="<dtml-var "getLangStr('ATTR_MANDATORY',manage_lang)">" align="center">
+         <input class="form-checkbox" type="checkbox" name="_mandatory:int" value="1" title="<dtml-var "getLangStr('ATTR_MANDATORY')">">
+        </td>
+        <dtml-if "metaObj['type']=='ZMSRecordSet'">
+         <td align="center" title="<dtml-var "getLangStr('ATTR_DISPLAY')"> (<dtml-var "getLangStr('ATTR_COL')">)">
+          <input class="form-checkbox" type="checkbox" name="_custom:int" value="1" title="<dtml-var "getLangStr('ATTR_DISPLAY')"> (<dtml-var "getLangStr('ATTR_COL')">)" checked="checked">
+         </td>
+        <dtml-else>
+         <td title="<dtml-var "getLangStr('ATTR_MULTILANG',manage_lang)">" align="center">
+          <input class="form-checkbox" type="checkbox" name="_multilang:int" value="1" title="<dtml-var "getLangStr('ATTR_MULTILANG')">" checked="checked">
+         </td>
+         <td align="center">
+          <input class="form-checkbox" type="checkbox" name="_repetitive:int" value="1" title="<dtml-var "getLangStr('ATTR_REPETITIVE')">">
+         </td>
+        </dtml-if>
+        <td class="form-small" colspan="2">
+         <input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_INSERT',manage_lang)" html_quote>" onclick="btnClick(this,'attr');">
+        </td>
+       </tr>
+       </table>
+
+       <!-- Edit -->
+       <div id="dtmlHint" style="visibility:hidden;display:none;width:100%;align:center;">
+       <div style="background-color:#ffffc0;border:1px dashed black;">
+        <div align="right"><a href="#" onclick="dtmlHintBtnClose();" onmouseover="document.getElementById('icon_close').src='<dtml-var MISC_ZMS>icon_logout1.gif'" onmouseout="document.getElementById('icon_close').src='<dtml-var MISC_ZMS>icon_logout0.gif'"><img id="icon_close" src="<dtml-var MISC_ZMS>icon_logout0.gif" alt="<dtml-var "getLangStr('BTN_CLOSE',manage_lang)">" border="0" align="absmiddle"/></a></div>
+        <div id="dtmlHintText" class="form-small" style="padding:4px;"></div>
+       </div>
+       </div>
+       <dtml-if "REQUEST.has_key('inp_id_name')">
+       <br />
+       <a name="#Edit">
+       <input type="hidden" name="inp_id_name" value="<dtml-var inp_id_name>">
+       <input type="hidden" name="inp_name_name" value="<dtml-var inp_name_name>">
+       <input type="hidden" name="inp_value_name" value="<dtml-var inp_value_name>">
+       <table cellspacing="0" cellpadding="1" border="0" width="100%">
+       <tr class="zmiNeutralColorStrong0">
+        <td class="form-small">
+         <script language="JavaScript">
+         <!--//
+          document.write( '<b>' + document.forms[ 0].elements[ '<dtml-var inp_id_name>'].value + '</b>: ' +  document.forms[ 0].elements[ '<dtml-var inp_name_name>'].value);
+         //-->
+         </script>
+        </td>
+       </tr>
+       <tr>
+        <td align="center" class="form-fixed">
+         <script language="JavaScript">
+         <!--//
+           function inpValueChange(el)
+           {
+             document.forms[0].elements['<dtml-var inp_value_name>'].value = document.forms[0].elements[ 'inp_value'].value;
+           }
+         //-->
+         </script>
+         <dtml-var "getTextArea(fmName='form0',elName='inp_value',cols=55,rows=15,value='',enabled=1,REQUEST=REQUEST,css='form-fixed',wrap='off',extra='onChange='+QUOT+'inpValueChange(this);'+QUOT)">
+         <script language="JavaScript">
+         <!--//
+           document.forms[0].elements[ 'inp_value'].value = document.forms[0].elements['<dtml-var inp_value_name>'].value;
+         //-->
+         </script>
+        </td>
+       </tr>
+       <tr>
+        <td align="right" class="form-element">
+         <input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_CHANGE',manage_lang)" html_quote>" onclick="btnClick(this,'all');">
+        </td>
+       </tr>
+       </table>
+       </dtml-if>
+
+       </td>
+       </tr>
+       </table>
+      </td>
+     </tr>
+     </dtml-unless>
+
+     </dtml-if>
+    <dtml-else>
+     <dtml-if "REQUEST.get('id','') == '' and (metaObj['package'] == '' or metaObj['type'] == 'ZMSPackage')">
+     <tr valign="top" class="neutralColorWhite">
+      <td colspan="7">
+       <table cellspacing="0" cellpadding="0" border="0" width="100%">
+        <dtml-let metaObjs="[metaObj]"
+         ><dtml-if "metaObj['type'] == 'ZMSPackage'"
+          ><dtml-in metaObjIds
+           ><dtml-let pkgMetaObj="getMetaobj(_['sequence-item'])"
+            ><dtml-if "pkgMetaObj['package'] == metaObj['id']"
+             ><dtml-call "metaObjs.append(pkgMetaObj)"
+            ></dtml-if
+           ></dtml-let
+          ></dtml-in
+         ></dtml-if
+         ><dtml-in metaObjs
+          ><dtml-let metaObj=sequence-item
+           ><tr>
+            <td class="form-text" witdh="100%"
+             ><div class="form-text"
+             ><dtml-if "_.len(metaObjs) > 1"
+              ><dtml-unless sequence-start
+               ><dtml-if sequence-end
+                ><img src="<dtml-var MISC_ZMS>tv_last.gif" alt="" align="absmiddle" border="0"
+               ><dtml-else
+                ><img src="<dtml-var MISC_ZMS>tv_item.gif" alt="" align="absmiddle" border="0" style="background-image:url(<dtml-var MISC_ZMS>tv_line.gif);"
+               ></dtml-if
+              ></dtml-unless
+             ></dtml-if
+             ><dtml-unless "metaObj.get('package','') != '' and metaObj.get('acquired',0) == 1"
+             ><input class="form-element" type="radio" name="id" value="<dtml-var "metaObj['id']">" onclick="radioOnClick(this,'<dtml-var URL0>');"
+             ></dtml-unless
+             ><img src="<dtml-var "display_icon(REQUEST,metaObj['id'])">" title="<dtml-var "metaObj['id']">" border="0" align="absmiddle"
+             ><dtml-if "metaObj.get('zms_system',0) == 1"><img src="<dtml-var MISC_ZMS>ico_default.gif" title="default / unmodified" style="margin-right:2" align="absmiddle"></dtml-if
+             ><dtml-if "metaObj.get('acquired',0) == 1"><a href="<dtml-var "getPortalMaster().absolute_url()+'/'+URL.split('/')[-1]">?id=<dtml-var "metaObj['id']">" target="_blank" class="zmi"><img src="<dtml-var MISC_ZMS>ico_is_acquired.gif" title="is acquired: <dtml-var "getConfProperty('Portal.Master')">" border="0" align="absmiddle"/></a></dtml-if
+             ><dtml-if has_acquisition><img src="<dtml-var MISC_ZMS>ico_has_acquisition.gif" title="has acquisitions: <dtml-var has_acquisition>" border="0" align="absmiddle"/></dtml-if
+             ><dtml-if "metaObj['type'] == 'ZMSPackage'"
+              ><a href="manage_BigPictureMetaobjForm?lang=<dtml-var lang>&manage_lang=<dtml-var manage_lang>&id=<dtml-var "metaObj['id']">" target="_blank" class="zmi" style="text-decoration:none;" title="BigPicture::Logical View"
+               ><code style="color:navy"><b><dtml-var "metaObj['name']"></b></code
+              ></a
+             ><dtml-else
+              ><b><dtml-var "metaObj['name']"></b
+              ><i>(<dtml-var "getLangStr('SOTYPE_%s'%metaObj['type'].upper(),manage_lang)">)</i
+             ></dtml-if
+             ></div
+            ></td>
+            <dtml-if sequence-start>
+             <td align="right" width="20">
+              <input class="form-checkbox" type="checkbox" name="ids:list" value="<dtml-var "metaObj['id']">" <dtml-if "metaObj.get('acquired',0) == 1">disabled="disabled"</dtml-if>/>
+             </td>
+            </dtml-if>
+           </tr>
+          </dtml-let>
+         </dtml-in>
+        </dtml-let>
+       </table>
+      </td>
+     </tr>
+     </dtml-if>
+    </dtml-if>
+   </dtml-let>
+  </dtml-in>
+  </dtml-if>
+  </dtml-let>
+
+ <!-- Insert Special Object -->
+ <dtml-if "REQUEST.get('id','')==''">
+  <tr>
+   <td colspan="7"><dtml-var "f_headline(_,_,headline=getLangStr('BTN_INSERT',manage_lang))"></td>
+  </tr>
+  <tr valign="top" class="zmiNeutralColorLight0">
+   <td>&nbsp;</td>
+   <td class="form-element">
+    <dtml-var "getTextInput(fmName='form0',elName='_meta_id',size=12,value='')">
+    <div align="right" class="form-small"><dtml-var "getLangStr('ATTR_ID',manage_lang)"></div>
+   </td>
+   <td class="form-element">
+    <dtml-var "getTextInput(fmName='form0',elName='_meta_name',size=15,value='')">
+    <div align="right" class="form-small"><dtml-var "getLangStr('ATTR_DISPLAY',manage_lang)"></div>
+   </td>
+   <td class="form-element">
+    <select class="form-element" name="_meta_type">
+     <dtml-in objtypes
+      ><dtml-let objtype=sequence-item
+       ><option value="<dtml-var objtype>"><dtml-var "getLangStr('SOTYPE_%s'%objtype.upper(),manage_lang)"></option
+      ></dtml-let
+     ></dtml-in
+    ></select>
+    <div align="right" class="form-small"><dtml-var "getLangStr('ATTR_TYPE',manage_lang)"></div>
+   </td>
+   <td colspan="3"><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_INSERT',manage_lang)" html_quote>" onclick="btnClick(this,'obj');"></td>
+ </tr>
+ </dtml-if>
+
+ <!-- Acquire Special Object -->
+ <dtml-if "REQUEST.get('id','')=='' and getPortalMaster() is not _.None">  
+  <dtml-call "REQUEST.set('count',0)">
+  <dtml-let thisIds="getMetaobjIds()" portalMaster="getPortalMaster()">
+    <dtml-in "portalMaster.getMetaobjIds()">
+     <dtml-let metaObjId=sequence-item metaObj="portalMaster.getMetaobj(metaObjId)">
+     <dtml-if "(metaObj['type'] == 'ZMSPackage' or metaObj['package'] == '') and (not metaObjId in thisIds or not ZMS_THIS.getMetaobj(metaObjId).get('acquired',0) == 1)">
+      <dtml-unless count>
+       <tr>
+        <td colspan="7"><dtml-var "f_headline(_,_,headline='%s: %s'%(getLangStr('BTN_ACQUIRE',manage_lang),portalMaster.getHome().id))"></td>
+       </tr>
+       <tr class="zmiNeutralColorLight0">
+        <td>&nbsp;</td>
+        <td colspan="7" class="form-element">
+         <table cellspacing="0" cellpadding="0" border="0">
+         <tr valign="top">
+          <td>
+           <select class="form-element" name="aq_id">
+            <option value="">----- <dtml-var "getLangStr('ACTION_SELECT',manage_lang)%getLangStr('TAB_METAOBJ',manage_lang)"> -----</option>
+      </dtml-unless>
+      <option value="<dtml-var "metaObj['id']">"><dtml-var "metaObj['id']"> (<dtml-var "metaObj['name']">)</option>
+      <dtml-call "REQUEST.set('count',count+1)">
+     </dtml-if>
+     </dtml-let>
+    </dtml-in>
+  </dtml-let>
+  <dtml-if count>
+       </select> 
+       <div align="right" class="form-small"><dtml-var "getLangStr('ATTR_ID',manage_lang)"> (<dtml-var "getLangStr('ATTR_DISPLAY',manage_lang)">)</div>
+      </td>
+      <td><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_ACQUIRE',manage_lang)" html_quote>" onclick="btnClick(this,'obj');"></td>
+     </tr>
+     </table>
+    </td>
+   </tr>
+  </dtml-if>
+ </dtml-if>
+
+ <!-- Import Special Object(s) -->
+ <dtml-if "REQUEST.get('id','')==''">
+  <tr>
+   <td colspan="7"><dtml-var "f_headline(_,_,headline='<img src=%smime_type.text_xml.gif alt=XML border=0 align=absmiddle>&nbsp;%s'%(MISC_ZMS,getLangStr('BTN_IMPORT',manage_lang)))"></td>
+  </tr>
+  <tr class="zmiNeutralColorLight0">
+   <td colspan="7">
+    <table cellspacing="0" cellpadding="2" border="0">
+    <tr valign="middle">
+     <td align="right"><div class="form-label"><img src="<dtml-var MISC_ZMS>upload.gif" title="XML" border="0" align="absmiddle"><dtml-var "getLangStr('ATTR_FILE',manage_lang)"></div></td>
+     <td><input class="form-element" name="file" type="file" size="25" accept="text/xml"></td>
+    </tr>
+    <dtml-let pattern="'.metaobj.'" conf_files="getConfFiles(pattern)">
+     <dtml-if conf_files>
+      <tr>
+       <td align="right"><div class="form-label"><dtml-var "getLangStr('OR',manage_lang).lower()"></div></td>
+       <td colspan="7">
+        <select class="form-element" name="init">
+	 <option value="">--- <dtml-var "getLangStr('BTN_INIT',manage_lang)">... ---</option>
+         <dtml-in conf_files>
+	  <dtml-let conf_file=sequence-item>
+           <option value="<dtml-var conf_file>">$ZMS_HOME/import/<dtml-var conf_file></option>
+	  </dtml-let>
+         </dtml-in>
+        </select>
+       </td>
+      </tr>
+     </dtml-if>
+    </dtml-let>
+    <tr valign="middle">
+     <td>&nbsp;</td>
+     <td><input class="form-submit" name="btn" type="submit" value="<dtml-var "getLangStr('BTN_IMPORT',manage_lang)" html_quote>" onclick="btnClick(this,'obj');"></td>
+    </tr>
+    </table>
+   </td>
+  </tr>
+  </dtml-if>
+
+  </table>
+ </form>
+
+<dtml-comment>
+<!-- ###################################################################### -->
+</dtml-comment>
+
+</dtml-let>
+
+<dtml-var f_eo_area>
+
+<dtml-var manage_page_footer>

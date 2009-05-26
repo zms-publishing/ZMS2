@@ -1,0 +1,12 @@
+<dtml-var f_standard_html_request>
+<dtml-var f_standard_html_header>
+<dtml-call "REQUEST.set('values',[])">
+<dtml-call "values.append('getDoiPath')">
+<dtml-call "values.append(QUERY_STRING)">
+<dtml-call "REQUEST.set('nodes',findFilteredTreeNodes(REQUEST,PAGES,values))">
+<dtml-if "_.len(nodes)>0">
+ <dtml-call "RESPONSE.redirect(nodes[0].getHref2IndexHtml(REQUEST,deep=0))">
+<dtml-else>
+ <p class="standard"><dtml-var "getLangStr('MSG_INACTIVE',lang)"></p>
+</dtml-if>
+<dtml-var f_standard_html_footer>
