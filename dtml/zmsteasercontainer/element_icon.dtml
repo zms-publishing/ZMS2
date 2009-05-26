@@ -1,0 +1,8 @@
+<div class="ZMSTeaserElement">
+ <div align="center" class="title"<dtml-if bgcolor_title> style="background-color:<dtml-var "get_colormap().get(bgcolor_title,'transparent')">"</dtml-if>
+  ><img src="<dtml-var spacer_gif>" title="<dtml-var "getZMILangStr('ATTR_TITLE')">" border="0" width="24" height="4"
+ ></div>
+ <div align="center" class="text"<dtml-if bgcolor_text> style="background-color:<dtml-var "get_colormap().get(bgcolor_text,'transparent')">"</dtml-if>
+  ><img src="<dtml-var icon>" title="<dtml-var "getZMILangStr('ATTR_TEXT')">" border="0"
+ ></div>
+</div>

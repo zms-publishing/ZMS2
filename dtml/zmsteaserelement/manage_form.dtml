@@ -1,0 +1,58 @@
+<!-- ### Penetrance -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_PENETRANCE')"></div></td>
+ <td><dtml-var "getObjInput('attr_penetrance',REQUEST)"></td>
+</tr>
+
+<!-- ### URL -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_URL')"></div></td>
+ <td><dtml-var "getObjInput('attr_url',REQUEST)"></td>
+</tr>
+
+<!-- ### Alignment -->
+<tr valign="middle" class="zmiNeutralColorMedium0">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_IMAGE')">/<dtml-var "getZMILangStr('ATTR_TITLE')"></div></td>
+ <td>
+  <table cellspacing="0" cellpadding="1" border="0">
+  <tr>
+   <!-- ### Displaytype -->
+   <td class="form-text">
+     <dtml-var "getZMILangStr('ALIGN')">
+   </td>
+   <dtml-var f_selectDisplaytype>
+  </tr>
+  </table>
+ </td>
+</tr>
+
+<!-- ### Image -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_IMAGE')"></div></td>
+ <td><dtml-var "getObjInput('attr_img',REQUEST)"></td>
+</tr>
+
+<!-- ### Title -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_TITLE')"></div></td>
+ <td><dtml-var "getObjInput('title',REQUEST)"></td>
+</tr>
+
+<!-- ### Format (Bold, Italic, Underline, etc.) -->
+<tr>
+ <td height="22" colspan="2" class="zmiNeutralColorMedium0">
+  <table cellspacing="0" cellpadding="0" border="0">
+  <tr valign="middle">
+   <td class="form-label">
+     &nbsp;<b><dtml-var "getZMILangStr('ATTR_TEXT')"></b>&nbsp;
+   </td>
+   <td nowrap="nowrap"><dtml-var "f_selectCharformat(_,_,fmName=fmName,elName='text_%s'%lang)"></td>
+  </tr>
+  </table>
+ </td>
+</tr>
+
+<!-- ### Text -->
+<tr>
+ <td colspan="2" align="center"><dtml-var "getObjInput('text',REQUEST)"></td>
+</tr>

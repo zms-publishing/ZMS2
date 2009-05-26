@@ -1,0 +1,13 @@
+<dtml-comment>
+################################################################################
+### Authentic XML Editor
+### please refer to http://www.altova.com/manual2008/AuthenticBrowser/
+################################################################################
+</dtml-comment>
+
+<object id="editor_<dtml-var "REQUEST.get('elName')">"
+        name="editor_<dtml-var "REQUEST.get('elName')">"
+   classid="clsid:28A640E8-EAEE-4B5D-BEBE-BFA956081E66"
+   style="width:100%; HEIGHT:400px"
+   codebase="<dtml-var "REQUEST.get('codebase_protocol',absolute_url()[:absolute_url().find(':')])">://medvalue.net/pub/bscw.cgi/d299240/AuthenticBrowserEditionUntrusted_DE.CAB">
+</object>

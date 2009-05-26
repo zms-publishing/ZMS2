@@ -1,0 +1,81 @@
+<dtml-in "metaObj['attrs']">
+<dtml-let oAttr=sequence-item
+          key="oAttr['id']"
+          required="oAttr.get('mandatory',0)==1 or (_['sequence-index']==0 and metaObj['type'] in [ 'ZMSDocument', 'ZMSTeaserElement' ])"
+          visible="oAttr['id'].find('_')!=0 and oAttr['type'] not in [ 'constant', 'method', 'resource', 'DTML Method', 'DTML Document', 'Script (Python)' ]"
+          obj_attr="getObjAttr(key)"
+          fmName="'form0'"
+          elName="getObjAttrName(obj_attr,lang)"
+          cols="40">
+<dtml-if visible>
+<dtml-comment>
+##### FORM-DELIMITER #####
+</dtml-comment>
+<dtml-if "oAttr['type']=='delimiter'">
+<tr id="tr_<dtml-var key>">
+ <td colspan="2" class="zmiHeadline"><dtml-var "getLangStr(oAttr['name'],lang)"></td>
+</tr>
+<dtml-comment>
+##### FORM-HINT #####
+</dtml-comment>
+<dtml-elif "oAttr['type']=='hint'">
+<tr id="tr_<dtml-var key>">
+ <td colspan="2" class="form-text"><dtml-var "getLangStr(oAttr['name'],lang)"></td>
+</tr>
+<dtml-comment>
+##### FORM-INTERFACE #####
+</dtml-comment>
+<dtml-elif "oAttr['type']=='interface'">
+<tr id="tr_<dtml-var key>" valign="middle">
+ <td colspan="2" class="form-text"><dtml-var "dt_html(oAttr['name'],REQUEST)"></td>
+</tr>
+<dtml-comment>
+##### ZMSResource #####
+</dtml-comment>
+<dtml-elif "oAttr['type'] in getMetaobjIds() and getMetaobj(oAttr['type'])['type']=='ZMSResource'">
+ <dtml-unless ZMS_INSERT>
+  <dtml-if "_.len(getObjChildren(oAttr['id'],REQUEST))==0">
+   <tr id="tr_<dtml-var key>">
+    <td><div class="form-label<dtml-if disabled>-disabled</dtml-if>"><dtml-var "getLangStr(oAttr['name'],lang)"><dtml-if required><sup style="color:red">*</sup></dtml-if></div></td>
+    <td><a href="manage_initObjChild?id=<dtml-var "oAttr['id']">&type=<dtml-var "oAttr['type']">&lang=<dtml-var lang>&target=<dtml-var URL>" class="button"><img src="<dtml-var MISC_ZMS>btn_add.gif" title="" border="0"/></a></td>
+   </tr>
+  <dtml-else>
+   <dtml-in "getObjChildren(oAttr['id'],REQUEST)">
+   <dtml-unless required>
+   <tr id="tr_<dtml-var key><dtml-var sequence-index>">
+    <td colspan="2">
+     <table cellspacing="0" cellpadding="1" border="0" width="100%" class="zmiHeadline">
+     <tr valign="middle">
+      <td><dtml-var "getLangStr(oAttr['name'],lang)"><dtml-if required><sup style="color:red">*</sup></dtml-if></td>
+      <td align="right"><dtml-if required>&nbsp;<dtml-else><a href="javascript:confirmDeleteBtnOnClick('manage_deleteObjs?ids:list=<dtml-var id>&target=<dtml-var URL>');" class="button"><img src="<dtml-var MISC_ZMS>btn_trashcan1.gif" title="" border="0"/></a></dtml-if></td>
+     </tr>
+     </table>
+    </td>
+   </tr>
+   </dtml-unless>
+   <dtml-let metaObj="getMetaobj(oAttr['type'])">
+    <dtml-var metaobj_input_fields>
+   </dtml-let>
+  </dtml-in>
+ </dtml-if>
+</dtml-unless>
+
+<dtml-comment>
+#####  Object #####
+</dtml-comment>
+<dtml-elif "oAttr['type']=='*' or oAttr['type'] in dGlobalAttrs.keys() or oAttr['type'] in getMetaobjIds()">
+ <dtml-var "f_selectObject(_,_,objLabel=getLangStr(oAttr['name'],lang),objAttr=oAttr)">
+
+<dtml-comment>
+#####  Primitive #####
+</dtml-comment>
+<dtml-else>
+<tr id="tr_<dtml-var key>" valign="top">
+ <td><div class="form-label<dtml-if disabled>-disabled</dtml-if>"><dtml-var "getLangStr(oAttr['name'],lang)"><dtml-if required><sup style="color:red">*</sup></dtml-if></div></td>
+ <td><dtml-var "getObjInput(key,REQUEST)"></td>
+</tr>
+
+</dtml-if>
+</dtml-if>
+</dtml-let>
+</dtml-in>

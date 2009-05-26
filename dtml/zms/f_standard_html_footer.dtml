@@ -1,0 +1,17 @@
+<dtml-if "REQUEST.get('op','')=='print' or REQUEST.has_key('printversion')"
+></body
+><dtml-else
+><dtml-in "getMetaobjIds()"
+><dtml-let metaObjId=sequence-item metaObj="getMetaobj(metaObjId)"
+><dtml-in "metaObj['attrs']"
+><dtml-let objAttr=sequence-item
+><dtml-if "objAttr['type']=='method' and objAttr['id']=='standard_html_footer'"
+><dtml-var "dt_html(objAttr['custom'],REQUEST)"
+></dtml-if
+></dtml-let
+></dtml-in
+></dtml-let
+></dtml-in
+><dtml-var standard_html_footer
+></dtml-if
+></html>

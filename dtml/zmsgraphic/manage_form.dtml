@@ -1,0 +1,50 @@
+<!-- ### Image -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_IMAGE')"></div></td>
+ <td><dtml-var "getObjInput('img',REQUEST)"></td>
+</tr>
+
+<!-- ### HighRes -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_IMAGE')">&nbsp;(<dtml-var "getZMILangStr('ATTR_HIRES')">)</div></td>
+ <td><dtml-var "getObjInput('imghires',REQUEST)">
+</tr>
+
+<!-- ### SuperRes -->
+<dtml-if "getConfProperty('ZMSGraphic.superres',0)==1">
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_IMAGE')">&nbsp;(<dtml-var "getZMILangStr('ATTR_SUPERRES')">)</div></td>
+ <td><dtml-var "getObjInput('imgsuperres',REQUEST)">
+</tr>
+</dtml-if>
+
+<!-- ### Special Attributes -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_ATTRS_SPEC')"></div></td>
+ <td><dtml-var "getObjInput('img_attrs_spec',REQUEST)"></td>
+</tr>
+
+<!-- ### Url -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_URL')"></div></td>
+ <td><dtml-var "getObjInput('attr_url',REQUEST)"></td>
+</tr>
+
+<!-- ### Align -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_EMBEDDING')"></div></td>
+ <td><dtml-var "getObjInput('align',REQUEST)"></td>
+</tr>
+
+<!-- ### Buttons -->
+<tr>
+ <td colspan="2"><dtml-var f_submitBtn></td>
+</tr>
+
+<!-- ### Caption -->
+<tr>
+ <td colspan="2" class="zmiHeadline"><dtml-var "getZMILangStr('ATTR_CAPTION')"></td>
+</tr>
+<tr>
+ <td colspan="2" class="zmiNeutralColorMedium0"><dtml-var "zmstextarea_manage_form(_,_,b_f_selectAlign=_.True,b_f_selectDisplaytype=_.True)"></td>
+</tr>

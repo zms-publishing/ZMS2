@@ -1,0 +1,49 @@
+<dtml-if "_.hasattr(getHome(),'A_rendershort_teasercontainer')"
+><dtml-with "getHome()"
+><dtml-var A_rendershort_teasercontainer
+></dtml-with
+><dtml-else>
+<dtml-in res>
+ <dtml-let teaserElmnt=sequence-item
+           manage_main="'%s/manage_main?lang=%s'%(teaserElmnt.absolute_url(),REQUEST['lang'])">
+  <div class="form-small">
+   <a href="<dtml-var manage_main>"><img src="<dtml-var MISC_ZMS>internal_link.gif" title="<dtml-var "getZMILangStr('CAPTION_EDIT')%teaserElmnt.display_type(REQUEST)">" border="0" align="absmiddle"/></a>
+   <dtml-if "teaserElmnt.meta_type == 'ZMSTeaserElement'">
+    <dtml-let url="teaserElmnt.getUrl(REQUEST)"
+              img="teaserElmnt.getImg(REQUEST)"
+              title="teaserElmnt.getTitle(REQUEST)"
+              abstract="teaserElmnt.getAbstract(REQUEST)">
+     <dtml-if title>
+      <dtml-if url>
+       <a href="<dtml-var url>" target="_blank" class="zmi"><b><dtml-var title></b></a>:
+      <dtml-else>
+       <b><dtml-var title></b>:
+      </dtml-if>
+     <dtml-else>
+      <dtml-if img>
+       <i>&laquo;<dtml-var "img.filename">&raquo;</i><br/>
+      </dtml-if>
+     </dtml-if>
+     <dtml-var abstract><br/>
+    </dtml-let>
+   <dtml-elif "teaserElmnt.meta_type == 'ZMSFile'">
+    <dtml-let file="teaserElmnt.getFile(REQUEST)"
+              titlealt="teaserElmnt.getTitlealt(REQUEST)" 
+              abstract="teaserElmnt.getObjProperty('attr_dc_description',REQUEST)">
+     <dtml-if file>
+      <img src="<dtml-var "file.getMimeTypeIconSrc()">" title="<dtml-var "file.getContentType()">" border="0" alt="Icon" align="absmiddle"/>
+      &laquo;<a href="<dtml-var "file.getHref(REQUEST)">" target="_blank"><b><dtml-var titlealt></b></a>&raquo; (<dtml-var "file.getDataSizeStr()">)<br/>
+     <dtml-else>
+      &laquo;<b><dtml-var titlealt></b>&raquo;<br/>
+     </dtml-if>
+     <dtml-var abstract><br/>
+    </dtml-let>
+   <dtml-elif "teaserElmnt.meta_type == 'ZMSCustom'">
+    <dtml-let title="teaserElmnt.getTitlealt(REQUEST)">
+     <b><dtml-var title></b><br/>
+    </dtml-let>
+   </dtml-if>
+  </div>
+ </dtml-let>
+</dtml-in>
+</dtml-if>

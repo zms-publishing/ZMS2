@@ -1,0 +1,51 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getZMILangStr('CAPTION_EDIT')%display_type(REQUEST)"></title>
+<dtml-var "zmscontainerobject_input_js(_,_,p_meta_type=this().meta_type)">
+</head>
+<dtml-var "manage_tabs(_,_,p_languages=_.True)">
+<dtml-var f_bo_area>
+<dtml-if checkout>
+
+<dtml-unless fmName><dtml-call "REQUEST.set('fmName', 'form0')"></dtml-unless>
+<form name="<dtml-var fmName>" action="manage_changeProperties" method="post" enctype="multipart/form-data">
+<dtml-let f_submitInputFieldsTable="_.True"><dtml-var f_submitInputFields></dtml-let>
+
+<!-- ### File -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_FILE')"> <sup style="color:red">*</sup></div></td>
+ <td><dtml-var "getObjInput('file',REQUEST)"></td>
+</tr>
+
+<!-- ### Title (Short) -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_TITLESHORT')"> <sup style="color:red">*</sup></div></td>
+ <td><dtml-var "getObjInput('titleshort',REQUEST)"></td>
+</tr>
+
+<!-- ### Title -->
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_TITLE')"> <sup style="color:red">*</sup></div></td>
+ <td><dtml-var "getObjInput('title',REQUEST)"></td>
+</tr>
+
+<!-- ### Align -->
+<dtml-if "getParentNode().meta_type in ['ZMS','ZMSFolder','ZMSDocument']">
+<tr valign="middle">
+ <td><div class="form-label"><dtml-var "getZMILangStr('ATTR_EMBEDDING')"></div></td>
+ <td><dtml-var "getObjInput('align',REQUEST)"></td>
+</tr>
+</dtml-if>
+
+<!-- ### Meta-Attributes -->
+<dtml-var "f_metaInputFields(_,_,fmName=fmName,p_meta_type=this().meta_type)">
+
+</table>
+
+<!-- ### Buttons -->
+<dtml-var f_submitBtn>
+
+</form>
+
+</dtml-if>
+<dtml-var f_eo_area>
+<dtml-var manage_page_footer>

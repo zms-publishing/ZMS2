@@ -1,0 +1,95 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getZMILangStr('ACTION_EDIT_CELL')"></title>
+</head>
+
+<script language="JavaScript">
+<!--//
+
+function selectValue(el, v) {
+	for (i=0; i < el.options.length; i++) {
+	  if (el.options[i].value == v)
+	  	el.selectedIndex = i;
+	}
+}
+
+function bodyOnLoad(fmName) {
+    var thisFm = document.forms[fmName];
+    var openFm = opener.document.forms[opener.table_fmName];
+    thisFm.elements['text_<dtml-var lang>'].value = openFm.elements['cell' + opener.table_elName].value;
+    sTag = openFm.elements['tag' + opener.table_elName].value;
+    elTag = thisFm.elements['tag'];
+    selectValue(elTag,sTag);
+    sFormat = openFm.elements['format' + opener.table_elName].value;
+    elFormat = thisFm.elements['format'];
+    selectValue(elFormat,sFormat);
+  }
+
+function changeBtnClick(fmName) {
+    var thisFm = document.forms[fmName];
+    var openFm = opener.document.forms[opener.table_fmName];
+    openFm.elements['cell' + opener.table_elName].value = thisFm.elements['text_<dtml-var lang>'].value;
+    openFm.elements['tag' + opener.table_elName].value = thisFm.elements['tag'].options[thisFm.elements['tag'].selectedIndex].value;
+    openFm.elements['format' + opener.table_elName].value = thisFm.elements['format'].options[thisFm.elements['format'].selectedIndex].value;
+    openFm.elements['function'].value = 'cell';
+    self.close();
+  }
+
+function cancelBtnClick(fmName) {
+    self.close();
+  }
+
+//-->
+</script>
+
+<body onload="bodyOnLoad('form0')" class="zmiNeutralColorLight0" alink="#990000" vlink="#cc0000" link="#336699" leftmargin="0" topmargin="0" marginheight="0" marginwidth="0">
+
+<div align="center"><center>
+
+<table cellpadding="4" cellspacing="0" border="0">
+<tr>
+ <td valign="top" class="zmiNeutralColorLight0">
+  <form name="form0">
+
+	<table cellspacing="0" cellpadding="1" border="0" width="100%">
+        <!-- ### Caption -->
+        <tr>
+         <td colspan="2" class="zmiHeadline"><dtml-var "getZMILangStr('ACTION_EDIT_CELL')"></td>
+        </tr>
+	<tr>
+	 <td colspan="2" class="zmiNeutralColorMedium0">
+          <table cellspacing="0" cellpadding="0" border="0">
+          <tr valign="middle">
+	   <!-- ### Format -->
+	   <td class="form-text"><dtml-var "getZMILangStr('ATTR_FORMAT')"></td>
+	   <td><dtml-var "f_selectInput(_,_,fmName='form0',elName='tag',value='',type='select',lang_str=getZMILangStr('ATTR_FORMAT'),required=1,options=['th','td'],enabled=_.True,css='form-element',REQUEST=REQUEST)"></td>
+	   <!-- ### Format -->
+	   <td class="form-text"><dtml-var "getZMILangStr('ATTR_PARAGRAPH')"></td>
+	   <td><dtml-var f_selectTextformat></td>
+	   <!-- ### Format (Bold, Italic, Underline) -->
+	   <td><dtml-var "f_selectCharformat(_,_,fmName='form0',elName='text_%s'%lang)"></td>
+	  </tr>
+	  </table>
+	 </td>
+	</tr>
+	<!-- ### Text -->
+	<tr>
+	 <td colspan="2" align="center">
+	  <dtml-var "getTextArea('form0','text_%s'%lang,40,9,'',1,REQUEST,css='form-element',wrap='virtual',extra=' onselect='+QUOT+'storeCaret(this);'+QUOT+' style='+QUOT+'width:100%;'+QUOT)">
+	 </td>
+	</tr>
+	</table>
+
+    <!-- ### SUBMIT -->
+    <hr size="1"/>
+    <input class="form-submit" type="submit" name="btn" value="<dtml-var "getZMILangStr('BTN_CHANGE')" html_quote>" onclick="changeBtnClick('form0')">
+    <input class="form-submit" type="submit" name="btn" value="<dtml-var "getZMILangStr('BTN_CANCEL')" html_quote>" onclick="cancelBtnClick('form0')">
+    </form>
+
+  </td>
+</tr>
+</table>
+
+</center></div>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!-- BO file/render_print.dtml -->
+
+<dtml-let f="getFile(REQUEST)">
+<dtml-if f>
+ <dtml-if url>
+  <a href="<dtml-var url>"><img src="<dtml-var "f.getMimeTypeIconSrc()">" title="<dtml-var "f.getContentType()">" border="0"></a>
+ <dtml-else>
+  <img src="<dtml-var "f.getMimeTypeIconSrc()">" title="<dtml-var "f.getContentType()">" border="0" alt="Icon" />
+ </dtml-if>
+ <strong>
+  <dtml-if url>
+   <a href="<dtml-var url>"><dtml-var "getTitlealt(REQUEST)"></a> (<dtml-var "getFile(REQUEST).getDataSizeStr()">)
+  <dtml-else>
+   <dtml-var "getTitlealt(REQUEST)">
+  </dtml-if>
+ </strong>
+ <br/>
+ <font class="caption"><dtml-var "getTitle(REQUEST)"></font>
+ <br/>
+</dtml-if>
+</dtml-let>
+
+<!-- EO file/render_print.dtml -->
+

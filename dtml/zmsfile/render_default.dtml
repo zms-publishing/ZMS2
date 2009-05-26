@@ -1,0 +1,17 @@
+<dtml-let file="getFile(REQUEST)"
+          title="getTitle(REQUEST)"
+          abstract="getObjProperty('attr_dc_description',REQUEST)">
+ <div class="<dtml-var meta_type>">
+  <dtml-if file>
+   <div class="title">
+   <img src="<dtml-var "file.getMimeTypeIconSrc()">" title="<dtml-var "file.getContentType()"> (<dtml-var "file.getDataSizeStr()">)" border="0" alt="Icon" align="absmiddle"/>
+   <a href="<dtml-var url>"><dtml-var "getTitlealt(REQUEST)"></a> (<dtml-var "file.getDataSizeStr()">)
+   </div>
+   <dtml-if title><div class="text"><dtml-var title></div></dtml-if>
+   <dtml-if abstract><div class="description"><dtml-var abstract newline_to_br></div></dtml-if>
+  <dtml-else>
+   <dtml-var "getZMILangStr('ATTR_NONE')">
+  </dtml-if>
+ </div>
+</dtml-let>
+

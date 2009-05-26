@@ -1,0 +1,16 @@
+<script type="text/javascript">
+<!--//
+
+  function onFormSubmit(fmName) {
+    if (self.btnClicked != "<dtml-var "getZMILangStr('BTN_CANCEL')" html_quote>" &&
+        self.btnClicked != "<dtml-var "getZMILangStr('BTN_BACK')" html_quote>") {
+      obj = document.forms[fmName].elements['attr_ref'];
+      msg = "<dtml-var "getZMILangStr('MSG_REQUIRED')%getZMILangStr('ATTR_URL')">";
+      dofocus = true;
+      if (disallowBlank(obj,msg,dofocus)) return false;
+    }
+    return true;
+  }
+
+//-->
+</script>

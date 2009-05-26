@@ -1,0 +1,28 @@
+<dtml-var manage_page_header>
+<title><dtml-var "getZMILangStr('CAPTION_PROPERTIES')%display_type(REQUEST)"></title>
+<dtml-var "zmscontainerobject_input_js(_,_,p_meta_type=ZMS_THIS.meta_type)">
+</head>
+
+<dtml-var "manage_tabs(_,_,p_languages=1)">
+<dtml-var f_bo_area>
+ 
+<dtml-var f_submitHrefForm>
+
+<dtml-unless fmName><dtml-call "REQUEST.set('fmName', 'form0')"></dtml-unless>
+<form name="<dtml-var fmName>" action="manage_changeProperties" method="post" onsubmit="return onFormSubmit('form0')" enctype="multipart/form-data">
+<dtml-let f_submitInputFieldsTable="_.True"><dtml-var f_submitInputFields></dtml-let>
+
+<dtml-var manage_form>
+
+<!-- ### Meta-Attributes -->
+<dtml-var "f_metaInputFields(_,_,fmName=fmName,p_meta_type=ZMS_THIS.meta_type)">
+
+</table>
+ 
+<!-- ### Buttons -->
+<dtml-var f_submitBtn>
+
+</form>
+ 
+<dtml-var f_eo_area>
+<dtml-var manage_page_footer>

@@ -1,0 +1,7 @@
+<dtml-let metaObj="getMetaobj(meta_id)">
+
+<!-- ### Attributes -->
+<dtml-var metaobj_input_js>
+<dtml-var metaobj_input_fields>
+
+</dtml-let>
