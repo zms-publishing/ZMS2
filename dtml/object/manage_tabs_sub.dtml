@@ -1,0 +1,29 @@
+<dtml-with "_(manage_options=manage_sub_options)">
+<dtml-if manage_options>
+
+<dtml-call "REQUEST.set('a_', 0)">
+
+<dtml-in manage_options mapping>
+ <dtml-if "URL[-(len(action)):]==action">
+  <dtml-call "REQUEST.set('a_', _['sequence-index'])">
+ </dtml-if>
+</dtml-in>
+
+<div id="ZMIManageTabsSubContainer">
+<ul id="ZMIManageTabsSub">
+<dtml-in manage_options mapping>
+ <li<dtml-if "_['sequence-index']==a_"> class="on"</dtml-if>
+  ><dtml-if "action and not action==''"
+   ><a href="<dtml-var "url_append_params('%s/%s'%(getSelf().absolute_url(),action),{'lang':lang})">" onclick="javascript:return confirmChanges(this);"
+    ><dtml-var "getZMILangStr(label)"
+   ></a
+  ><dtml-else
+   ><span><dtml-var "getZMILangStr(label)"></span
+  ></dtml-if
+ </li>
+</dtml-in>
+</ul>
+</div>
+
+</dtml-if>
+</dtml-with>
