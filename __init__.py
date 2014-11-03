@@ -25,6 +25,7 @@ __doc__ = """initialization module."""
 __version__ = '0.1'
 
 # Imports.
+from zope.component import provideAdapter
 from App.Common import package_home
 from App.ImageFile import ImageFile
 from DateTime.DateTime import DateTime
@@ -104,6 +105,7 @@ def initialize(context):
         # register deprecated classes
         dummy_constructors = (zmscustom.manage_addZMSCustomForm, zmscustom.manage_addZMSCustom,)
         dummy_permission = 'Add ZMSs'
+        provideAdapter(zms.NoETagAdapter)
         
         # automated registration for util
         OFS.misc_.misc_.zms['initutil']=_globals.initutil()
