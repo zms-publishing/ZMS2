@@ -105,7 +105,7 @@ def initialize(context):
         # register deprecated classes
         dummy_constructors = (zmscustom.manage_addZMSCustomForm, zmscustom.manage_addZMSCustom,)
         dummy_permission = 'Add ZMSs'
-        provideAdapter(zms.NoETagAdapter)
+        zms.NoETagAdapter.register()
         
         # automated registration for util
         OFS.misc_.misc_.zms['initutil']=_globals.initutil()

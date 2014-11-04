@@ -747,18 +747,36 @@ class ZMS(
 
 ################################################################################
 
-from zope.browserresource.interfaces import IFileResource, IETag 
-from zope.publisher.interfaces.browser import IBrowserRequest 
-from zope.interface import implementer 
+# Workaround for an incompatibility with zope.browserresource 3.11.0 and newer 
+# which requires an ETagAdapter to be provided by the application. 
+# Sent a patch upstream to lift this requirement, at which point this 
+# workaround could be removed: 
+#  https://github.com/zopefoundation/zope.browserresource/pull/1 
 
-from zope.component import adapter 
+try:
+    from zope.browserresource.interfaces import IFileResource, IETag 
+    from zope.publisher.interfaces.browser import IBrowserRequest 
+    from zope.interface import implementer 
+    
+    from zope.component import adapter 
+    
+    @adapter(IFileResource, IBrowserRequest) 
+    @implementer(IETag) 
+    class NoETagAdapter(object): 
+        
+        def __init__(self, context, request): 
+            pass 
+        
+        def __call__(self, mtime, content): 
+            return None
+        
+        @classmethod 
+        def register(cls): 
+            pass
 
-@adapter(IFileResource, IBrowserRequest) 
-@implementer(IETag) 
-class NoETagAdapter(object): 
-
-    def __init__(self, context, request): 
-        pass 
-
-    def __call__(self, mtime, content): 
-        return None 
+except ImportError: 
+    # zope.browserresource before 3.11.0 
+    class NoETagAdapter(object): 
+        @classmethod 
+        def register(cls): 
+            pass 
