@@ -1,0 +1,133 @@
+import os
+from setuptools import setup, find_packages
+
+INSTALL_REQUIRES = [
+ 'ExtensionClass>=4.1a1',
+ 'Record',
+ 'Missing',
+ 'Acquisition',
+ 'AccessControl',
+ 'zope.site',
+ 'zope.publisher',
+ 'zope.untrustedpython',
+ 'zope.browserresource>=4.0.2',  # @see https://github.com/zopefoundation/zope.browserresource/pull/1
+ 'Zope2>=2.13.22',  # @see https://pypi.python.org/pypi/Zope2/2.13.22
+ 'Products.CMFCore>=2.2.8',  # @see configure.zcml <cmf:registerDirectory>
+ 'Pillow',
+ 'MySQL-python',
+ 'Products.ZMySQLDA',
+ 'Products.ZSQLiteDA',
+ 'Products.ZSQLMethods',
+ 'Products.StandardCacheManagers',
+ 'Products.BTreeFolder2',
+ 'nt-svcutils',
+ 'persistent',
+ 'mechanize==0.2.5',
+ 'six',
+ 'zeo',
+ 'zodb',
+ 'zc.lockfile',
+ 'zope.filerepresentation',
+ 'zope.datetime',
+ 'zope.dottedname',
+ 'zope.formlib',
+ 'zope.globalrequest',
+ 'zope.traversing',
+ 'zope.security',
+ 'zope.schema',
+ 'zope.lifecycleevent',
+ 'zope.interface',
+ 'zope.i18nmessageid',
+ 'zope.i18n',
+ 'nt_svcutils',
+ 'products.standardcachemanagers',
+ 'zope.component',
+ 'transaction',
+ 'zope.event',
+ 'products.pythonscripts',
+ 'products.mimetools',
+ 'products.mailhost',
+ 'products.externalmethod',
+ 'products.btreefolder2',
+ 'zope.viewlet',
+ 'zope.testing',
+ 'zope.testbrowser',
+ 'zope.tales',
+ 'zope.tal',
+ 'zope.structuredtext',
+ 'zope.size',
+ 'zope.sequencesort',
+ 'zope.sendmail',
+ 'zope.ptresource',
+ 'zope.proxy',
+ 'zope.processlifetime',
+ 'zope.pagetemplate>=4.0.4',
+ 'zope.location',
+ 'zope.exceptions',
+ 'zope.deferredimport',
+ 'zope.contenttype',
+ 'zope.contentprovider',
+ 'zope.container',
+ 'zope.configuration',
+ 'zope.browserpage',
+ 'zope.browsermenu',
+ 'zope.browser',
+ 'zlog',
+ 'zexceptions',
+ 'zdaemon>=4.0.0',
+ 'tempstorage',
+ 'pytz',
+ 'initgroups',
+ 'docutils',
+ 'zopeundo',
+ 'zodb3',
+ 'zconfig',
+ 'restrictedpython',
+ 'products.zctextindex',
+ 'products.zcatalog',
+ 'products.ofsp',
+ 'persistence',
+ 'multimapping',
+ 'documenttemplate',
+ 'datetime',
+ 'zope.annotation',
+ 'btrees',
+]
+
+CLASSIFIERS = [
+  'Framework :: Zope2',
+  'Programming Language :: Python :: 2.7',
+  'License :: OSI Approved :: GNU General Public License (GPL)',
+  'Operating System :: OS Independent',
+  'Topic :: Internet :: WWW/HTTP :: Site Management',
+  'Intended Audience :: Education',
+]
+
+# Not sure why it is required to reiterate all data files in addition to
+# specifiying include_package_data - but if left out, data files don't install
+# from sdists for me. --mh
+def generate_data_directories(folders, valid_suffixes):
+    for folder in folders:
+        for root,dirs,files in os.walk(folder):
+            for suffix in valid_suffixes:
+                yield root + "/" + suffix
+
+
+setup(
+  description           = 'ZMS: Simplified Content Modelling',
+  name                  = 'ZMS2',
+  version               = "2.13.4",
+  author                = 'HOFFMANN+LIEBENBERG in association with SNTL Publishing, Berlin',
+  author_email          = 'zms@sntl-publishing.com',
+  url                   = 'http://www.zms-publishing.com',
+  install_requires      = INSTALL_REQUIRES,
+  namespace_packages    = ['Products'],
+  packages              = ['Products.zms'],
+  package_dir           = {'Products.zms': '.'},
+  classifiers           = CLASSIFIERS,
+  package_data          = { '': list(generate_data_directories(
+      ['conf', 'doc', 'dtml', 'etc', 'Extensions', 'import', 'plugins', 'tests', 'www', 'zpt'],
+      ['*.js', '*.css', '*.css', '*.dtml', '*.eot', '*.gif', '*.html', '*.jpg', '*.js', '*.md', '*.otf', '*.png', '*.sps', '*.sql', '*.svg', '*.ttf', '*.txt', '*.woff', '*.xml', '*.xsd', '*.zcml', '*.zexp', '*.zip', '*.zpt']))},
+  include_package_data  = True,
+  zip_safe              = False,
+)
