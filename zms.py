@@ -19,6 +19,7 @@
 # Imports.
 from App.Common import package_home
 from App.special_dtml import HTMLFile
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from OFS.Image import Image
 from sys import *
 import copy
@@ -481,7 +482,8 @@ class ZMS(
 
     # Interface.
     # ----------
-    index_html = HTMLFile('dtml/ZMS/index', globals()) # index_html
+    # index_html = HTMLFile('dtml/ZMS/index', globals()) # index_html
+    index_html = PageTemplateFile('zpt/ZMS/index', globals())
     not_found_html = HTMLFile('dtml/ZMS/not_found', globals()) # index_html
     f_index_html = HTMLFile('dtml/ZMS/index', globals()) # index_html
     f_inactive_html = HTMLFile('dtml/ZMS/f_inactive', globals()) # inactive_html
