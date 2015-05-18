@@ -79,7 +79,7 @@
 		></tal:block
 		><tal:block tal:content="structure python:here.f_standard_html_header(here,request)">f_standard_html_request</tal:block
 		><tal:block tal:condition="python:here.isPreviewRequest(request) or here.isActive(request)"
-			><tal:block tal:content="structure python:here.zmi_body_content(here,request)">zmi_body_content</tal:block
+			><tal:block tal:content="structure python:here.getBodyContent(request)">zmi_body_content</tal:block
 		></tal:block
 		><tal:block tal:condition="not:python:here.isPreviewRequest(request) or here.isActive(request)"
 			><p class="standard" tal:content="python:here.getLangStr('MSG_INACTIVE',request['lang'])">Message inactive</p
