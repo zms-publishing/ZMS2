@@ -1346,11 +1346,11 @@ class ZMSObject(ZMSItem.ZMSItem,
       """
       html = ''
       try:
-        if self.getType() in [ 'ZMSDocument', 'ZMSResource', 'ZMSReference']:
+        if 'renderShort' in self.getMetaobjAttrIds(self.meta_id):
+          html = self.attr('renderShort')
+        elif self.getType() in [ 'ZMSDocument', 'ZMSResource', 'ZMSReference']:
           html = self.getTitlealt(REQUEST)
           html = '<div class="contentEditable form-label" id="contentEditable_%s_%s">%s</div>'%(self.id,REQUEST['lang'],html)
-        elif 'renderShort' in self.getMetaobjAttrIds(self.meta_id):
-          html = self.attr('renderShort')
         else:
           html = self._getBodyContent(REQUEST)
         html = '<div class="zmiRenderShort">%s</div><!-- .zmiRenderShort -->'%html
