@@ -1,0 +1,76 @@
+FROM ubuntu:16.04
+RUN apt-get update
+
+# Install OS Requirements
+RUN apt-get install -y ca-certificates
+RUN update-ca-certificates
+
+# Install Zope/ZEO Dependencies
+RUN apt-get install -y python2.7
+RUN apt-get install -y python-pip 
+RUN apt-get install -y python-minimal 
+RUN apt-get install -y python-dev 
+RUN apt-get install -y python-setuptools 
+RUN apt-get install -y python-virtualenv
+RUN apt-get install -y make \
+	gcc \ 
+	g++ \
+	git \
+	curl \
+	bash \
+	zlib1g-dev\ 
+	libbz2-dev \
+	libffi-dev \
+	libjpeg62-dev \
+	libsasl2-dev \
+	libxml2-dev \
+	libxslt-dev \
+	libxslt1-dev \
+	libssl-dev \
+	libldap2-dev \
+	libreadline-dev \
+	libsqlite3-dev
+
+# Add Zope User and Environment
+RUN adduser --disabled-password zope && usermod -aG sudo zope
+USER zope
+WORKDIR /home/zope/
+
+ENV VIRTUAL_ENV=/home/zope/venv
+ENV SHELL=/bin/bash
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+ENV INSTANCE=/home/zope
+
+# Install ZMS and Zope in a Virtual Environment
+RUN python2 -m pip install pip==20.3
+RUN virtualenv --python=python2  $VIRTUAL_ENV
+RUN pip install --trusted-host zopefoundation.github.io -r https://zopefoundation.github.io/Zope/releases/2.13.29/requirements.txt
+RUN pip install --no-deps -e git+https://github.com/zms-publishing/ZMS2.git#egg=ZMS
+RUN pip install Pillow==6.2.2
+RUN pip install Products.ZSQLMethods==2.13.5
+RUN pip install Products.ZSQLiteDA==0.6.1
+RUN pip install debugpy
+RUN pip install pudb==2019.2
+
+# Create Zope Instance
+RUN mkzopeinstance -d . -u admin:admin
+
+# Link ZMS to Zope Products
+RUN mkdir -p /home/zope/venv/src/zms/Products
+RUN ln -s /home/zope/venv/src/zms /home/zope/venv/src/zms/Products/zms
+# RUN mkdir -p /home/zope/Products
+# RUN ln -s /home/zope/venv/src/zms/Products/ZMS /home/zope/Products/ZMS
+
+# Mount Zope Instance Data
+COPY ./etc etc
+COPY ./var var
+COPY ./Extensions Extensions
+
+# Expose Ports:
+EXPOSE 5678
+EXPOSE 8080 
+EXPOSE 8085
+EXPOSE 8086
+
+# Finally Start Zope by Script
+# CMD ["/home/zope/etc/start.sh"]
