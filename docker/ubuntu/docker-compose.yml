@@ -22,5 +22,5 @@ services:
       - ./var/:/home/zope/var/:rw
 
     ### Override the default command from the dockerfile.
-    # command: sleep infinity
-    command: /home/zope/bin/runzope.sh
+    command: sleep infinity
+    # command: /home/zope/bin/runall.sh

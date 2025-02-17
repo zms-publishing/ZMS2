@@ -45,12 +45,11 @@ ENV INSTANCE=/home/zope
 RUN python2 -m pip install pip==20.3
 RUN virtualenv --python=python2  $VIRTUAL_ENV
 RUN pip install --trusted-host zopefoundation.github.io -r https://zopefoundation.github.io/Zope/releases/2.13.29/requirements.txt
-RUN pip install --no-deps -e git+https://github.com/zms-publishing/ZMS2.git#egg=ZMS
+RUN pip install --no-deps -e git+https://github.com/zms-publishing/ZMS2.git@zeo_in_docker#egg=zms
 RUN pip install Pillow==6.2.2
 RUN pip install Products.ZSQLMethods==2.13.5
 RUN pip install Products.ZSQLiteDA==0.6.1
 RUN pip install debugpy
-RUN pip install pudb==2019.2
 
 # Create Zope Instance
 RUN mkzopeinstance -d . -u admin:admin
