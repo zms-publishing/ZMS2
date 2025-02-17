@@ -1,0 +1,73 @@
+{
+	"folders": [
+		{
+			"name": "ZMS2",
+			"path": "../"
+		}
+	],
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Python: ZMS2-Py2-Docker",
+				"python": "/home/zope/venv/bin/python",
+				"type": "debugpy-old",
+				// IMPORTANT NOTE:
+					// For Debugging Python 2.7 install "Debugpy Old" extension:
+					// https://marketplace.visualstudio.com/items?itemName=atariq11700.debugpy-old
+					// works with the standard Python-Extension
+					// https://marketplace.visualstudio.com/items?itemName=ms-python.python
+				"request": "launch",
+				"module": "Zope2.Startup.run",
+				"justMyCode": false,
+				"console": "integratedTerminal",
+				"args": [
+					"-C/home/zope/etc/zope.conf",
+					"-Xdebug-mode=on",
+				],
+				"env": {
+					"PYTHONUNBUFFERED":"1",
+					"CONFIG_FILE": "/home/zope/etc/zope.conf",
+					"INSTANCE_HOME": "/home/zope/",
+					"CLIENT_HOME": "/home/zope/",
+					"PYTHON": "/home/zope/venv/bin/python",
+					"SOFTWARE_HOME": "/home/zope/venv/bin/"
+				},
+				"serverReadyAction":{
+					"pattern":"Zope Ready to handle requests",
+					"uriFormat": "http://127.0.0.1:8080/manage_main",
+					"action": "openExternally",
+				},
+			}
+		]
+	},
+	"settings": {
+		"python.defaultInterpreterPath": "/home/zope/venv/bin/python",
+		"extensions.autoUpdate": false,
+		"python.linting.enabled": false,
+		"python.formatting.provider": "none",
+		"window.zoomLevel": 0,
+		"git.ignoreMissingGitWarning": true,
+		"editor.minimap.enabled": false,
+		"editor.renderWhitespace": "all",
+		"editor.renderControlCharacters": false,
+		"workbench.iconTheme": "vs-minimal",
+		"files.associations": {
+			"*.zpt": "html",
+			"*.zcml": "xml"
+		},
+		"scm.alwaysShowActions": true,
+		"files.exclude": {
+			"*.pyc": true,
+			"*-all.min.*":true,
+			"**/cache/**": true,
+			"**/Data.*": true,
+		},
+		"search.exclude": { 
+			"**/apidocs/**": true
+		},
+		"files.eol": "\n",
+		"files.autoSave": "afterDelay",
+		"workbench.colorTheme": "Visual Studio Light",
+	}
+}
