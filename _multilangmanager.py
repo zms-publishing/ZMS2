@@ -28,6 +28,7 @@ import IZMSLocale
 import _fileutil
 import _globals
 import _xmllib
+import cgi
 
 
 # ------------------------------------------------------------------------------
@@ -310,7 +311,7 @@ class MultiLanguageManager:
         if d[key].has_key(lang):
           return d[key][lang]
       
-      return key
+      return cgi.escape(key)
 
 
     def getPrimaryLanguage(self):
