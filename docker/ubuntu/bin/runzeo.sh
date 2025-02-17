@@ -1,0 +1,9 @@
+#! /bin/sh
+
+instance_dir="/home/zope"
+venv_bin_dir="/home/zope/venv/bin"
+
+$venv_bin_dir/runzeo --configure $instance_dir/etc/zeo.conf
+
+
+

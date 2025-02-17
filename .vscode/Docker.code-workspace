@@ -27,7 +27,7 @@
 				],
 				"env": {
 					"PYTHONUNBUFFERED":"1",
-					"CONFIG_FILE": "/home/zope/etc/zope.conf",
+					"CONFIG_FILE": "/home/zope/etc/zope_8081.conf", // lets Zope run on Port 8081 (after stopping Zope on Port 8080!)
 					"INSTANCE_HOME": "/home/zope/",
 					"CLIENT_HOME": "/home/zope/",
 					"PYTHON": "/home/zope/venv/bin/python",
@@ -35,7 +35,7 @@
 				},
 				"serverReadyAction":{
 					"pattern":"Zope Ready to handle requests",
-					"uriFormat": "http://127.0.0.1:8080/manage_main",
+					"uriFormat": "http://127.0.0.1:8081/manage_main",
 					"action": "openExternally",
 				},
 			}

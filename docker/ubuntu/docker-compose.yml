@@ -6,8 +6,8 @@ services:
     ports:
       - 5678:5678
       - 8080:8080
-      - 8085:8085
-      - 8086:8086
+      - 8081:8081
+
     environment:
       - PYTHONUNBUFFERED="1"
       - CONFIG_FILE="/home/zope/etc/zope.ini"
@@ -16,10 +16,11 @@ services:
       - PYTHON="/home/zope/venv/bin/python"
       - SOFTWARE_HOME="/home/zope/venv/bin"
     volumes:
+      - ./bin/:/home/zope/bin/
       - ./etc/:/home/zope/etc/
       - ./Extensions/:/home/zope/Extensions/:rw
       - ./var/:/home/zope/var/:rw
 
     ### Override the default command from the dockerfile.
     # command: sleep infinity
-    command: /home/zope/etc/start.sh
+    command: /home/zope/bin/runzope.sh
