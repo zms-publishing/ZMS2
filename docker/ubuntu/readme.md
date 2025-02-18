@@ -102,5 +102,8 @@ The VSCode Docker Extension [ms-azuretools.vscode-docker](https://marketplace.vi
 ## Attach VSCode to the ZMS Container
 Another right click on the running container-ID allows to intrude the container with VSCode and launch a new Zope instance in debugging mode. 
 Hint: For this purpose the docker-container folder `/home/zope/venv/src/zms/.vscode/` contains a prepared VSCode-workspace file and a launch file for starting Zope in debug-mode within the container [Docker.code-workspace](../../.vscode/Docker.code-workspace). The thus launched Zope instance will run port 8081.
+For Debugging Python 2.7 install from VSCode Marketplace the [Debugpy Old](https://marketplace.visualstudio.com/items?itemName=atariq11700.debugpy-old) extension into the container. The "Debugpy Old" extension actually works with the current [Python-Extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) that shall be installed as a second step. The debugger rucan be started from delivered workspace-file as "Python: ZMS2-Docker:8081"-configuration
+
+
 
 ![Attach VSCode to the ZMS Container](../../doc/images/zeo_in_docker.png)
