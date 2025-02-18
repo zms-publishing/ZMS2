@@ -9,11 +9,11 @@
 		"version": "0.2.0",
 		"configurations": [
 			{
-				"name": "Python: ZMS2-Py2-Docker",
+				"name": "Python: ZMS2-Docker:8081",
 				"python": "/home/zope/venv/bin/python",
 				"type": "debugpy-old",
 				// IMPORTANT NOTE:
-					// For Debugging Python 2.7 install "Debugpy Old" extension:
+					// For Debugging Python 2.7 install "Debugpy Old" extension in Container:
 					// https://marketplace.visualstudio.com/items?itemName=atariq11700.debugpy-old
 					// works with the standard Python-Extension
 					// https://marketplace.visualstudio.com/items?itemName=ms-python.python
@@ -22,12 +22,12 @@
 				"justMyCode": false,
 				"console": "integratedTerminal",
 				"args": [
-					"-C/home/zope/etc/zope.conf",
+					"-C/home/zope/etc/zope_8081.conf",
 					"-Xdebug-mode=on",
 				],
 				"env": {
 					"PYTHONUNBUFFERED":"1",
-					"CONFIG_FILE": "/home/zope/etc/zope_8081.conf", // lets Zope run on Port 8081 (after stopping Zope on Port 8080!)
+					"CONFIG_FILE": "/home/zope/etc/zope_8081.conf", // lets Zope run on Port 8081
 					"INSTANCE_HOME": "/home/zope/",
 					"CLIENT_HOME": "/home/zope/",
 					"PYTHON": "/home/zope/venv/bin/python",
