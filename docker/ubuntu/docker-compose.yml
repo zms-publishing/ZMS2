@@ -23,4 +23,4 @@ services:
 
     ### Override the default command from the dockerfile.
     # command: sleep infinity
-    command: /home/zope/bin/runzope.sh
+    command: /home/zope/bin/runall
