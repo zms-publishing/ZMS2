@@ -65,7 +65,6 @@ COPY ./var var
 COPY ./Extensions Extensions
 
 # Expose Ports:
-EXPOSE 5678
 EXPOSE 8080 
 EXPOSE 8081
 
