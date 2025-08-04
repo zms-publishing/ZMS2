@@ -1,10 +1,7 @@
 FROM ubuntu:16.04
 
-# Container-variant for local development
-# Based on Dockerfile plus VSCode-Server 3.12.0
-# creating VSCode 1.60.0 as a browser-based IDE
 # ############################
-# Get environment variables from docker-compose.yml:
+# Get environment variables from docker-compose.yml (and its env file):
 # So, image file must be created with docker-compose build
 # ############################
 ARG INSTANCE_DIR
@@ -15,7 +12,6 @@ ARG GID
 # ############################
 
 RUN apt-get update && apt-get install -y ca-certificates
-# COPY zerts-pem/* /usr/local/share/ca-certificates/
 RUN update-ca-certificates
 RUN apt-get -y upgrade
 
@@ -60,40 +56,13 @@ RUN echo "slapd slapd/internal/generated_adminpw password password" | debconf-se
 	apt-get install -y slapd ldap-utils && \
 	rm -rf /var/lib/apt/lists/*
 
-
-# Add Microsoft Package Servers for VSCode
-RUN wget https://launchpad.net/ubuntu/+archive/primary/+files/apt-transport-https_1.2.32_amd64.deb && \
-	dpkg -i apt-transport-https_1.2.32_amd64.deb && \
-	rm apt-transport-https_1.2.32_amd64.deb
-# RUN apt-get install -y curl apt-transport-https
-RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft.gpg
-RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list
-RUN apt-get update
-# Install VSCode Server as User root
-# Copilot-Hints: 
-# 	https://copilot.microsoft.com/shares/zTrKFY3Jc7ucLYUs7bkge
-# 	https://copilot.microsoft.com/shares/cfz7tHiKiEKhhu1osK3NQ
-# 	https://copilot.microsoft.com/shares/JWQQogrAxdTgMdAcMQnno
-RUN curl -fsSL https://code-server.dev/install.sh | bash -s -- --version 3.12.0
-
+RUN python2 -m pip install pip==20.3
 
 # Set host's UID/GID to allow sharing of production files as bind mounts
 ENV UID=${UID:-1000}
 ENV GID=${GID:-1000}
 RUN groupadd --gid $GID zope
 RUN adduser --disabled-password --uid $UID --gid $GID zope
-
-# Grant zope passwordless sudo for development purposes if IS_DEBUG is set to true
-RUN if [ "$IS_DEBUG" = "true" ]; then \
-	echo "Debug mode is ON. Granting zope passwordless sudo." && \
-	apt-get update && \
-	apt-get install -y sudo && \
-	echo 'zope ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
-	adduser zope sudo; \
-else \
-	echo "Debug mode is OFF. Not granting zope passwordless sudo."; \
-fi
-
 
 USER zope
 # Create Zope Instance
@@ -102,7 +71,6 @@ ENV VIRTUAL_ENV=${VENV_DIR}
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 ENV SHELL=/bin/bash
 WORKDIR $VIRTUAL_ENV/bin
-# RUN bash -c "source activate"
 
 # Install ZMS and Zope in a Virtual Environment
 RUN python2 -m pip install pip==20.3
@@ -131,20 +99,7 @@ RUN ./pip install -U --no-deps zExceptions
 RUN ./pip install -U --no-deps zope.interface==4.1.3
 
 
-
-
-# # Create Zope Instance
+# # Create Zope Instance (uncomment if needed)
 # RUN ./mkzopeinstance --dir ${INSTANCE_DIR} --user admin:admin
 # COPY ./var ${INSTANCE_DIR}/var
 
-# Install VSCode Extensions for local User zope
-RUN code-server --install-extension ms-python.python --user-data-dir /home/zope/.local/share/code-server
-
-# Start VScode-Server
-# CMD ["code-server", \
-#      "--bind-addr", "0.0.0.0:8888", \
-#      "--disable-telemetry", \
-#      "--disable-update-check", \
-#      "--user-data-dir", "/home/zope/.local/share/code-server", \
-#      "--auth", "none", \
-#      "/home/zope"]

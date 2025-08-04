@@ -1,0 +1,67 @@
+x-instance-common: &instance_common
+  image: zms2:latest
+  build:
+    context: .
+    dockerfile: ./Dockerfile
+    args:
+      - INSTANCE_DIR=${INSTANCE_DIR}
+      - VENV_DIR=${VENV_DIR}
+      - IS_DEBUG=false
+      - UID=${UID}
+      - GID=${GID}
+  user: zope
+  volumes:
+    - ./instance:${INSTANCE_DIR}:rw
+    - ${SRC_MOUNT}/:${SRC_DIR}/:rw
+  command: >
+    bash -c "
+      memcached -u zope -m 64 -p 11211 &
+      wait 2 &
+      ${SRC_DIR}/.devcontainer/start_instance.sh &&
+      sleep infinity
+    "
+
+services:
+  ### Zope: Zope Application Server
+  instance1:
+    <<: *instance_common
+    environment:
+      - PYTHONUNBUFFERED="1"
+      - SOFTWARE_HOME="${VENV_DIR}/bin"
+      - PYTHON="${VENV_DIR}bin/python"
+      - HTTP_PORT=8081
+      - READ_ONLY=false
+    ports:
+      - "8081:8080"
+
+  instance2:
+    <<: *instance_common
+    environment:
+      - PYTHONUNBUFFERED="1"
+      - SOFTWARE_HOME="${VENV_DIR}/bin"
+      - PYTHON="${VENV_DIR}bin/python"
+      - HTTP_PORT=8082
+      - READ_ONLY=false
+    ports:
+      - "8082:8080"
+
+  instance3:
+    <<: *instance_common
+    environment:
+      - PYTHONUNBUFFERED="1"
+      - SOFTWARE_HOME="${VENV_DIR}/bin"
+      - PYTHON="${VENV_DIR}bin/python"
+      - HTTP_PORT=8083
+      - READ_ONLY=false
+    ports:
+      - "8083:8080"
+
+  ### ZEO: Zope Enterprise Objects
+  zeo:
+    <<: *instance_common
+    depends_on: []
+    command: >
+      bash -c "
+      ${SRC_DIR}/.devcontainer/start_zeo.sh &
+      sleep infinity
+      "
