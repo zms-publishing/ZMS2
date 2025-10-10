@@ -137,8 +137,13 @@ RUN ./pip install -U --no-deps zope.interface==4.1.3
 # RUN ./mkzopeinstance --dir ${INSTANCE_DIR} --user admin:admin
 # COPY ./var ${INSTANCE_DIR}/var
 
-# Install VSCode Extensions for local User zope
-RUN code-server --install-extension ms-python.python --user-data-dir /home/zope/.local/share/code-server
+# Download VSCode Python Extension vsix file and install from the file
+# /// IMPORTANT: 2021.9.1246542782 corresponds to VSCode 1.60.0 and code-server 3.12.0
+# /// see https://github.com/microsoft/vscode-python/releases/tag/2021.9.1246542782
+# /// The latest version of the Python extension is not be compatible with this older VSCode version!
+WORKDIR /home/zope
+RUN wget https://github.com/microsoft/vscode-python/releases/download/2021.9.1246542782/ms-python-release.vsix
+RUN code-server --install-extension ms-python-release.vsix  --user-data-dir /home/zope/.local/share/code-server
 
 # Start VScode-Server
 # CMD ["code-server", \
