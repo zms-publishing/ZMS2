@@ -126,7 +126,7 @@ setup(
   package_dir           = {'Products.zms': '.'},
   classifiers           = CLASSIFIERS,
   package_data          = { '': list(generate_data_directories(
-      ['conf', 'doc', 'dtml', 'etc', 'Extensions', 'import', 'plugins', 'tests', 'www', 'zpt'],
+      ['.', 'conf', 'doc', 'dtml', 'etc', 'Extensions', 'import', 'plugins', 'tests', 'www', 'zpt'],
       ['*.js', '*.css', '*.css', '*.dtml', '*.eot', '*.gif', '*.html', '*.jpg', '*.js', '*.md', '*.otf', '*.png', '*.sps', '*.sql', '*.svg', '*.ttf', '*.txt', '*.woff', '*.xml', '*.xsd', '*.zcml', '*.zexp', '*.zip', '*.zpt']))},
   include_package_data  = True,
   zip_safe              = False,
