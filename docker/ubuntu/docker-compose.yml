@@ -19,6 +19,7 @@ services:
       - ./etc/:/home/zope/etc/
       - ./Extensions/:/home/zope/Extensions/:rw
       - ./var/:/home/zope/var/:rw
+      - ./import/:/home/zope/import/:rw
 
     ### Override the default command from the dockerfile.
     # command: sleep infinity

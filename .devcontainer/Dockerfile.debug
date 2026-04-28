@@ -107,6 +107,8 @@ WORKDIR $VIRTUAL_ENV/bin
 # Install ZMS and Zope in a Virtual Environment
 RUN python2 -m pip install pip==20.3
 RUN virtualenv --python=python2  $VIRTUAL_ENV
+# Change directory to virtualenv bin for pip install
+WORKDIR $VIRTUAL_ENV/bin
 RUN ./pip install git+https://github.com/zms-publishing/ZMS2.git@master#egg=ZMS
 RUN ./pip install Products.PluginRegistry==1.4
 RUN ./pip install Products.LDAPUserFolder==2.27
