@@ -1,0 +1,73 @@
+x-instance-common: &instance_common
+  image: zms2:ubuntu-debug
+  build:
+    context: .
+    dockerfile: ./Dockerfile.debug
+    args:
+      - INSTANCE_DIR=${INSTANCE_DIR}
+      - VENV_DIR=${VENV_DIR}
+      - INSTANCE_MOUNT=${INSTANCE_MOUNT}
+      - IS_DEBUG=true
+      - UID=${UID}
+      - GID=${GID}
+  depends_on:
+    - zeo
+  user: zope
+  volumes:
+    - ${INSTANCE_MOUNT}/.vscode:${INSTANCE_DIR}/.vscode:rw
+    # Mounting the instance directory allows to persist changes to the Zope instance configuration and data
+    - ${INSTANCE_MOUNT}/bin:${INSTANCE_DIR}/bin:rw
+    - ${INSTANCE_MOUNT}/etc:${INSTANCE_DIR}/etc:rw
+    - ${INSTANCE_MOUNT}/var:${INSTANCE_DIR}/var:rw
+    - ${INSTANCE_MOUNT}/log:${INSTANCE_DIR}/log:rw
+    # To share external methods between Zope/ZEO/Docker clients folder needs to be mounted
+    - ${INSTANCE_MOUNT}/Extensions:${INSTANCE_DIR}/Extensions:rw
+    # Vendor folders
+    - /home/zope/src/fonts:${INSTANCE_DIR}/vendor/fonts:rw
+    - /home/zope/src/unify:${INSTANCE_DIR}/vendor/unify:rw
+    # Source code
+    - ${INSTANCE_MOUNT}/customizing:${INSTANCE_DIR}/customizing:rw
+    - ${INSTANCE_MOUNT}/customizing/overrides.zcml:/home/zope/venv/lib/python2.7/site-packages/Products/zms/overrides.zcml:rw
+
+  ### HINT: VScode-Server will be started in the container automatically
+  ### and can be accessed via the browser at http://localhost:8888
+  ### The VSCode-Server will be started with the workspace and
+  ### Zope Instance has be started manually with VSCode-Python Debugger
+  command: >
+    bash -c "
+      memcached -u zope -m 64 -p 11211 &
+      code-server --bind-addr 0.0.0.0:8888 --disable-telemetry --disable-update-check --user-data-dir /home/zope/.local/share/code-server --auth none ${INSTANCE_DIR}/.vscode/Docker.code-workspace
+    "
+
+  networks:
+    - zms_network
+
+networks:
+  zms_network:
+    driver: bridge
+
+services:
+  ### Zope Instance for Debugging
+  instance_debug:
+    <<: *instance_common
+    environment:
+      - PYTHONUNBUFFERED="1"
+      - SOFTWARE_HOME="${VENV_DIR}/bin"
+      - PYTHON="${VENV_DIR}bin/python"
+      - HTTP_PORT=8080
+      - READ_ONLY=false
+      - DB_HOST="host.docker.internal" # Use this to access the host's MariaDB server
+      - DB_PORT="3306"
+    ports:
+      - "8080:8080"
+      - "8888:8888" # Code-server port
+
+  ### ZEO: Zope Enterprise Objects
+  zeo:
+    <<: *instance_common
+    depends_on: []
+    command: >
+      bash -c "
+      ${INSTANCE_DIR}/bin/start_zeo.sh &
+      sleep infinity
+      "

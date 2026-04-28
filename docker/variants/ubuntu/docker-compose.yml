@@ -1,0 +1,97 @@
+### #############################################################################
+### Docker Compose configuration for ZMS2 on Ubuntu
+### #############################################################################
+### IMPORTANT: This file creates a basic multi-instanstance setup for ZMS2. 
+### For debugging purposes, use `docker-compose.debug.yml` 
+### file instead, which refers to a copy of production data.
+### #############################################################################
+x-instance-common: &instance_common
+  image: zms2:ubuntu
+  build:
+    context: .
+    dockerfile: ./Dockerfile
+    args:
+      - INSTANCE_DIR=${INSTANCE_DIR}
+      - VENV_DIR=${VENV_DIR}
+      - INSTANCE_MOUNT=${INSTANCE_MOUNT}
+      - IS_DEBUG=false
+      - UID=${UID}
+      - GID=${GID}
+  depends_on:
+    - zeo
+  user: zope
+  volumes:
+    - ${INSTANCE_MOUNT}/.vscode:${INSTANCE_DIR}/.vscode:rw
+    # Mounting the instance directory allows to persist changes to the Zope instance configuration and data
+    - ${INSTANCE_MOUNT}/bin:${INSTANCE_DIR}/bin:rw
+    - ${INSTANCE_MOUNT}/etc:${INSTANCE_DIR}/etc:rw
+    - ${INSTANCE_MOUNT}/var:${INSTANCE_DIR}/var:rw
+    - ${INSTANCE_MOUNT}/log:${INSTANCE_DIR}/log:rw
+    # To share external methods between Zope/ZEO/Docker clients folder needs to be mounted
+    - ${INSTANCE_MOUNT}/Extensions:${INSTANCE_DIR}/Extensions:rw
+    # Vendor folders
+    - /home/zope/src/fonts:${INSTANCE_DIR}/vendor/fonts:rw
+    - /home/zope/src/unify:${INSTANCE_DIR}/vendor/unify:rw
+    # Source code
+    - ${INSTANCE_MOUNT}/customizing:${INSTANCE_DIR}/customizing:rw
+    - ${INSTANCE_MOUNT}/customizing/overrides.zcml:/home/zope/venv/lib/python2.7/site-packages/Products/zms/overrides.zcml:rw
+
+  command: >
+    bash -c "
+      memcached -u zope -m 64 -p 11211 &
+      ${INSTANCE_DIR}/bin/start_instance.sh &&
+      sleep infinity
+    "
+  networks:
+    - zms_network
+
+networks:
+  zms_network:
+    driver: bridge
+
+services:
+  ### Zope: Zope Application Server
+  instance1:
+    <<: *instance_common
+    environment:
+      - PYTHONUNBUFFERED="1"
+      - SOFTWARE_HOME="${VENV_DIR}/bin"
+      - PYTHON="${VENV_DIR}/bin/python"
+      - HTTP_PORT=8085
+      - READ_ONLY=true
+    ports:
+      - "8085:8080"
+
+  instance2:
+    <<: *instance_common
+    environment:
+      - PYTHONUNBUFFERED="1"
+      - SOFTWARE_HOME="${VENV_DIR}/bin"
+      - PYTHON="${VENV_DIR}bin/python"
+      - HTTP_PORT=8086
+      - READ_ONLY=false
+    ports:
+      - "8086:8080"
+
+  instance3:
+    <<: *instance_common
+    environment:
+      - PYTHONUNBUFFERED="1"
+      - SOFTWARE_HOME="${VENV_DIR}/bin"
+      - PYTHON="${VENV_DIR}bin/python"
+      - HTTP_PORT=8087
+      - READ_ONLY=false
+    ports:
+      - "8087:8080"
+
+  ### ZEO: Zope Enterprise Objects
+  zeo:
+    <<: *instance_common
+    depends_on: []
+    command: >
+      bash -c "
+      ${INSTANCE_DIR}/bin/start_zeo.sh &
+      sleep infinity
+      "
+
+### MariaDB service is provided in dockerfile-compose.mysql.yml
