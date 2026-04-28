@@ -75,14 +75,11 @@ WORKDIR $VIRTUAL_ENV/bin
 # Install ZMS and Zope in a Virtual Environment
 RUN python2 -m pip install pip==20.3
 RUN virtualenv --python=python2  $VIRTUAL_ENV
-# RUN ./pip install --trusted-host zopefoundation.github.io -r https://zopefoundation.github.io/Zope/releases/2.13.29/requirements.txt
-RUN ./pip install -r https://raw.githubusercontent.com/zms-publishing/zms3/master/requirements.txt
-RUN ./pip install git+https://github.com/zms-publishing/ZMS2.git@master#egg=zms
+RUN ./pip install git+https://github.com/zms-publishing/ZMS2.git@master#egg=ZMS
 RUN ./pip install Products.PluginRegistry==1.4
 RUN ./pip install Products.LDAPUserFolder==2.27
 RUN ./pip install Products.PluggableAuthService==1.11.0
 RUN ./pip install Products.LDAPMultiPlugins==1.14
-RUN ./pip install Products.ZSQLMethods==2.13.4
 RUN ./pip install MySQL-python==1.2.5
 RUN ./pip install Products.ZSQLiteDA==0.6.1
 RUN ./pip install Products.ZMySQLDA==3.1.1
@@ -97,6 +94,7 @@ RUN ./pip install --no-deps Products.mcdutils==2.0
 # IMPORTANT: Install zExceptions last to avoid conflicts with other packages
 RUN ./pip install -U --no-deps zExceptions
 RUN ./pip install -U --no-deps zope.interface==4.1.3
+
 
 
 # # Create Zope Instance (uncomment if needed)
