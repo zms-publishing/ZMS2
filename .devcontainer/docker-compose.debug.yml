@@ -6,6 +6,7 @@ x-instance-common: &instance_common
     args:
       - INSTANCE_DIR=${INSTANCE_DIR}
       - VENV_DIR=${VENV_DIR}
+      - INSTANCE_MOUNT=${INSTANCE_MOUNT}
       - IS_DEBUG=true
       - UID=${UID}
       - GID=${GID}

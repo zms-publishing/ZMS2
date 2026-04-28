@@ -1,0 +1,45 @@
+{
+	"folders": [
+		{
+			"name": "ZMS2-Code",
+			"path": "../"
+		},
+		{
+			"name": "ZMS2-instance",
+			"path": "../docker/variants/ubuntu/instance"
+		}
+	],
+	"settings": {
+		"window.zoomLevel": 0,
+		"editor.minimap.enabled": false,
+		"editor.renderWhitespace": "all",
+		"editor.insertSpaces": false,
+		"editor.renderControlCharacters": false,
+		"editor.tabSize": 4,
+		"workbench.iconTheme": "vs-minimal",
+		"files.associations": {
+			"*.zpt": "html",
+			"*.zcml": "xml",
+			"css_*": "css"
+		},
+		"files.exclude": {
+			"*.pyc": true,
+			"*-all.min.*":true
+		},
+		"python.workspaceSymbols.exclusionPatterns": [
+			"**/site-packages/**",
+			"*.pyc"
+		],
+		"files.eol": "\n",
+		"files.autoSave": "afterDelay",
+		"python.linting.pylintEnabled": true,
+		"python.linting.enabled": false,
+		"jupyter.jupyterServerType": "local",
+		"task.allowAutomaticTasks": "on",
+		"git.openRepositoryInParentFolders": "always",
+		"extensions.ignoreRecommendations": true,
+		"extensions.autoUpdate": false,
+		"extensions.autoCheckUpdates": false,
+		"update.mode": "none"
+	}
+}

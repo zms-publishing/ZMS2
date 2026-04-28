@@ -5,6 +5,7 @@ FROM ubuntu:16.04
 # So, image file must be created with docker-compose build
 # ############################
 ARG INSTANCE_DIR
+ARG INSTANCE_MOUNT
 ARG VENV_DIR
 ARG IS_DEBUG
 ARG UID
@@ -66,8 +67,8 @@ RUN adduser --disabled-password --uid $UID --gid $GID zope
 
 USER zope
 # Create Zope Instance
-ENV INSTANCE_DIR=${INSTANCE_DIR}
-ENV VIRTUAL_ENV=${VENV_DIR}
+ENV INSTANCE_DIR=${INSTANCE_DIR:-/home/zope}
+ENV VIRTUAL_ENV=${VENV_DIR:-/home/zope/venv}
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 ENV SHELL=/bin/bash
 WORKDIR $VIRTUAL_ENV/bin

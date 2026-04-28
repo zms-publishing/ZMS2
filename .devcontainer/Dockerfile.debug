@@ -8,6 +8,7 @@ FROM ubuntu:16.04
 # So, image file must be created with docker-compose build
 # ############################
 ARG INSTANCE_DIR
+ARG INSTANCE_MOUNT
 ARG VENV_DIR
 ARG IS_DEBUG
 ARG UID
@@ -97,8 +98,8 @@ fi
 
 USER zope
 # Create Zope Instance
-ENV INSTANCE_DIR=${INSTANCE_DIR}
-ENV VIRTUAL_ENV=${VENV_DIR}
+ENV INSTANCE_DIR=${INSTANCE_DIR:-/home/zope}
+ENV VIRTUAL_ENV=${VENV_DIR:-/home/zope/venv}
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 ENV SHELL=/bin/bash
 WORKDIR $VIRTUAL_ENV/bin
@@ -132,9 +133,9 @@ RUN ./pip install -U --no-deps zope.interface==4.1.3
 
 
 
-# # Create Zope Instance
-# RUN ./mkzopeinstance --dir ${INSTANCE_DIR} --user admin:admin
-# COPY ./var ${INSTANCE_DIR}/var
+# Create Zope Instance
+RUN ./mkzopeinstance --dir ${INSTANCE_DIR} --user admin:admin
+COPY ./instance ${INSTANCE_DIR}
 
 # Download VSCode Python Extension vsix file and install from the file
 # /// IMPORTANT: 2021.9.1246542782 corresponds to VSCode 1.60.0 and code-server 3.12.0
@@ -145,10 +146,10 @@ RUN wget https://github.com/microsoft/vscode-python/releases/download/2021.9.124
 RUN code-server --install-extension ms-python-release.vsix  --user-data-dir /home/zope/.local/share/code-server
 
 # Start VScode-Server
-# CMD ["code-server", \
-#      "--bind-addr", "0.0.0.0:8888", \
-#      "--disable-telemetry", \
-#      "--disable-update-check", \
-#      "--user-data-dir", "/home/zope/.local/share/code-server", \
-#      "--auth", "none", \
-#      "/home/zope"]
+CMD ["code-server", \
+     "--bind-addr", "0.0.0.0:8888", \
+     "--disable-telemetry", \
+     "--disable-update-check", \
+     "--user-data-dir", "/home/zope/.local/share/code-server", \
+     "--auth", "none", \
+     "/home/zope"]
