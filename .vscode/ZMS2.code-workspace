@@ -1,45 +1,47 @@
 {
 	"folders": [
 		{
-			"name": "ZMS2-Code",
+			"name": "ZMS2",
 			"path": "../"
 		},
 		{
-			"name": "ZMS2-instance",
-			"path": "../docker/variants/ubuntu/instance"
+			"name": "ZMS3",
+			"path": "../../ZMS3/"
+		},
+		{
+			"name": "ZMS5",
+			"path": "../../ZMS5/"
+		},
+		{
+			"name": "ZMS2-instance (dev)",
+			"path": "/home/zope/instance/zms2_dev"
+			
 		}
 	],
 	"settings": {
+		"python.defaultInterpreterPath": "/home/zope/venv/bin/python",
 		"window.zoomLevel": 0,
+		"git.ignoreMissingGitWarning": true,
 		"editor.minimap.enabled": false,
 		"editor.renderWhitespace": "all",
-		"editor.insertSpaces": false,
 		"editor.renderControlCharacters": false,
-		"editor.tabSize": 4,
 		"workbench.iconTheme": "vs-minimal",
 		"files.associations": {
 			"*.zpt": "html",
-			"*.zcml": "xml",
-			"css_*": "css"
+			"*.zcml": "xml"
 		},
+		"scm.alwaysShowActions": true,
 		"files.exclude": {
 			"*.pyc": true,
-			"*-all.min.*":true
+			"*-all.min.*":true,
+			"**/cache/**": true,
+			"**/Data.*": true,
 		},
-		"python.workspaceSymbols.exclusionPatterns": [
-			"**/site-packages/**",
-			"*.pyc"
-		],
+		"search.exclude": { 
+			"**/apidocs/**": true
+		},
 		"files.eol": "\n",
 		"files.autoSave": "afterDelay",
-		"python.linting.pylintEnabled": true,
-		"python.linting.enabled": false,
-		"jupyter.jupyterServerType": "local",
-		"task.allowAutomaticTasks": "on",
-		"git.openRepositoryInParentFolders": "always",
-		"extensions.ignoreRecommendations": true,
-		"extensions.autoUpdate": false,
-		"extensions.autoCheckUpdates": false,
-		"update.mode": "none"
+		"workbench.colorTheme": "Visual Studio Light",
 	}
 }
