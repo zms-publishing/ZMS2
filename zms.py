@@ -747,6 +747,13 @@ class ZMS(
       # object, which will be used by xmlGetParent() (see below).
       self.oParent = None
 
+      ### WORKAROUND! Avoid infinite recursion in ZMS.__before_publishing_traverse__
+      def __before_publishing_traverse__(self, arg1, arg2=None):
+        """
+        Pre-traversal hook.
+        """
+        pass
+
 ################################################################################
 
 # Workaround for an incompatibility with zope.browserresource 3.11.0 and newer 
