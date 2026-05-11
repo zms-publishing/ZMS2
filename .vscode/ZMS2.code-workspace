@@ -14,7 +14,7 @@
 		},
 		{
 			"name": "ZMS2-instance (dev)",
-			"path": "/home/zope/instance/zms2_desy"
+			"path": "/home/zope/instance/zms2_dev"
 			
 		}
 	],
