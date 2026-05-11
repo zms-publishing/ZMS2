@@ -6,11 +6,12 @@ LABEL org.opencontainers.image.title="zms2:ubuntu-debug"
 # Get environment variables from docker-compose.yml:
 # So, image file must be created with docker-compose build
 # ############################
-ARG INSTANCE_DIR=$(INSTANCE_DIR;default:/home/zope)
-ARG VENV_DIR=$(VENV_DIR;default:/home/zope/venv)
+ARG INSTANCE_DIR=/home/zope
+ARG VENV_DIR=/home/zope/venv
+ARG INSTANCE_MOUNT=/home/zope/instance/zms2_dev
 ARG IS_DEBUG=true
-ARG UID=$(UID;default:1000)
-ARG GID=$(GID;default:1000)
+ARG UID=1000
+ARG GID=1000
 ARG CODE_SERVER_VERSION=4.20.1
 # ############################
 
@@ -23,7 +24,16 @@ USER root
 # https://copilot.microsoft.com/shares/zTrKFY3Jc7ucLYUs7bkge
 # https://copilot.microsoft.com/shares/cfz7tHiKiEKhhu1osK3NQ
 # https://copilot.microsoft.com/shares/JWQQogrAxdTgMdAcMQnno
-RUN curl -fSL --progress-bar https://code-server.dev/install.sh | bash -s -- --version $CODE_SERVER_VERSION
+RUN --mount=type=cache,target=${INSTANCE_MOUNT}/.cache \
+        set -e; \
+        INSTALL_SH=${INSTANCE_DIR}/.cache/code-server-install.sh; \
+        if [ ! -s "$INSTALL_SH" ]; then \
+            curl -fSL --progress-bar -o "$INSTALL_SH" https://code-server.dev/install.sh; \
+            chmod +x "$INSTALL_SH"; \
+        else \
+            echo "Using cached code-server installer: $INSTALL_SH"; \
+        fi; \
+        bash "$INSTALL_SH" --version "$CODE_SERVER_VERSION"
 
 
 # ------------------------------
@@ -35,8 +45,15 @@ USER zope
 # /// We keep this VSIX pinned to preserve Python 2 support; if you upgrade `code-server`
 # /// to 4.x, you must test the VSIX — newer Python extension releases may have dropped Py2 support.
 WORKDIR /home/zope
-RUN wget https://github.com/microsoft/vscode-python/releases/download/2021.9.1246542782/ms-python-release.vsix
-RUN code-server --install-extension ms-python-release.vsix  --user-data-dir /home/zope/.local/share/code-server
+RUN --mount=type=cache,target=${INSTANCE_MOUNT}/.cache,uid=${UID},gid=${GID},mode=0775 \
+        set -e; \
+        PY_VSIX=${INSTANCE_MOUNT}/.cache/ms-python-release.vsix; \
+        if [ ! -s "$PY_VSIX" ]; then \
+            curl -fSL -o "$PY_VSIX" https://github.com/microsoft/vscode-python/releases/download/2021.9.1246542782/ms-python-release.vsix; \
+        else \
+            echo "Using cached VSIX: $PY_VSIX"; \
+        fi
+RUN code-server --install-extension ${INSTANCE_MOUNT}/.cache/ms-python-release.vsix  --user-data-dir /home/zope/.local/share/code-server
 
 
 # Start VScode-Server

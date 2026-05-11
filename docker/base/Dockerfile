@@ -8,6 +8,7 @@ LABEL org.opencontainers.image.title="zms2:ubuntu"
 # ############################
 # Use simple ARG defaults so Docker expands them correctly.
 ARG INSTANCE_DIR=/home/zope
+ARG INSTANCE_MOUNT=/home/zope/instance/zms2_dev
 ARG VENV_DIR=/home/zope/venv
 ARG IS_DEBUG=false
 ARG UID=1000
@@ -95,6 +96,12 @@ RUN ./pip install -r https://raw.githubusercontent.com/zms-publishing/zms3/maste
 # # Create Zope Instance
 # RUN ./mkzopeinstance --dir ${INSTANCE_DIR} --user admin:admin
 # COPY ./var ${INSTANCE_DIR}/var
+
+# Install additional/custom modules from a productive instance 
+# see: docker-compose.yml -> additional_contexts -> custom_src
+COPY --from=custom_src . ${INSTANCE_DIR}/src/
+RUN ${INSTANCE_DIR}/src/install_custom_modules.sh
+
 
 # EXPOSE 3306
 # EXPOSE 8080
