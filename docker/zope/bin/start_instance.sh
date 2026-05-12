@@ -43,21 +43,21 @@ while [ ! -f "${INSTANCE_DIR}/etc/zope_$HTTP_PORT.conf" ]; do
   sleep 1
 done
 
-# Wait for ZEO server to start by monitoring its log file
+# Wait for ZEO server to start by checking its socket file on the shared var volume.
 echo "Waiting for ZEO server to start listening on socket..."
-max_wait=60  # Maximum seconds to wait
+max_wait=120  # Maximum seconds to wait
 elapsed=0
-while ! tail -n 20 "${INSTANCE_DIR}/log/zeo.log" 2>/dev/null | grep -q "listening on"; do
+while [ ! -S "${INSTANCE_DIR}/var/zeosocket" ]; do
   echo "Waiting for ZEO server to start... ($elapsed seconds)"
   sleep 1
   elapsed=$((elapsed+1))
   # Check if maximum waiting time is exceeded
   if [ $elapsed -ge $max_wait ]; then
-    echo "ERROR: Timed out waiting for ZEO server to start (${max_wait}s)"
+    echo "ERROR: Timed out waiting for ZEO server socket (${max_wait}s)"
     exit 1
   fi
 done
-echo "ZEO server is now listening on socket"
+echo "ZEO server is now listening on ${INSTANCE_DIR}/var/zeosocket"
 
 # Start Zope instance
 echo "Starting Zope instance ..."
