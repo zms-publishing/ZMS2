@@ -4,22 +4,20 @@ services:
       context: .
       dockerfile: ./docker/base/Dockerfile
     image: localhost/zope:2-latest
-    stop_grace_period: 1s # SIGKILL after 1s, as zope is always taking the full 10 seconds
+    # stop_grace_period: 1s # SIGKILL after 1s, as zope is always taking the full 10 seconds
     ports:
-      - 80:80
+      - 8080:8080
     environment:
-      - HTTP_PORT=80
+      - HTTP_PORT=8080
+      - READ_ONLY=false
     # runzope does not support envsubst directly, so we use bash to execute the command and perform the variable substitution before running zope. This allows us to dynamically configure the HTTP port based on the environment variable.
-    command: bash -c "exec runzope -X debug-mode=on --configure <( envsubst '$\HTTP_PORT' < etc/zope.conf )"
+    # command: bash -c "exec runzope -X debug-mode=on --configure <( envsubst '$\HTTP_PORT' < etc/zope.conf )"
     volumes:
       - ./docker/zope/etc/:/home/zope/etc/
       - ./docker/zope/var/:/home/zope/var/
       # To share external methods between Zope/ZEO/Docker clients folder needs to be mounted
       - ./docker/zope/Extensions/:/home/zope/Extensions/
-      # source code
-      - ./tests:/home/zope/tests
-      - ./test_output:/home/zope/test_output
-      - ./selenium_tests:/home/zope/selenium_tests
+      - ./docker/zope/entrypoint.d/:/home/zope/entrypoint.d/
     develop:
       watch:
         # sync+restart
@@ -47,6 +45,7 @@ services:
     tty: true
 
   zope-debug:
+    # start with `docker compose --profile debug up`
     profiles: [debug]
     build:
       context: .
@@ -60,7 +59,6 @@ services:
     command: code-server --bind-addr 0.0.0.0:8080 --auth none  /home/zope
     ports:
       - 8080:8080 # VSCode-Server
-      - 5678:5678 # debugpy (vscode remote debugger)
       - 8085:8085 # Running Default Zope-Server on ZEO
       - 8086:8086 # Provided for Debugger-Zope-Instance
     volumes:
@@ -68,10 +66,7 @@ services:
       - ./docker/zope/var/:/home/zope/var/
       # To share external methods between Zope/ZEO/Docker clients folder needs to be mounted
       - ./docker/zope/Extensions/:/home/zope/Extensions/
-      # source code
-      - ./tests:/home/zope/tests
-      - ./test_output:/home/zope/test_output
-      - ./selenium_tests:/home/zope/selenium_tests
+      - ./docker/zope/entrypoint.d/:/home/zope/entrypoint.d/
 
   zeo:
     build:

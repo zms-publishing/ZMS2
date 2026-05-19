@@ -61,9 +61,11 @@ RUN <<EOR
 EOR
 
 # Provide ZEO health check script
-COPY --chown=zope:zope docker/base/zeo_health_check.py bin/zeo_health_check.py
+ARG BUILD_DIR=docker/base
+COPY --chown=zope:zope $BUILD_DIR/zeo_health_check.py bin/zeo_health_check.py
 # generic run script
-COPY --chown=zope:zope docker/base/run-zope.sh bin/run-zope.sh
+COPY --chown=zope:zope $BUILD_DIR/run-zope.sh bin/run-zope.sh
+COPY --chown=zope:zope $BUILD_DIR/entrypoint.sh bin/entrypoint.sh
 
 ARG INSTANCE_DIR=/home/zope/
 ENV VIRTUAL_ENV=/home/zope/venv
@@ -93,11 +95,9 @@ EOR
 # Copy in and install zms last, to maximize layer caching
 # Needs to happen before instance initialization as the instance cannot be loaded
 # otherwise to generate the initial user
-# Not quite sure why the source needs to land in `src/Products/zms` - the setup.py
-# file declares it to be in src. But this works…
-COPY --chown=zope:zope . src/Products/zms
+COPY --chown=zope:zope . src/
 RUN --mount=type=cache,uid=$UID,target=$PIP_CACHE_DIR,sharing=locked <<EOR
-    $PIP_INSTALL --editable ./src/[dev]
+    $PIP_INSTALL ./src/[dev]
 EOR
 
 # Create Zope Instance
@@ -110,14 +110,13 @@ EOR
 # startup behaviour.
 RUN <<EOR
     set -ex
-    mkdir cache Extensions Products customizing import
+    mkdir cache Extensions Products customizing import entrypoint.d
     mkzopeinstance --dir ${INSTANCE_DIR} --user admin:admin
     # consume inituser file
     echo | zopectl --configure etc/zope.conf debug
 EOR
 
 # TODO copy in base configuration files
-ARG BUILD_DIR=docker/base
 COPY --chown=zope:zope $BUILD_DIR/zope.conf etc/zope.conf
 COPY --chown=zope:zope $BUILD_DIR/zeo.conf etc/zeo.conf
 
