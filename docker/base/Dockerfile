@@ -1,23 +1,7 @@
 FROM ubuntu:20.04
+ARG BUILD_PYTHON_VERSION=2.7
 
-# Image name: zms2:ubuntu
-LABEL org.opencontainers.image.title="zms2:ubuntu"
-
-# Get environment variables from docker-compose.yml:
-# So, image file must be created with docker-compose build
-# ############################
-# Use simple ARG defaults so Docker expands them correctly.
-ARG INSTANCE_DIR=/home/zope
-ARG INSTANCE_MOUNT=/home/zope/instance/zms2_dev
-ARG VENV_DIR=/home/zope/venv
-ARG IS_DEBUG=false
-ARG UID=1000
-ARG GID=1000
-# ############################
-
-# Non-interactive installs and default timezone to avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive TZ=Europe/Berlin
-
 RUN \
     --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
@@ -54,63 +38,95 @@ RUN \
     apt-get install --yes mariadb-client default-libmysqlclient-dev
     apt-get install --yes slapd ldap-utils
     apt-get install --yes libnss3 libxss1 libasound2 libatk1.0-0 libgtk-3-0 libx11-xcb1 libxcb1
+    # zms2 specific dependencies
+    apt-get install --yes libffi-dev
+    apt-get install --yes libxml2-dev libxslt1-dev
+    apt-get install --yes libjpeg-dev
 EOR
 
-
-# ------------------------------
-# Add Packages needed for VSCode
-RUN apt-get update && apt-get install -y apt-transport-https ca-certificates gnupg curl && \
-    curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft.gpg && \
-    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list && \
-    rm -rf /var/lib/apt/lists/*
-# ------------------------------
-
 # Set host's UID/GID to allow sharing of production files as bind mounts
-RUN groupadd --gid $GID zope
-RUN adduser --disabled-password --uid $UID --gid $GID zope
-
-# Grant zope passwordless sudo for development purposes if IS_DEBUG is set to true
-RUN if [ "$IS_DEBUG" = "true" ]; then \
-    echo "Debug mode is ON. Granting zope passwordless sudo." && \
-    apt-get update && \
-    apt-get install -y sudo && \
-    echo 'zope ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
-    adduser zope sudo; \
-    else \
-    echo "Debug mode is OFF. Not granting zope passwordless sudo."; \
-    fi
-
+ARG UID=1000
+ARG GID=1000
+RUN <<EOR
+    groupadd --gid $GID zope
+    adduser --disabled-password --system --uid $UID --gid $GID zope
+EOR
 USER zope
+WORKDIR /home/zope/
+
+# Configure git for zms integrated push
+RUN <<EOR
+    git config --global user.email "zmsbot@container"
+    git config --global user.name "zmsbot"
+EOR
+
+# Provide ZEO health check script
+COPY --chown=zope:zope docker/base/zeo_health_check.py bin/zeo_health_check.py
+# generic run script
+COPY --chown=zope:zope docker/base/run-zope.sh bin/run-zope.sh
+
+ARG INSTANCE_DIR=/home/zope/
+ENV VIRTUAL_ENV=/home/zope/venv
+
 # Create Zope Instance
-ENV INSTANCE_DIR=$INSTANCE_DIR
-ENV VIRTUAL_ENV=$VENV_DIR
+ENV INSTANCE_DIR=${INSTANCE_DIR}
+RUN <<EOR
+    virtualenv --python=python2 $VIRTUAL_ENV
+    ln -s ${VIRTUAL_ENV}/lib/python$BUILD_PYTHON_VERSION/site-packages/ ${VIRTUAL_ENV}/site-packages
+EOR
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-RUN virtualenv --python=python2 $VIRTUAL_ENV
 
-WORKDIR $VIRTUAL_ENV/bin
-RUN bash -c "source activate"
+# Local builds greatly accelerate, if we do not need to download all pip packages from scratch every time
+ENV PIP_CACHE_DIR=/home/zope/venv/cache
+ARG PIP_INSTALL="pip install --cache-dir $PIP_CACHE_DIR"
 
-RUN ./pip install git+https://github.com/zms-publishing/ZMS2.git@master#egg=ZMS
-RUN ./pip install -r https://raw.githubusercontent.com/zms-publishing/zms3/master/requirements-extra.txt
+COPY --chown=zope:zope version.txt src/version.txt
+COPY --chown=zope:zope requirements*.txt setup.py README.rst src/
+RUN --mount=type=cache,uid=$UID,target=$PIP_CACHE_DIR,sharing=locked <<EOR
+    set -xe
+    $PIP_INSTALL --upgrade pip wheel setuptools
+    $PIP_INSTALL --requirement src/requirements.txt
+    $PIP_INSTALL --requirement src/requirements-extra.txt
+    $PIP_INSTALL ./src/
+EOR
 
-# # Create Zope Instance
-# RUN ./mkzopeinstance --dir ${INSTANCE_DIR} --user admin:admin
-# COPY ./var ${INSTANCE_DIR}/var
+# Copy in and install zms last, to maximize layer caching
+# Needs to happen before instance initialization as the instance cannot be loaded
+# otherwise to generate the initial user
+# Not quite sure why the source needs to land in `src/Products/zms` - the setup.py
+# file declares it to be in src. But this works…
+COPY --chown=zope:zope . src/Products/zms
+RUN --mount=type=cache,uid=$UID,target=$PIP_CACHE_DIR,sharing=locked <<EOR
+    $PIP_INSTALL --editable ./src/[dev]
+EOR
 
-# Install additional/custom modules from a productive instance 
-# see: docker-compose.yml -> additional_contexts -> custom_src
-COPY --from=custom_src . ${INSTANCE_DIR}/src/
-RUN ${INSTANCE_DIR}/src/install_custom_modules.sh
+# Create Zope Instance
+# We do this, to make it easy to evaluate zms without having to create an initial zodb
+# outside the container and map it inside.
+# However: mkzopeinstance creates a file inituser in the top level of the deployment
+# This file is read on the first startup of zope, and creates the actual initial user
+# in the zodb consuming that file. Therefore we must be very cautious to ensuret that
+# this file itself is _not_ part of the docker image. zconsole triggers that same
+# startup behaviour.
+RUN <<EOR
+    set -ex
+    mkdir cache Extensions Products customizing import
+    mkzopeinstance --dir ${INSTANCE_DIR} --user admin:admin
+    # consume inituser file
+    echo | zopectl --configure etc/zope.conf debug
+EOR
 
+# TODO copy in base configuration files
+ARG BUILD_DIR=docker/base
+COPY --chown=zope:zope $BUILD_DIR/zope.conf etc/zope.conf
+COPY --chown=zope:zope $BUILD_DIR/zeo.conf etc/zeo.conf
 
-# EXPOSE 3306
-# EXPOSE 8080
-# EXPOSE 8085
-# EXPOSE 8086
-# EXPOSE 8087
 
 # Finally Start Zope by Script
 # ENTRYPOINT ["/bin/sh -c"]
 # ENTRYPOINT ["bash", "-c", "sleep infinity"]
 # CMD ["$INSTANCE_HOME/bin/zopectl","fg"]
-# CMD ["$INSTANCE_HOME/bin/runzope","-X","debug-mode=on"]cd
+# CMD ["$INSTANCE_HOME/bin/runzope","-X","debug-mode=on"]
+
+ENV HTTP_PORT=${HTTP_PORT:-80}
+CMD ["bin/run-zope.sh"]

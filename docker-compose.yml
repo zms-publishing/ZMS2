@@ -1,0 +1,84 @@
+services:
+  zope:
+    build:
+      context: .
+      dockerfile: ./docker/base/Dockerfile
+    image: localhost/zope:2-latest
+    stop_grace_period: 1s # SIGKILL after 1s, as zope is always taking the full 10 seconds
+    ports:
+      - 80:80
+    environment:
+      - HTTP_PORT=80
+    # runzope does not support envsubst directly, so we use bash to execute the command and perform the variable substitution before running zope. This allows us to dynamically configure the HTTP port based on the environment variable.
+    command: bash -c "exec runzope -X debug-mode=on --configure <( envsubst '$\HTTP_PORT' < etc/zope.conf )"
+    volumes:
+      - ./docker/zope/etc/:/home/zope/etc/
+      - ./docker/zope/var/:/home/zope/var/
+      # To share external methods between Zope/ZEO/Docker clients folder needs to be mounted
+      - ./docker/zope/Extensions/:/home/zope/Extensions/
+      # source code
+      - ./tests:/home/zope/tests
+      - ./test_output:/home/zope/test_output
+      - ./selenium_tests:/home/zope/selenium_tests
+    develop:
+      watch:
+        # sync+restart
+        - action: sync+restart
+          path: ./Products
+          target: /home/zope/Products
+        # rebuild
+        - action: rebuild
+          path: docker/base/Dockerfile
+        - action: rebuild
+          path: requirements.txt
+        - action: rebuild
+          path: requirements-zeo.txt
+        - action: rebuild
+          path: requirements-full.txt
+        - action: rebuild
+          path: requirements-dev.txt
+        - action: rebuild
+          path: setup.py
+        - action: rebuild
+          path: setup.cfg
+
+    # allow attaching to the container to debug with `breakpoint()`
+    stdin_open: true
+    tty: true
+
+  zope-debug:
+    profiles: [debug]
+    build:
+      context: .
+      dockerfile: ./docker/base/Dockerfile.debug
+      args:
+        BASE_IMAGE: localhost/zope:2-latest
+    image: localhost/zope-debug:2-latest
+    depends_on:
+      - zeo
+    stop_grace_period: 1s # SIGKILL after 1s, as zope is always taking the full 10 seconds
+    command: code-server --bind-addr 0.0.0.0:8080 --auth none  /home/zope
+    ports:
+      - 8080:8080 # VSCode-Server
+      - 5678:5678 # debugpy (vscode remote debugger)
+      - 8085:8085 # Running Default Zope-Server on ZEO
+      - 8086:8086 # Provided for Debugger-Zope-Instance
+    volumes:
+      - ./docker/zope/etc/:/home/zope/etc/
+      - ./docker/zope/var/:/home/zope/var/
+      # To share external methods between Zope/ZEO/Docker clients folder needs to be mounted
+      - ./docker/zope/Extensions/:/home/zope/Extensions/
+      # source code
+      - ./tests:/home/zope/tests
+      - ./test_output:/home/zope/test_output
+      - ./selenium_tests:/home/zope/selenium_tests
+
+  zeo:
+    build:
+      context: .
+      dockerfile: ./docker/base/Dockerfile
+    image: localhost/zope:2-latest
+    command: runzeo --configure etc/zeo.conf
+    volumes:
+      - ./docker/zope/etc/:/home/zope/etc/
+      - ./docker/zope/var/:/home/zope/var/
