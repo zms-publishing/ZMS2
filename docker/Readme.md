@@ -6,13 +6,13 @@ This project ships a Docker Compose setup to run **Zope** with a **ZEO** backend
 
 - Docker + Docker Compose (with support for `develop.watch`)
 - Free host ports:
-  - `80` (default Zope)
-  - Debug profile: `8080`, `5678`, `8085`, `8086`
+  - `8080` (default Zope)
+  - Debug profile: `8080`, `8085`, `8086`
 
 ## Services (docker-compose.yml)
 
 - `zeo`: ZEO server (internal port `8090`, not published to host)
-- `zope`: main Zope instance (publishes `80:80`)
+- `zope`: main Zope instance (publishes `8080:8080`)
 - `zope-debug` (profile `debug`): code-server + debug ports, depends on `zeo`
 
 ## Quickstart
@@ -22,7 +22,7 @@ From the repository root:
 - Build and run:
   - `docker compose up --build`
 - Open Zope:
-  - http://localhost/
+  - http://localhost:8080/
 
 Stop / remove containers:
 
@@ -98,5 +98,5 @@ Compose `develop.watch` is configured to:
 
 ## Troubleshooting (short)
 
-- If host port `80` is already in use, change the `ports:` mapping in `docker-compose.yml`.
+- If host port `8080` is already in use, change the `ports:` mapping in `docker-compose.yml`.
 - To reset the database, remove the contents of `docker/zope/var/` (this deletes `Data.fs`).
