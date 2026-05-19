@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: ./docker/base/Dockerfile
     image: localhost/zope:2-latest
+    # image: ghcr.io/zms-publishing/zms2:latest
     # stop_grace_period: 1s # SIGKILL after 1s, as zope is always taking the full 10 seconds
     ports:
       - 8080:8080
@@ -74,6 +75,7 @@ services:
       context: .
       dockerfile: ./docker/base/Dockerfile
     image: localhost/zope:2-latest
+    # image: ghcr.io/zms-publishing/zms2:latest
     command: runzeo --configure etc/zeo.conf
     volumes:
       - ./docker/zope/etc/:/home/zope/etc/
