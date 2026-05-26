@@ -9,32 +9,27 @@ entrypoint_log() {
     fi
 }
 
-if /usr/bin/find "/home/zope/entrypoint.d/" -mindepth 1 -maxdepth 1 -type f -print -quit 2>/dev/null | read v; then
-    entrypoint_log "$0: /home/zope/entrypoint.d/ is not empty, will attempt to perform configuration"
+ENTRYPOINT_D="/home/zope/entrypoint.d"
 
-    find "/home/zope/entrypoint.d/" -follow -type f -print | sort -V | while read -r f; do
-        case "$f" in
-        *.envsh)
-            if [ -x "$f" ]; then
-                entrypoint_log "$0: Sourcing $f"
-                . "$f"
-            else
-                entrypoint_log "$0: Ignoring $f, not executable"
-            fi
-            ;;
-        *.sh)
-            if [ -x "$f" ]; then
-                entrypoint_log "$0: Launching $f"
-                "$f"
-            else
-                entrypoint_log "$0: Ignoring $f, not executable"
-            fi
-            ;;
-        *) entrypoint_log "$0: Ignoring $f" ;;
-        esac
-    done
-
-    entrypoint_log "$0: Configuration complete; ready for start up"
-else
-    entrypoint_log "$0: No files found in /home/zope/entrypoint.d/, skipping configuration"
+if ! /usr/bin/find "$ENTRYPOINT_D" -mindepth 1 -maxdepth 1 -type f -print -quit 2>/dev/null | read _; then
+    entrypoint_log "$0: No files found in $ENTRYPOINT_D, skipping configuration"
+    return 0 2>/dev/null || exit 0
 fi
+
+find "$ENTRYPOINT_D" -maxdepth 1 -follow -type f -print | sort -V | while read -r file; do
+    case "$file" in
+    *.envsh)
+        if [ -x "$file" ]; then
+            entrypoint_log "$0: Sourcing $file"
+            . "$file"
+        fi
+        ;;
+    *.sh)
+        if [ -x "$file" ]; then
+            entrypoint_log "$0: Executing $file"
+            "$file"
+        fi
+        ;;
+    *) ;;
+    esac
+done
